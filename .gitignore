@@ -7,21 +7,12 @@
 # Maven build output
 **/target/
 
-
 # Temporary files
 *.tmp
 *.swp
 
-# OS-specific files
-.DS_Store
-Thumbs.db
-
-# IDE settings (optional, if you're using other IDEs too)
-.vscode/
-
 # Environment files (optional, if used)
 .env
-.env.*
 
 # H2 database (in case of file-based usage later)
 *.mv.db
