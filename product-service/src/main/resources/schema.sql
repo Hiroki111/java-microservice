@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS products (
   name VARCHAR(100) NOT NULL,
   description VARCHAR(100) NOT NULL,
   price DECIMAL NOT NULL,
-  is_available BOOLEAN NOT NULL
+  available BOOLEAN NOT NULL
 );

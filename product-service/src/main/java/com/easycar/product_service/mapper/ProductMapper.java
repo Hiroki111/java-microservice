@@ -9,7 +9,7 @@ public class ProductMapper {
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
-        product.setIsAvailable(productDto.getIsAvailable());
+        product.setAvailable(productDto.isAvailable());
         return product;
     }
 }

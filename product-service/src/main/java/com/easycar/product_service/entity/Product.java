@@ -24,7 +24,7 @@ public class Product {
     @Column(name="price")
     private BigDecimal price;
 
-    @Column(name="is_available")
-    private Boolean isAvailable;
+    @Column(name="available")
+    private boolean available;
 
 }

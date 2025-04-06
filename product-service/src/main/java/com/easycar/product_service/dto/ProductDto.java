@@ -27,6 +27,6 @@ public class ProductDto {
     @NotNull(message = "description can not be a null")
     private BigDecimal price;
 
-    @NotNull(message = "isAvailable can not be a null")
-    private Boolean isAvailable;
+    @NotNull(message = "available can not be a null")
+    private boolean available;
 }
