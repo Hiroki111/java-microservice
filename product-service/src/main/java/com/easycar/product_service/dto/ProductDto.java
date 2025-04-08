@@ -24,9 +24,8 @@ public class ProductDto {
     private String description;
 
     @Min(value = 0, message = "The value must be positive")
-    @NotNull(message = "description can not be a null")
+    @NotNull(message = "price can not be a null")
     private BigDecimal price;
 
-    @NotNull(message = "available can not be a null")
     private boolean available;
 }
