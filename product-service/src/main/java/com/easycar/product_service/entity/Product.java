@@ -6,25 +6,29 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name="products")
-@Getter @Setter @ToString @AllArgsConstructor @NoArgsConstructor
+@Table(name = "products")
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name="description")
+    @Column(name = "description")
     private String description;
 
-    @Column(name="price")
+    @Column(name = "price")
     private BigDecimal price;
 
-    @Column(name="available")
+    @Column(name = "available")
     private boolean available;
 
 }

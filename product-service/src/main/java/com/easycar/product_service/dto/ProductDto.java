@@ -9,10 +9,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-@Schema(
-        name = "ProductDto",
-        description = "Schema to hold product information"
-)
+@Schema(name = "ProductDto", description = "Schema to hold product information")
 public class ProductDto {
 
     private Long id;

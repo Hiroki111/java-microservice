@@ -39,10 +39,8 @@ public class ProductControllerTest {
 
         Mockito.doNothing().when(productService).createProduct(any(ProductDto.class));
 
-        mockMvc.perform(post("/api/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(productDto)))
-                .andExpect(status().isCreated())
+        mockMvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productDto))).andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.statusCode").value("201"))
                 .andExpect(jsonPath("$.statusMsg").value("Product created successfully"));

@@ -13,7 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path="/api/products", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/api/products", produces = {MediaType.APPLICATION_JSON_VALUE})
 @AllArgsConstructor
 @Validated
 public class ProductController {
@@ -23,10 +23,8 @@ public class ProductController {
     @PostMapping("")
     public ResponseEntity<ResponseDto> createProduct(@Valid @RequestBody ProductDto productDto) {
         productService.createProduct(productDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(ProductConstants.STATUS_201, ProductConstants.MESSAGE_201));
     }
-
 
 }

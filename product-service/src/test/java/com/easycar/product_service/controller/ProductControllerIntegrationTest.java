@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ProductControllerIntegrationTest {
@@ -33,12 +32,8 @@ public class ProductControllerIntegrationTest {
     private ObjectMapper objectMapper;
     private String productName;
 
-    private record ProductTestDto(
-            String name,
-            String description,
-            BigDecimal price,
-            Boolean available
-    ) {}
+    private record ProductTestDto(String name, String description, BigDecimal price, Boolean available) {
+    }
 
     @BeforeEach
     void cleanDb() {
@@ -48,22 +43,13 @@ public class ProductControllerIntegrationTest {
     @Test
     public void testCreateProduct_shouldPersistProduct() throws Exception {
         String productName = "Toyota Corolla";
-        var productTestDto = new ProductTestDto(
-            productName,
-            "A popular sedan",
-            BigDecimal.valueOf(20000),
-            true
-        );
+        var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
 
-        mockMvc.perform(post("/api/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(productTestDto)))
-                .andExpect(status().isCreated());
+        mockMvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productTestDto))).andExpect(status().isCreated());
 
-        Optional<Product> saved = productRepository.findAll()
-                .stream()
-                .filter(product -> product.getName().equals(productName))
-                .findFirst();
+        Optional<Product> saved = productRepository.findAll().stream()
+                .filter(product -> product.getName().equals(productName)).findFirst();
 
         assertThat(saved).isPresent();
         assertThat(saved.get().getDescription()).isEqualTo(productTestDto.description);
@@ -72,22 +58,13 @@ public class ProductControllerIntegrationTest {
     @Test
     public void testCreateProduct_withEmptyName_shouldReturnBadRequest() throws Exception {
         String productName = "";
-        var productTestDto = new ProductTestDto(
-                productName,
-                "A popular sedan",
-                BigDecimal.valueOf(20000),
-                true
-        );
+        var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
 
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(productTestDto)))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productTestDto))).andExpect(status().isBadRequest());
 
-        Optional<Product> saved = productRepository.findAll()
-                .stream()
-                .filter(product -> product.getName().equals(productName))
-                .findFirst();
+        Optional<Product> saved = productRepository.findAll().stream()
+                .filter(product -> product.getName().equals(productName)).findFirst();
 
         assertThat(saved).isNotPresent();
     }
@@ -95,22 +72,13 @@ public class ProductControllerIntegrationTest {
     @Test
     public void testCreateProduct_withNegativePrice_shouldReturnBadRequest() throws Exception {
         String productName = "Toyota Corolla";
-        var productTestDto = new ProductTestDto(
-                productName,
-                "Desc",
-                BigDecimal.valueOf(-20000),
-                true
-        );
+        var productTestDto = new ProductTestDto(productName, "Desc", BigDecimal.valueOf(-20000), true);
 
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(productTestDto)))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productTestDto))).andExpect(status().isBadRequest());
 
-        Optional<Product> saved = productRepository.findAll()
-                .stream()
-                .filter(product -> product.getName().equals(productName))
-                .findFirst();
+        Optional<Product> saved = productRepository.findAll().stream()
+                .filter(product -> product.getName().equals(productName)).findFirst();
 
         assertThat(saved).isNotPresent();
     }
