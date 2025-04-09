@@ -15,9 +15,8 @@ public class ProductService {
     private ProductRepository productRepository;
 
     public Product findProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Product", "id", id.toString())
-        );
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
     }
 
     public void createProduct(ProductDto productDto) {
@@ -26,9 +25,8 @@ public class ProductService {
     }
 
     public Product updateProduct(Long id, ProductDto productDto) {
-        Product currentProduct = productRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Product", "id", id.toString())
-        );
+        Product currentProduct = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
         Product updateProduct = ProductMapper.mapProductDtoToProduct(productDto, currentProduct);
         productRepository.save(updateProduct);
 
