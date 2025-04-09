@@ -130,9 +130,20 @@
 				</executions>
 				<configuration>
 					<java>
-						<eclipse>
-							<file>${basedir}/eclipse-java-formatter.xml</file>
-						</eclipse>
+						<includes>
+							<include>src/main/java/**/*.java</include>
+							<include>src/test/java/**/*.java</include>
+						</includes>
+						<importOrder />
+						<removeUnusedImports />
+						<toggleOffOn/>
+						<trimTrailingWhitespace/>
+						<endWithNewline/>
+						<indent>
+							<tabs>true</tabs>
+							<spacesPerTab>4</spacesPerTab>
+						</indent>
+						<palantirJavaFormat/>
 					</java>
 				</configuration>
 			</plugin>

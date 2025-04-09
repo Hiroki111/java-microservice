@@ -1,9 +1,8 @@
 package com.easycar.product_service.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
+import lombok.*;
 
 @Entity
 @Table(name = "products")
@@ -30,5 +29,4 @@ public class Product {
 
     @Column(name = "available")
     private boolean available;
-
 }

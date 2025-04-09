@@ -14,5 +14,4 @@ public class ResponseDto {
 
     @Schema(description = "Status message in the response")
     private String statusMsg;
-
 }
