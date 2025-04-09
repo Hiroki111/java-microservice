@@ -3,6 +3,7 @@ package com.easycar.product_service.controller;
 import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ResponseDto;
+import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,12 @@ public class ProductController {
 
     private ProductService productService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProduct(@PathVariable Long id) {
+        var product = productService.findProductById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
+
     @PostMapping("")
     public ResponseEntity<ResponseDto> createProduct(@Valid @RequestBody ProductDto productDto) {
         productService.createProduct(productDto);
@@ -27,4 +34,10 @@ public class ProductController {
                 .body(new ResponseDto(ProductConstants.STATUS_201, ProductConstants.MESSAGE_201));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseDto> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
+        productService.updateProduct(id, productDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto(ProductConstants.STATUS_200, ProductConstants.MESSAGE_200));
+    }
 }
