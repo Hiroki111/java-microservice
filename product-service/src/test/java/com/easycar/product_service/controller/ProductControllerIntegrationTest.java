@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,55 +41,59 @@ public class ProductControllerIntegrationTest {
         productRepository.deleteAll();
     }
 
-    @Test
-    public void testCreateProduct_shouldPersistProduct() throws Exception {
-        String productName = "Toyota Corolla";
-        var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
+    @Nested
+    @DisplayName("POST /api/products")
+    class CreateProductTests {
+        @Test
+        public void testCreateProduct_shouldPersistProduct() throws Exception {
+            String productName = "Toyota Corolla";
+            var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
 
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(productTestDto)))
-                .andExpect(status().isCreated());
+            mockMvc.perform(post("/api/products")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(productTestDto)))
+                    .andExpect(status().isCreated());
 
-        Optional<Product> saved = productRepository.findAll().stream()
-                .filter(product -> product.getName().equals(productName))
-                .findFirst();
+            Optional<Product> saved = productRepository.findAll().stream()
+                    .filter(product -> product.getName().equals(productName))
+                    .findFirst();
 
-        assertThat(saved).isPresent();
-        assertThat(saved.get().getDescription()).isEqualTo(productTestDto.description);
-    }
+            assertThat(saved).isPresent();
+            assertThat(saved.get().getDescription()).isEqualTo(productTestDto.description);
+        }
 
-    @Test
-    public void testCreateProduct_withEmptyName_shouldReturnBadRequest() throws Exception {
-        String productName = "";
-        var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
+        @Test
+        public void testCreateProduct_withEmptyName_shouldReturnBadRequest() throws Exception {
+            String productName = "";
+            var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
 
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(productTestDto)))
-                .andExpect(status().isBadRequest());
+            mockMvc.perform(post("/api/products")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(productTestDto)))
+                    .andExpect(status().isBadRequest());
 
-        Optional<Product> saved = productRepository.findAll().stream()
-                .filter(product -> product.getName().equals(productName))
-                .findFirst();
+            Optional<Product> saved = productRepository.findAll().stream()
+                    .filter(product -> product.getName().equals(productName))
+                    .findFirst();
 
-        assertThat(saved).isNotPresent();
-    }
+            assertThat(saved).isNotPresent();
+        }
 
-    @Test
-    public void testCreateProduct_withNegativePrice_shouldReturnBadRequest() throws Exception {
-        String productName = "Toyota Corolla";
-        var productTestDto = new ProductTestDto(productName, "Desc", BigDecimal.valueOf(-20000), true);
+        @Test
+        public void testCreateProduct_withNegativePrice_shouldReturnBadRequest() throws Exception {
+            String productName = "Toyota Corolla";
+            var productTestDto = new ProductTestDto(productName, "Desc", BigDecimal.valueOf(-20000), true);
 
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(productTestDto)))
-                .andExpect(status().isBadRequest());
+            mockMvc.perform(post("/api/products")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(productTestDto)))
+                    .andExpect(status().isBadRequest());
 
-        Optional<Product> saved = productRepository.findAll().stream()
-                .filter(product -> product.getName().equals(productName))
-                .findFirst();
+            Optional<Product> saved = productRepository.findAll().stream()
+                    .filter(product -> product.getName().equals(productName))
+                    .findFirst();
 
-        assertThat(saved).isNotPresent();
+            assertThat(saved).isNotPresent();
+        }
     }
 }
