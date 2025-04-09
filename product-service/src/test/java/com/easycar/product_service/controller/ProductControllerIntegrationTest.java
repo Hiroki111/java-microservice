@@ -32,8 +32,6 @@ public class ProductControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String productName;
-
     private record ProductTestDto(String name, String description, BigDecimal price, Boolean available) {}
 
     @BeforeEach
