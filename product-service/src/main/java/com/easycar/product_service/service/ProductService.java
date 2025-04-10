@@ -33,4 +33,11 @@ public class ProductService {
         Product updateProduct = ProductMapper.mapProductPatchDtoToProduct(productPatchDto, currentProduct);
         productRepository.save(updateProduct);
     }
+
+    public void deleteProduct(Long id) {
+        Product product = productRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
+        productRepository.delete(product);
+    }
 }

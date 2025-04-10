@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -143,6 +144,55 @@ public class ProductControllerIntegrationTest {
             assertThat(updated.get().getName()).isEqualTo("CR-V");
             assertThat(updated.get().getDescription()).isEqualTo("Cool SUV");
             assertThat(updated.get().getPrice().compareTo(BigDecimal.valueOf(65000))).isZero();
+        }
+
+        @Test
+        public void testUpdateProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
+            ProductDto payload = new ProductDto();
+            payload.setName("CR-V");
+
+            mockMvc.perform(patch("/api/products/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        public void testUpdateProduct_withEmptyName_shouldReturnBadRequest() throws Exception {
+            ProductDto payload = new ProductDto();
+            payload.setName("");
+
+            mockMvc.perform(patch("/api/products/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("DELETE /api/products/{id}")
+    class DeleteProductTests {
+        @Test
+        public void testDeleteProduct_shouldDeleteProduct() throws Exception {
+            Product product = productRepository.save(Product.builder()
+                    .name("Camry")
+                    .description("Reliable car")
+                    .price(BigDecimal.valueOf(55000))
+                    .build());
+
+            mockMvc.perform(delete("/api/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+
+            Optional<Product> updated = productRepository.findById(product.getId());
+            assertThat(updated).isNotPresent();
+        }
+
+        @Test
+        public void testDeleteProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
+            mockMvc.perform(delete("/api/products/1")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
         }
     }
 }
