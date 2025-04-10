@@ -1,6 +1,7 @@
 package com.easycar.product_service.service;
 
 import com.easycar.product_service.dto.ProductDto;
+import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.exception.ResourceNotFoundException;
 import com.easycar.product_service.mapper.ProductMapper;
@@ -25,13 +26,11 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public Product updateProduct(Long id, ProductDto productDto) {
+    public void patchProduct(Long id, ProductPatchDto productPatchDto) {
         Product currentProduct = productRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
-        Product updateProduct = ProductMapper.mapProductDtoToProduct(productDto, currentProduct);
+        Product updateProduct = ProductMapper.mapProductPatchDtoToProduct(productPatchDto, currentProduct);
         productRepository.save(updateProduct);
-
-        return updateProduct;
     }
 }

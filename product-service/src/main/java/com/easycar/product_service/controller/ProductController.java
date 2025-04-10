@@ -2,6 +2,7 @@ package com.easycar.product_service.controller;
 
 import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.dto.ProductDto;
+import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.dto.ResponseDto;
 import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.service.ProductService;
@@ -36,9 +37,10 @@ public class ProductController {
                 .body(new ResponseDto(ProductConstants.STATUS_201, ProductConstants.MESSAGE_201));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
-        productService.updateProduct(id, productDto);
+    @PatchMapping("/{id}")
+    public ResponseEntity<ResponseDto> patchProduct(
+            @PathVariable Long id, @Valid @RequestBody ProductPatchDto productDto) {
+        productService.patchProduct(id, productDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(ProductConstants.STATUS_200, ProductConstants.MESSAGE_200));
     }

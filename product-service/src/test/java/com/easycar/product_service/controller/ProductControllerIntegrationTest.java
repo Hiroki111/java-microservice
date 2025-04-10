@@ -1,18 +1,19 @@
 package com.easycar.product_service.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,9 +35,31 @@ public class ProductControllerIntegrationTest {
 
     private record ProductTestDto(String name, String description, BigDecimal price, Boolean available) {}
 
-    @BeforeEach
+    @AfterEach
     void cleanDb() {
         productRepository.deleteAll();
+    }
+
+    @Nested
+    @DisplayName("GET /api/products/{id}")
+    class GetProductTests {
+        @Test
+        public void testGetProduct_shouldReturnProductById() throws Exception {
+            var saved = productRepository.save(Product.builder()
+                    .name("Camry")
+                    .description("Reliable car")
+                    .price(BigDecimal.valueOf(55000))
+                    .build());
+
+            mockMvc.perform(get("/api/products/" + saved.getId()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.name").value(("Camry")));
+        }
+
+        @Test
+        public void testGetProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
+            mockMvc.perform(get("/api/products/1")).andExpect(status().isNotFound());
+        }
     }
 
     @Nested
@@ -92,6 +115,34 @@ public class ProductControllerIntegrationTest {
                     .findFirst();
 
             assertThat(saved).isNotPresent();
+        }
+    }
+
+    @Nested
+    @DisplayName("PUT /api/products/{id}")
+    class UpdateProductTests {
+        @Test
+        public void testUpdateProduct_shouldUpdateProduct() throws Exception {
+            Product product = productRepository.save(Product.builder()
+                    .name("Camry")
+                    .description("Reliable car")
+                    .price(BigDecimal.valueOf(55000))
+                    .build());
+            ProductDto payload = new ProductDto();
+            payload.setName("CR-V");
+            payload.setDescription("Cool SUV");
+            payload.setPrice(BigDecimal.valueOf(65000));
+
+            mockMvc.perform(patch("/api/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isOk());
+
+            Optional<Product> updated = productRepository.findById(product.getId());
+            assertThat(updated).isPresent();
+            assertThat(updated.get().getName()).isEqualTo("CR-V");
+            assertThat(updated.get().getDescription()).isEqualTo("Cool SUV");
+            assertThat(updated.get().getPrice().compareTo(BigDecimal.valueOf(65000))).isZero();
         }
     }
 }
