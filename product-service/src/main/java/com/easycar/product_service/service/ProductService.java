@@ -7,7 +7,10 @@ import com.easycar.product_service.exception.ResourceNotFoundException;
 import com.easycar.product_service.mapper.ProductMapper;
 import com.easycar.product_service.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @AllArgsConstructor
@@ -19,6 +22,10 @@ public class ProductService {
         return productRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
+    }
+
+    public Page<Product> findProducts (Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     public void createProduct(ProductDto productDto) {

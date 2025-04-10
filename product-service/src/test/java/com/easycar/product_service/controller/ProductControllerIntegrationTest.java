@@ -64,6 +64,12 @@ public class ProductControllerIntegrationTest {
     }
 
     @Nested
+    @DisplayName("GET /api/products")
+    class GetProductsTests {
+
+    }
+
+    @Nested
     @DisplayName("POST /api/products")
     class CreateProductTests {
         @Test
