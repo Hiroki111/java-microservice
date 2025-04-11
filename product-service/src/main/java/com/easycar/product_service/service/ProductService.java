@@ -1,5 +1,6 @@
 package com.easycar.product_service.service;
 
+import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Product;
@@ -10,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @AllArgsConstructor
@@ -24,8 +24,9 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
     }
 
-    public Page<Product> findProducts (Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public PageDto<Product> findProducts(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return ProductMapper.mapProductPageToPageDto(productPage, new PageDto<Product>());
     }
 
     public void createProduct(ProductDto productDto) {

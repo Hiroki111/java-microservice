@@ -1,6 +1,7 @@
 package com.easycar.product_service.controller;
 
 import com.easycar.product_service.constants.ProductConstants;
+import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.dto.ResponseDto;
@@ -34,10 +35,8 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Product>> getProducts(
-            @PageableDefault(size = 100) Pageable pageable
-            ) {
-        Page<Product> products = productService.findProducts(pageable);
+    public ResponseEntity<PageDto<Product>> getProducts(@PageableDefault(size = 100) Pageable pageable) {
+        PageDto<Product> products = productService.findProducts(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 

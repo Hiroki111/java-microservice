@@ -1,9 +1,11 @@
 package com.easycar.product_service.mapper;
 
+import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Product;
 import java.math.BigDecimal;
+import org.springframework.data.domain.Page;
 
 public class ProductMapper {
 
@@ -32,5 +34,16 @@ public class ProductMapper {
             product.setAvailable(productPatchDto.getAvailable());
         }
         return product;
+    }
+
+    public static PageDto<Product> mapProductPageToPageDto(Page<Product> productPage, PageDto<Product> pageDto) {
+        pageDto.setContent(productPage.getContent());
+        pageDto.setTotalElements((int) productPage.getTotalElements());
+        pageDto.setTotalPages(productPage.getTotalPages());
+        pageDto.setPageSize(productPage.getSize());
+        pageDto.setCurrentPage(productPage.getNumber());
+        pageDto.setFirst(productPage.isFirst());
+        pageDto.setLast(productPage.isLast());
+        return pageDto;
     }
 }
