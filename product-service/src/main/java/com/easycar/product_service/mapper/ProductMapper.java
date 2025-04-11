@@ -5,6 +5,8 @@ import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Product;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 
 public class ProductMapper {
@@ -17,33 +19,57 @@ public class ProductMapper {
         return product;
     }
 
-    public static Product mapProductPatchDtoToProduct(ProductPatchDto productPatchDto, Product product) {
+    public static Product mapProductPatchDtoToProduct(ProductPatchDto productPatchDto, Product currentProduct) {
+        Product newProduct = Product.builder()
+                .id(currentProduct.getId())
+                .name(currentProduct.getName())
+                .description(currentProduct.getDescription())
+                .price(currentProduct.getPrice())
+                .available(currentProduct.isAvailable())
+                .build();
+
         if (productPatchDto.getName() != null) {
-            product.setName(productPatchDto.getName());
+            newProduct.setName(productPatchDto.getName());
         }
         if (productPatchDto.getDescription() != null) {
-            product.setDescription(productPatchDto.getDescription());
+            newProduct.setDescription(productPatchDto.getDescription());
         }
         if (productPatchDto.getPrice() != null) {
             if (productPatchDto.getPrice().compareTo(BigDecimal.ZERO) < 0) {
                 throw new IllegalArgumentException("Price must be non-negative");
             }
-            product.setPrice(productPatchDto.getPrice());
+            newProduct.setPrice(productPatchDto.getPrice());
         }
         if (productPatchDto.getAvailable() != null) {
-            product.setAvailable(productPatchDto.getAvailable());
+            newProduct.setAvailable(productPatchDto.getAvailable());
         }
-        return product;
+        return newProduct;
     }
 
-    public static PageDto<Product> mapProductPageToPageDto(Page<Product> productPage, PageDto<Product> pageDto) {
-        pageDto.setContent(productPage.getContent());
-        pageDto.setTotalElements((int) productPage.getTotalElements());
-        pageDto.setTotalPages(productPage.getTotalPages());
-        pageDto.setPageSize(productPage.getSize());
-        pageDto.setCurrentPage(productPage.getNumber());
-        pageDto.setFirst(productPage.isFirst());
-        pageDto.setLast(productPage.isLast());
-        return pageDto;
+    public static ProductDto mapProductToProductDto(Product product) {
+        ProductDto productDto = new ProductDto();
+        productDto.setId(product.getId());
+        productDto.setName(product.getName());
+        productDto.setDescription(product.getDescription());
+        productDto.setPrice(product.getPrice());
+        productDto.setAvailable(product.isAvailable());
+
+        return productDto;
+    }
+
+    public static PageDto<ProductDto> mapProductPageToPageDto(Page<Product> productPage) {
+        List<ProductDto> content = productPage.getContent().stream()
+                .map(ProductMapper::mapProductToProductDto)
+                .collect(Collectors.toList());
+
+        return PageDto.<ProductDto>builder()
+                .content(content)
+                .totalElements((int) productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .pageSize(productPage.getSize())
+                .currentPage(productPage.getNumber())
+                .first(productPage.isFirst())
+                .last(productPage.isLast())
+                .build();
     }
 }

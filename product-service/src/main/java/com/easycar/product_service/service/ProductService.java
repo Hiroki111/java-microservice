@@ -24,9 +24,9 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
     }
 
-    public PageDto<Product> findProducts(Pageable pageable) {
+    public PageDto<ProductDto> findProducts(Pageable pageable) {
         Page<Product> productPage = productRepository.findAll(pageable);
-        return ProductMapper.mapProductPageToPageDto(productPage, new PageDto<Product>());
+        return ProductMapper.mapProductPageToPageDto(productPage);
     }
 
     public void createProduct(ProductDto productDto) {

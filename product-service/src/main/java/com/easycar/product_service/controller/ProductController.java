@@ -9,7 +9,6 @@ import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -35,8 +34,8 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<PageDto<Product>> getProducts(@PageableDefault(size = 100) Pageable pageable) {
-        PageDto<Product> products = productService.findProducts(pageable);
+    public ResponseEntity<PageDto<ProductDto>> getProducts(@PageableDefault(size = 100) Pageable pageable) {
+        PageDto<ProductDto> products = productService.findProducts(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
