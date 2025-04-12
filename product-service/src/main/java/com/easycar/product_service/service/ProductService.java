@@ -44,7 +44,7 @@ public class ProductService {
     }
 
     public void createProduct(ProductDto productDto) {
-        Product product = ProductMapper.mapProductDtoToProduct(productDto, new Product());
+        Product product = ProductMapper.mapProductDtoToProduct(productDto);
         productRepository.save(product);
     }
 

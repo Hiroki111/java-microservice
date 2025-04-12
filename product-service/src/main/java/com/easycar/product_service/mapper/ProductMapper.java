@@ -11,12 +11,14 @@ import org.springframework.data.domain.Page;
 
 public class ProductMapper {
 
-    public static Product mapProductDtoToProduct(ProductDto productDto, Product product) {
-        product.setName(productDto.getName());
-        product.setDescription(productDto.getDescription());
-        product.setPrice(productDto.getPrice());
-        product.setAvailable(productDto.isAvailable());
-        return product;
+    public static Product mapProductDtoToProduct(ProductDto productDto) {
+        return Product.builder()
+                .id(productDto.getId())
+                .name(productDto.getName())
+                .description(productDto.getDescription())
+                .price(productDto.getPrice())
+                .available(productDto.isAvailable())
+                .build();
     }
 
     public static Product mapProductPatchDtoToProduct(ProductPatchDto productPatchDto, Product currentProduct) {

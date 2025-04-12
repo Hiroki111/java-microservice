@@ -39,6 +39,8 @@ public class ProductControllerIntegrationTest {
 
     private record ProductTestDto(String name, String description, BigDecimal price, Boolean available) {}
 
+    private final long nonexistentId = 999999L;
+
     @AfterEach
     void cleanDb() {
         productRepository.deleteAll();
@@ -62,7 +64,7 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void testGetProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
-            mockMvc.perform(get("/api/products/1")).andExpect(status().isNotFound());
+            mockMvc.perform(get("/api/products/" + nonexistentId)).andExpect(status().isNotFound());
         }
     }
 
@@ -188,13 +190,19 @@ public class ProductControllerIntegrationTest {
     @Nested
     @DisplayName("PUT /api/products/{id}")
     class UpdateProductTests {
-        @Test
-        public void testUpdateProduct_shouldUpdateProduct() throws Exception {
-            Product product = productRepository.save(Product.builder()
+        private Product product;
+
+        @BeforeEach
+        void populateDbTable() {
+            product = productRepository.save(Product.builder()
                     .name("Camry")
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
                     .build());
+        }
+
+        @Test
+        public void testUpdateProduct_shouldUpdateProduct() throws Exception {
             ProductDto payload = new ProductDto();
             payload.setName("CR-V");
             payload.setDescription("Cool SUV");
@@ -214,11 +222,11 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testUpdateProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
+        public void testUpdateProduct_withNonExistentId_shouldReturnNotFound() throws Exception {
             ProductDto payload = new ProductDto();
             payload.setName("CR-V");
 
-            mockMvc.perform(patch("/api/products/1")
+            mockMvc.perform(patch("/api/products/" + nonexistentId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isNotFound());
@@ -229,7 +237,7 @@ public class ProductControllerIntegrationTest {
             ProductDto payload = new ProductDto();
             payload.setName("");
 
-            mockMvc.perform(patch("/api/products/1")
+            mockMvc.perform(patch("/api/products/" + product.getId())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isBadRequest());
@@ -239,14 +247,19 @@ public class ProductControllerIntegrationTest {
     @Nested
     @DisplayName("DELETE /api/products/{id}")
     class DeleteProductTests {
-        @Test
-        public void testDeleteProduct_shouldDeleteProduct() throws Exception {
-            Product product = productRepository.save(Product.builder()
+        private Product product;
+
+        @BeforeEach
+        void setupProductDb () {
+            product = productRepository.save(Product.builder()
                     .name("Camry")
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
                     .build());
+        }
 
+        @Test
+        public void testDeleteProduct_shouldDeleteProduct() throws Exception {
             mockMvc.perform(delete("/api/products/" + product.getId()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
@@ -255,8 +268,8 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testDeleteProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
-            mockMvc.perform(delete("/api/products/1").contentType(MediaType.APPLICATION_JSON))
+        public void testDeleteProduct_withNonExistentId_shouldReturnNotFound() throws Exception {
+            mockMvc.perform(delete("/api/products/" + nonexistentId).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         }
     }
