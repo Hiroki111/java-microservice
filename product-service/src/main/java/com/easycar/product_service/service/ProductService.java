@@ -7,9 +7,11 @@ import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.exception.ResourceNotFoundException;
 import com.easycar.product_service.mapper.ProductMapper;
 import com.easycar.product_service.repository.ProductRepository;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,8 +26,19 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
     }
 
-    public PageDto<ProductDto> findProducts(Pageable pageable) {
-        Page<Product> productPage = productRepository.findAll(pageable);
+    public PageDto<ProductDto> findProducts(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        Specification<Product> spec = Specification.where(null);
+
+        if (minPrice != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice));
+        }
+        if (maxPrice != null) {
+            spec = spec.and(
+                    (root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice));
+        }
+
+        Page<Product> productPage = productRepository.findAll(spec, pageable);
         return ProductMapper.mapProductPageToPageDto(productPage);
     }
 

@@ -1,10 +1,10 @@
 package com.easycar.product_service.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,7 +13,10 @@ import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -66,7 +69,64 @@ public class ProductControllerIntegrationTest {
     @Nested
     @DisplayName("GET /api/products")
     class GetProductsTests {
+        private List<Product> products;
+        private final int numberOfProducts = 200;
+        private final BigDecimal defaultPrice = BigDecimal.valueOf(100000);
 
+        @BeforeEach
+        void populateProductsTable() {
+            products = IntStream.rangeClosed(1, numberOfProducts)
+                    .mapToObj(i -> Product.builder()
+                            .name("Product " + i)
+                            .description("Description " + i)
+                            .price(defaultPrice)
+                            .build())
+                    .toList();
+            productRepository.saveAll(products);
+        }
+
+        @Test
+        public void testGetProducts() throws Exception {
+            mockMvc.perform(get("/api/products"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content.length()").value(100)) // Default page size
+                    .andExpect(jsonPath("$.totalElements").value(numberOfProducts))
+                    .andExpect(jsonPath("$.content[0].id")
+                            .value(products.getFirst().getId()))
+                    .andExpect(
+                            jsonPath("$.content[99].id").value(products.get(99).getId()));
+        }
+
+        @Test
+        public void testGetProducts_withQueryParams() throws Exception {
+            mockMvc.perform(get("/api/products?size=5&page=1&sort=id,desc"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content.length()").value(5))
+                    .andExpect(jsonPath("$.totalElements").value(numberOfProducts))
+                    .andExpect(
+                            jsonPath("$.content[0].id").value(products.get(194).getId()))
+                    .andExpect(
+                            jsonPath("$.content[4].id").value(products.get(190).getId()));
+        }
+
+        @Test
+        public void testGetProducts_ByPrice() throws Exception {
+            List<BigDecimal> prices =
+                    Arrays.asList(BigDecimal.valueOf(4999), BigDecimal.valueOf(7000), BigDecimal.valueOf(15001));
+            prices.forEach((price) -> {
+                Product product = Product.builder()
+                        .name("Product ")
+                        .description("Description ")
+                        .price(price)
+                        .build();
+                productRepository.save(product);
+            });
+
+            mockMvc.perform(get("/api/products?minPrice=5000&maxPrice=15000"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].price").value("7000.0"));
+        }
     }
 
     @Nested
@@ -149,7 +209,8 @@ public class ProductControllerIntegrationTest {
             assertThat(updated).isPresent();
             assertThat(updated.get().getName()).isEqualTo("CR-V");
             assertThat(updated.get().getDescription()).isEqualTo("Cool SUV");
-            assertThat(updated.get().getPrice().compareTo(BigDecimal.valueOf(65000))).isZero();
+            assertThat(updated.get().getPrice().compareTo(BigDecimal.valueOf(65000)))
+                    .isZero();
         }
 
         @Test
@@ -186,8 +247,7 @@ public class ProductControllerIntegrationTest {
                     .price(BigDecimal.valueOf(55000))
                     .build());
 
-            mockMvc.perform(delete("/api/products/" + product.getId())
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(delete("/api/products/" + product.getId()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
             Optional<Product> updated = productRepository.findById(product.getId());
@@ -196,8 +256,7 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void testDeleteProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
-            mockMvc.perform(delete("/api/products/1")
-                            .contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(delete("/api/products/1").contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         }
     }
