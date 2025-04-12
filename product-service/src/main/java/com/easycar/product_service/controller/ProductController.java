@@ -5,7 +5,6 @@ import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.dto.ResponseDto;
-import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.service.ProductService;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
@@ -30,8 +29,8 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable Long id) {
-        var product = productService.findProductById(id);
+    public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
+        ProductDto product = productService.findProductById(id);
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 

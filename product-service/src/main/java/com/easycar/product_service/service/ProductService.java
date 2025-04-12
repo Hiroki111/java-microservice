@@ -20,10 +20,11 @@ public class ProductService {
 
     private ProductRepository productRepository;
 
-    public Product findProductById(Long id) {
-        return productRepository
+    public ProductDto findProductById(Long id) {
+        Product product = productRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
+        return ProductMapper.mapProductToProductDto(product);
     }
 
     public PageDto<ProductDto> findProducts(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
