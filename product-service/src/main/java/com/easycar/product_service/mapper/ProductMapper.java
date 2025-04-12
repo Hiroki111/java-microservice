@@ -4,7 +4,6 @@ import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Product;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -37,9 +36,6 @@ public class ProductMapper {
             newProduct.setDescription(productPatchDto.getDescription());
         }
         if (productPatchDto.getPrice() != null) {
-            if (productPatchDto.getPrice().compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("Price must be non-negative");
-            }
             newProduct.setPrice(productPatchDto.getPrice());
         }
         if (productPatchDto.getAvailable() != null) {

@@ -1,9 +1,9 @@
 package com.easycar.product_service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -19,7 +19,7 @@ public class ProductDto {
     @NotEmpty(message = "description can not be a null or empty")
     private String description;
 
-    @Min(value = 0, message = "The value must be positive")
+    @PositiveOrZero(message = "The value must be positive or zero")
     @NotNull(message = "price can not be a null")
     private BigDecimal price;
 

@@ -196,6 +196,7 @@ public class ProductControllerIntegrationTest {
     @DisplayName("PUT /api/products/{id}")
     class UpdateProductTests {
         private Product product;
+        private ProductDto payload;
 
         @BeforeEach
         void populateDbTable() {
@@ -204,15 +205,15 @@ public class ProductControllerIntegrationTest {
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
                     .build());
+
+            payload = new ProductDto();
+            payload.setName("CR-V");
+            payload.setDescription("Cool SUV");
+            payload.setPrice(BigDecimal.valueOf(65000));
         }
 
         @Test
         public void shouldUpdateProduct() throws Exception {
-            ProductDto payload = new ProductDto();
-            payload.setName("CR-V");
-            payload.setDescription("Cool SUV");
-            payload.setPrice(BigDecimal.valueOf(65000));
-
             mockMvc.perform(patch("/api/products/" + product.getId())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(payload)))
@@ -228,9 +229,6 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnNotFound_withNonExistentId() throws Exception {
-            ProductDto payload = new ProductDto();
-            payload.setName("CR-V");
-
             mockMvc.perform(patch("/api/products/" + nonexistentId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(payload)))
@@ -239,7 +237,6 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnBadRequest_withEmptyName() throws Exception {
-            ProductDto payload = new ProductDto();
             payload.setName("");
 
             mockMvc.perform(patch("/api/products/" + product.getId())
@@ -250,8 +247,6 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnBadRequest_withEmptyDescription() throws Exception {
-            ProductDto payload = new ProductDto();
-            payload.setName("CR-V");
             payload.setDescription("");
 
             mockMvc.perform(patch("/api/products/" + product.getId())
@@ -262,9 +257,6 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnBadRequest_withNegativePrice() throws Exception {
-            ProductDto payload = new ProductDto();
-            payload.setName("CR-V");
-            payload.setDescription("Popular SUV");
             payload.setPrice(BigDecimal.valueOf(-54300));
 
             mockMvc.perform(patch("/api/products/" + product.getId())

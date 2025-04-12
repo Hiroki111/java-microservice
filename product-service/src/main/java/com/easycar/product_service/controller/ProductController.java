@@ -34,7 +34,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<PageDto<ProductDto>> getProducts(
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
@@ -43,7 +43,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<ResponseDto> createProduct(@Valid @RequestBody ProductDto productDto) {
         productService.createProduct(productDto);
         return ResponseEntity.status(HttpStatus.CREATED)
