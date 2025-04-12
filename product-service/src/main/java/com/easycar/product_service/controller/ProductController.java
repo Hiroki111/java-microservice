@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
         produces = {MediaType.APPLICATION_JSON_VALUE})
 @AllArgsConstructor
 @Validated
+@SuppressWarnings("unused")
 public class ProductController {
 
     private ProductService productService;
