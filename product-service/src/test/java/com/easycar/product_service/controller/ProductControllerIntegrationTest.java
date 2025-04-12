@@ -49,21 +49,26 @@ public class ProductControllerIntegrationTest {
     @Nested
     @DisplayName("GET /api/products/{id}")
     class GetProductTests {
-        @Test
-        public void testGetProduct_shouldReturnProductById() throws Exception {
-            var saved = productRepository.save(Product.builder()
+        private Product product;
+
+        @BeforeEach
+        void setupDbTable() {
+            product = productRepository.save(Product.builder()
                     .name("Camry")
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
                     .build());
+        }
 
-            mockMvc.perform(get("/api/products/" + saved.getId()))
+        @Test
+        public void shouldReturnProductById() throws Exception {
+            mockMvc.perform(get("/api/products/" + product.getId()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.name").value(("Camry")));
         }
 
         @Test
-        public void testGetProduct_withEmptyDb_shouldReturnNotFound() throws Exception {
+        public void shouldReturnNotFound_withNonExistentId() throws Exception {
             mockMvc.perform(get("/api/products/" + nonexistentId)).andExpect(status().isNotFound());
         }
     }
@@ -76,7 +81,7 @@ public class ProductControllerIntegrationTest {
         private final BigDecimal defaultPrice = BigDecimal.valueOf(100000);
 
         @BeforeEach
-        void populateProductsTable() {
+        void setupDbTable() {
             products = IntStream.rangeClosed(1, numberOfProducts)
                     .mapToObj(i -> Product.builder()
                             .name("Product " + i)
@@ -88,7 +93,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testGetProducts() throws Exception {
+        public void shouldReturnProducts() throws Exception {
             mockMvc.perform(get("/api/products"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content.length()").value(100)) // Default page size
@@ -100,7 +105,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testGetProducts_withQueryParams() throws Exception {
+        public void shouldReturnProducts_withQueryParams() throws Exception {
             mockMvc.perform(get("/api/products?size=5&page=1&sort=id,desc"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content.length()").value(5))
@@ -112,7 +117,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testGetProducts_ByPrice() throws Exception {
+        public void shouldReturnProducts_byPrice() throws Exception {
             List<BigDecimal> prices =
                     Arrays.asList(BigDecimal.valueOf(4999), BigDecimal.valueOf(7000), BigDecimal.valueOf(15001));
             prices.forEach((price) -> {
@@ -135,7 +140,7 @@ public class ProductControllerIntegrationTest {
     @DisplayName("POST /api/products")
     class CreateProductTests {
         @Test
-        public void testCreateProduct_shouldPersistProduct() throws Exception {
+        public void shouldPersistProduct() throws Exception {
             String productName = "Toyota Corolla";
             var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
 
@@ -153,7 +158,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testCreateProduct_withEmptyName_shouldReturnBadRequest() throws Exception {
+        public void shouldReturnBadRequest_withEmptyName() throws Exception {
             String productName = "";
             var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
 
@@ -170,7 +175,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testCreateProduct_withNegativePrice_shouldReturnBadRequest() throws Exception {
+        public void shouldReturnBadRequest_withNegativePrice() throws Exception {
             String productName = "Toyota Corolla";
             var productTestDto = new ProductTestDto(productName, "Desc", BigDecimal.valueOf(-20000), true);
 
@@ -202,7 +207,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testUpdateProduct_shouldUpdateProduct() throws Exception {
+        public void shouldUpdateProduct() throws Exception {
             ProductDto payload = new ProductDto();
             payload.setName("CR-V");
             payload.setDescription("Cool SUV");
@@ -222,7 +227,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testUpdateProduct_withNonExistentId_shouldReturnNotFound() throws Exception {
+        public void shouldReturnNotFound_withNonExistentId() throws Exception {
             ProductDto payload = new ProductDto();
             payload.setName("CR-V");
 
@@ -233,7 +238,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testUpdateProduct_withEmptyName_shouldReturnBadRequest() throws Exception {
+        public void shouldReturnBadRequest_withEmptyName() throws Exception {
             ProductDto payload = new ProductDto();
             payload.setName("");
 
@@ -250,7 +255,7 @@ public class ProductControllerIntegrationTest {
         private Product product;
 
         @BeforeEach
-        void setupProductDb () {
+        void setupProductDb() {
             product = productRepository.save(Product.builder()
                     .name("Camry")
                     .description("Reliable car")
@@ -259,7 +264,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testDeleteProduct_shouldDeleteProduct() throws Exception {
+        public void shouldDeleteProduct() throws Exception {
             mockMvc.perform(delete("/api/products/" + product.getId()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
@@ -268,7 +273,7 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void testDeleteProduct_withNonExistentId_shouldReturnNotFound() throws Exception {
+        public void shouldReturnNotFound_withNonExistentId() throws Exception {
             mockMvc.perform(delete("/api/products/" + nonexistentId).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         }
