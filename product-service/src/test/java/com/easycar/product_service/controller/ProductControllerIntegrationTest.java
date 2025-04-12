@@ -247,6 +247,31 @@ public class ProductControllerIntegrationTest {
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isBadRequest());
         }
+
+        @Test
+        public void shouldReturnBadRequest_withEmptyDescription() throws Exception {
+            ProductDto payload = new ProductDto();
+            payload.setName("CR-V");
+            payload.setDescription("");
+
+            mockMvc.perform(patch("/api/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void shouldReturnBadRequest_withNegativePrice() throws Exception {
+            ProductDto payload = new ProductDto();
+            payload.setName("CR-V");
+            payload.setDescription("Popular SUV");
+            payload.setPrice(BigDecimal.valueOf(-54300));
+
+            mockMvc.perform(patch("/api/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
