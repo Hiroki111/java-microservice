@@ -18,7 +18,7 @@ public class ProductPatchDto {
     private String description;
 
     @Schema(nullable = true)
-    @DecimalMin(value = "0.0", inclusive = true, message = "Price must be non-negative")
+    @DecimalMin(value = "0.0", message = "Price must be non-negative")
     private BigDecimal price;
 
     @Schema(nullable = true)

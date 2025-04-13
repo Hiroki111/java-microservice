@@ -6,9 +6,16 @@ import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.dto.ResponseDto;
 import com.easycar.product_service.service.ProductService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
+import io.swagger.v3.oas.annotations.enums.Explode;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -35,9 +42,30 @@ public class ProductController {
     }
 
     @GetMapping
+    @Parameters({
+        @Parameter(
+                name = "page",
+                description = "page number",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "integer", defaultValue = "0")),
+        @Parameter(
+                name = "size",
+                description = "page size",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "integer", defaultValue = "5")),
+        @Parameter(
+                name = "sort",
+                description = "sort specification",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "array"),
+                explode = Explode.FALSE,
+                style = ParameterStyle.SIMPLE
+        ),
+    })
     public ResponseEntity<PageDto<ProductDto>> getProducts(
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
+            @ParameterObject
             @PageableDefault(size = 100) Pageable pageable) {
         PageDto<ProductDto> products = productService.findProducts(minPrice, maxPrice, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(products);
