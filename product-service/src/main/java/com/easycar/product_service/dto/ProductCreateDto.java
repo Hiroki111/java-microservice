@@ -7,20 +7,20 @@ import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
-@Schema(name = "ProductPatchDto", description = "Schema to partially update product information")
-public class ProductPatchDto {
-    @Schema(nullable = true, example = "CR-V")
+@Schema(name = "ProductCreateDto", description = "Schema to create a new product")
+public class ProductCreateDto {
+    @Schema(example = "CR-V")
     @NotBlank(message = "name cannot be empty")
     private String name;
 
-    @Schema(nullable = true, example = "Popular SUV")
+    @Schema(example = "Popular SUV")
     @NotBlank(message = "description cannot be empty")
     private String description;
 
-    @Schema(nullable = true, example = "65000.50")
+    @Schema(example = "65000.50")
     @DecimalMin(value = "0.0", message = "Price must be non-negative")
     private BigDecimal price;
 
-    @Schema(nullable = true)
+    @Schema(description = "defaults to false if omitted")
     private Boolean available;
 }

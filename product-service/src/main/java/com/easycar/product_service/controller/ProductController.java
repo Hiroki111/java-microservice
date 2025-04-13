@@ -1,10 +1,7 @@
 package com.easycar.product_service.controller;
 
 import com.easycar.product_service.constants.ProductConstants;
-import com.easycar.product_service.dto.PageDto;
-import com.easycar.product_service.dto.ProductDto;
-import com.easycar.product_service.dto.ProductPatchDto;
-import com.easycar.product_service.dto.ResponseDto;
+import com.easycar.product_service.dto.*;
 import com.easycar.product_service.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -17,6 +14,7 @@ import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -63,13 +61,13 @@ public class ProductController {
     public ResponseEntity<PageDto<ProductDto>> getProducts(
             @Parameter(description = "Min price (inclusive)") @RequestParam(required = false) BigDecimal minPrice,
             @Parameter(description = "Max price (inclusive)") @RequestParam(required = false) BigDecimal maxPrice,
-            @ParameterObject Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 100) Pageable pageable) {
         PageDto<ProductDto> products = productService.findProducts(minPrice, maxPrice, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> createProduct(@Valid @RequestBody ProductDto productDto) {
+    public ResponseEntity<ResponseDto> createProduct(@Valid @RequestBody ProductCreateDto productDto) {
         productService.createProduct(productDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(ProductConstants.STATUS_201, ProductConstants.MESSAGE_201));

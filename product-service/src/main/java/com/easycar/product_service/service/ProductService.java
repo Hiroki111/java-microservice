@@ -1,6 +1,7 @@
 package com.easycar.product_service.service;
 
 import com.easycar.product_service.dto.PageDto;
+import com.easycar.product_service.dto.ProductCreateDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Product;
@@ -43,8 +44,8 @@ public class ProductService {
         return ProductMapper.mapProductPageToPageDto(productPage);
     }
 
-    public void createProduct(ProductDto productDto) {
-        Product product = ProductMapper.mapProductDtoToProduct(productDto);
+    public void createProduct(ProductCreateDto productDto) {
+        Product product = ProductMapper.mapProductCreateDtoToProduct(productDto);
         productRepository.save(product);
     }
 

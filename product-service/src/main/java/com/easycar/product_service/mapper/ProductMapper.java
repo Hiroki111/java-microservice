@@ -1,6 +1,7 @@
 package com.easycar.product_service.mapper;
 
 import com.easycar.product_service.dto.PageDto;
+import com.easycar.product_service.dto.ProductCreateDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Product;
@@ -10,13 +11,12 @@ import org.springframework.data.domain.Page;
 
 public class ProductMapper {
 
-    public static Product mapProductDtoToProduct(ProductDto productDto) {
+    public static Product mapProductCreateDtoToProduct(ProductCreateDto productDto) {
         return Product.builder()
-                .id(productDto.getId())
                 .name(productDto.getName())
                 .description(productDto.getDescription())
                 .price(productDto.getPrice())
-                .available(productDto.isAvailable())
+                .available(productDto.getAvailable())
                 .build();
     }
 
