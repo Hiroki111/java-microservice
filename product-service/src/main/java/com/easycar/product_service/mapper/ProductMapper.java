@@ -4,6 +4,7 @@ import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductCreateDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
+import com.easycar.product_service.entity.Dealer;
 import com.easycar.product_service.entity.Product;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,12 +12,14 @@ import org.springframework.data.domain.Page;
 
 public class ProductMapper {
 
-    public static Product mapProductCreateDtoToProduct(ProductCreateDto productDto) {
+    public static Product mapProductCreateDtoToProduct(ProductCreateDto productDto, Dealer dealer) {
         return Product.builder()
                 .name(productDto.getName())
                 .description(productDto.getDescription())
                 .price(productDto.getPrice())
                 .available(productDto.getAvailable())
+                .category(productDto.getCategory())
+                .dealer(dealer)
                 .build();
     }
 
@@ -27,6 +30,8 @@ public class ProductMapper {
                 .description(currentProduct.getDescription())
                 .price(currentProduct.getPrice())
                 .available(currentProduct.isAvailable())
+                .category(currentProduct.getCategory())
+                .dealer(currentProduct.getDealer())
                 .build();
 
         if (productPatchDto.getName() != null) {
@@ -51,6 +56,7 @@ public class ProductMapper {
         productDto.setDescription(product.getDescription());
         productDto.setPrice(product.getPrice());
         productDto.setAvailable(product.isAvailable());
+        productDto.setCategory(product.getCategory());
 
         return productDto;
     }

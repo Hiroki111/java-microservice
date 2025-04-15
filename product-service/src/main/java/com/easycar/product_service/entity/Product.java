@@ -1,5 +1,7 @@
 package com.easycar.product_service.entity;
 
+import com.easycar.product_service.constants.Category;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import lombok.*;
@@ -8,7 +10,6 @@ import lombok.*;
 @Table(name = "products")
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -30,4 +31,13 @@ public class Product {
 
     @Column(name = "available")
     private boolean available;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dealer_id", nullable = false)
+    @JsonIgnore
+    private Dealer dealer;
 }

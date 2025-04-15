@@ -4,9 +4,11 @@ import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductCreateDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;
+import com.easycar.product_service.entity.Dealer;
 import com.easycar.product_service.entity.Product;
 import com.easycar.product_service.exception.ResourceNotFoundException;
 import com.easycar.product_service.mapper.ProductMapper;
+import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
     private ProductRepository productRepository;
+    private DealerRepository dealerRepository;
 
     public ProductDto findProductById(Long id) {
         Product product = productRepository
@@ -45,7 +48,11 @@ public class ProductService {
     }
 
     public void createProduct(ProductCreateDto productDto) {
-        Product product = ProductMapper.mapProductCreateDtoToProduct(productDto);
+        Dealer dealer = dealerRepository
+                .findById(productDto.getDealerId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Dealer", "id", productDto.getDealerId().toString()));
+        Product product = ProductMapper.mapProductCreateDtoToProduct(productDto, dealer);
         productRepository.save(product);
     }
 

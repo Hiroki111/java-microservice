@@ -1,5 +1,6 @@
 package com.easycar.product_service.dto;
 
+import com.easycar.product_service.constants.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -27,4 +28,8 @@ public class ProductDto {
     private BigDecimal price;
 
     private boolean available;
+
+    @Schema(example = "SUV")
+    @NotNull(message = "category can not be a null")
+    private Category category;
 }

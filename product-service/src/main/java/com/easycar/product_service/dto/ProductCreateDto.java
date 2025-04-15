@@ -1,7 +1,9 @@
 package com.easycar.product_service.dto;
 
+import com.easycar.product_service.constants.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import lombok.Data;
@@ -23,4 +25,11 @@ public class ProductCreateDto {
 
     @Schema(description = "defaults to false if omitted")
     private Boolean available;
+
+    @Schema(example = "SUV")
+    private Category category;
+
+    @Schema(example = "1")
+    @Min(value = 1)
+    private Long dealerId;
 }
