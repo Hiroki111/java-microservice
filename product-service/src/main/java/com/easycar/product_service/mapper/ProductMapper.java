@@ -7,6 +7,7 @@ import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.entity.Dealer;
 import com.easycar.product_service.entity.Product;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 
@@ -23,7 +24,8 @@ public class ProductMapper {
                 .build();
     }
 
-    public static Product mapProductPatchDtoToProduct(ProductPatchDto productPatchDto, Product currentProduct) {
+    public static Product mapProductPatchDtoToProduct(
+            ProductPatchDto productPatchDto, Product currentProduct, Optional<Dealer> newDealerOption) {
         Product newProduct = Product.builder()
                 .id(currentProduct.getId())
                 .name(currentProduct.getName())
@@ -45,6 +47,10 @@ public class ProductMapper {
         }
         if (productPatchDto.getAvailable() != null) {
             newProduct.setAvailable(productPatchDto.getAvailable());
+        }
+        if (newDealerOption.isPresent()) {
+            Dealer newDealer = newDealerOption.get();
+            newProduct.setDealer(newDealer);
         }
         return newProduct;
     }

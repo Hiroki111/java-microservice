@@ -8,8 +8,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.easycar.product_service.dto.ProductDto;
+import com.easycar.product_service.constants.Category;
+import com.easycar.product_service.dto.ProductPatchDto;
+import com.easycar.product_service.entity.Dealer;
 import com.easycar.product_service.entity.Product;
+import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
@@ -24,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@SpringBootTest(properties = {"spring.sql.init.mode=never"})
 @AutoConfigureMockMvc
 public class ProductControllerIntegrationTest {
 
@@ -35,15 +38,20 @@ public class ProductControllerIntegrationTest {
     private ProductRepository productRepository;
 
     @Autowired
+    private DealerRepository dealerRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
-    private record ProductTestDto(String name, String description, BigDecimal price, Boolean available) {}
+    private record ProductTestDto(
+            String name, String description, BigDecimal price, Boolean available, Category category, Long dealerId) {}
 
     private final long nonexistentId = 999999L;
 
     @AfterEach
     void cleanDb() {
         productRepository.deleteAll();
+        dealerRepository.deleteAll();
     }
 
     @Nested
@@ -53,10 +61,17 @@ public class ProductControllerIntegrationTest {
 
         @BeforeEach
         void setupDbTable() {
+            Dealer dealer = dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address("123 Main Street, Springfield")
+                    .build());
+
             product = productRepository.save(Product.builder()
                     .name("Camry")
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
+                    .category(Category.SEDAN)
+                    .dealer(dealer)
                     .build());
         }
 
@@ -81,12 +96,18 @@ public class ProductControllerIntegrationTest {
         private final BigDecimal defaultPrice = BigDecimal.valueOf(100000);
 
         @BeforeEach
-        void setupDbTable() {
+        void setupDbTables() {
+            Dealer dealer = dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address("123 Main Street, Springfield")
+                    .build());
             products = IntStream.rangeClosed(1, numberOfProducts)
                     .mapToObj(i -> Product.builder()
                             .name("Product " + i)
                             .description("Description " + i)
                             .price(defaultPrice)
+                            .category(Category.SEDAN)
+                            .dealer(dealer)
                             .build())
                     .toList();
             productRepository.saveAll(products);
@@ -118,6 +139,10 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnProducts_byPrice() throws Exception {
+            Dealer dealer = dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address("123 Main Street, Springfield")
+                    .build());
             List<BigDecimal> prices =
                     Arrays.asList(BigDecimal.valueOf(4999), BigDecimal.valueOf(7000), BigDecimal.valueOf(15001));
             prices.forEach((price) -> {
@@ -125,6 +150,8 @@ public class ProductControllerIntegrationTest {
                         .name("Product ")
                         .description("Description ")
                         .price(price)
+                        .category(Category.SEDAN)
+                        .dealer(dealer)
                         .build();
                 productRepository.save(product);
             });
@@ -139,10 +166,21 @@ public class ProductControllerIntegrationTest {
     @Nested
     @DisplayName("POST /api/products")
     class CreateProductTests {
+        private Dealer dealer;
+
+        @BeforeEach
+        void setupDealer() {
+            dealer = dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address("123 Main Street, Springfield")
+                    .build());
+        }
+
         @Test
         public void shouldPersistProduct() throws Exception {
             String productName = "Toyota Corolla";
-            var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
+            var productTestDto = new ProductTestDto(
+                    productName, "A popular sedan", BigDecimal.valueOf(20000), true, Category.SEDAN, dealer.getId());
 
             mockMvc.perform(post("/api/products")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -160,7 +198,8 @@ public class ProductControllerIntegrationTest {
         @Test
         public void shouldReturnBadRequest_withEmptyName() throws Exception {
             String productName = "";
-            var productTestDto = new ProductTestDto(productName, "A popular sedan", BigDecimal.valueOf(20000), true);
+            var productTestDto = new ProductTestDto(
+                    productName, "A popular sedan", BigDecimal.valueOf(20000), true, Category.SEDAN, dealer.getId());
 
             mockMvc.perform(post("/api/products")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -177,7 +216,8 @@ public class ProductControllerIntegrationTest {
         @Test
         public void shouldReturnBadRequest_withNegativePrice() throws Exception {
             String productName = "Toyota Corolla";
-            var productTestDto = new ProductTestDto(productName, "Desc", BigDecimal.valueOf(-20000), true);
+            var productTestDto = new ProductTestDto(
+                    productName, "A popular sedan", BigDecimal.valueOf(-20000), true, Category.SEDAN, dealer.getId());
 
             mockMvc.perform(post("/api/products")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -196,20 +236,33 @@ public class ProductControllerIntegrationTest {
     @DisplayName("PUT /api/products/{id}")
     class UpdateProductTests {
         private Product product;
-        private ProductDto payload;
+        private ProductPatchDto payload;
+        private Dealer newDealer;
 
         @BeforeEach
-        void populateDbTable() {
+        void setupData() {
+            Dealer currentDealer = dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address("123 Main Street, Springfield")
+                    .build());
+            newDealer = dealerRepository.save(Dealer.builder()
+                    .name("Ruby Auto")
+                    .address("123 Peach Street, Fairfield")
+                    .build());
             product = productRepository.save(Product.builder()
                     .name("Camry")
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
+                    .category(Category.SEDAN)
+                    .dealer(currentDealer)
                     .build());
 
-            payload = new ProductDto();
+            payload = new ProductPatchDto();
             payload.setName("CR-V");
             payload.setDescription("Cool SUV");
             payload.setPrice(BigDecimal.valueOf(65000));
+            payload.setCategory(Category.SUV);
+            payload.setDealerId(newDealer.getId());
         }
 
         @Test
@@ -225,6 +278,7 @@ public class ProductControllerIntegrationTest {
             assertThat(updated.get().getDescription()).isEqualTo("Cool SUV");
             assertThat(updated.get().getPrice().compareTo(BigDecimal.valueOf(65000)))
                     .isZero();
+            assertThat(updated.get().getDealer().getId()).isEqualTo(newDealer.getId());
         }
 
         @Test
@@ -264,6 +318,17 @@ public class ProductControllerIntegrationTest {
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isBadRequest());
         }
+
+        @Test
+        public void shouldReturnNotFound_withNonExistentDealerId() throws Exception {
+            long nonexistentDealerId = 999999L;
+            payload.setDealerId(nonexistentDealerId);
+
+            mockMvc.perform(patch("/api/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isNotFound());
+        }
     }
 
     @Nested
@@ -273,10 +338,16 @@ public class ProductControllerIntegrationTest {
 
         @BeforeEach
         void setupProductDb() {
+            Dealer dealer = dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address("123 Main Street, Springfield")
+                    .build());
             product = productRepository.save(Product.builder()
                     .name("Camry")
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
+                    .category(Category.SEDAN)
+                    .dealer(dealer)
                     .build());
         }
 

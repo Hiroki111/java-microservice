@@ -4,9 +4,8 @@ import com.easycar.product_service.constants.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
-import java.math.BigDecimal;
-
 import jakarta.validation.constraints.Pattern;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
