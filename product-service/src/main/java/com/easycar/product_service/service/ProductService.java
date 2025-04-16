@@ -62,6 +62,7 @@ public class ProductService {
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
         Optional<Dealer> newDealerOption = Optional.empty();
+
         if (productPatchDto.getDealerId() != null) {
             newDealerOption = dealerRepository.findById(productPatchDto.getDealerId());
             if (newDealerOption.isEmpty()) {
@@ -69,9 +70,9 @@ public class ProductService {
                         "Dealer", "id", productPatchDto.getDealerId().toString());
             }
         }
-        Product updateProduct =
-                ProductMapper.mapProductPatchDtoToProduct(productPatchDto, currentProduct, newDealerOption);
-        productRepository.save(updateProduct);
+
+        ProductMapper.mapProductPatchDtoToProduct(productPatchDto, currentProduct, newDealerOption);
+        productRepository.save(currentProduct);
     }
 
     public void deleteProduct(Long id) {

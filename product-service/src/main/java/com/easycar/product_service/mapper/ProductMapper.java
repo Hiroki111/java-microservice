@@ -24,35 +24,25 @@ public class ProductMapper {
                 .build();
     }
 
-    public static Product mapProductPatchDtoToProduct(
+    public static void mapProductPatchDtoToProduct(
             ProductPatchDto productPatchDto, Product currentProduct, Optional<Dealer> newDealerOption) {
-        Product newProduct = Product.builder()
-                .id(currentProduct.getId())
-                .name(currentProduct.getName())
-                .description(currentProduct.getDescription())
-                .price(currentProduct.getPrice())
-                .available(currentProduct.isAvailable())
-                .category(currentProduct.getCategory())
-                .dealer(currentProduct.getDealer())
-                .build();
 
         if (productPatchDto.getName() != null) {
-            newProduct.setName(productPatchDto.getName());
+            currentProduct.setName(productPatchDto.getName());
         }
         if (productPatchDto.getDescription() != null) {
-            newProduct.setDescription(productPatchDto.getDescription());
+            currentProduct.setDescription(productPatchDto.getDescription());
         }
         if (productPatchDto.getPrice() != null) {
-            newProduct.setPrice(productPatchDto.getPrice());
+            currentProduct.setPrice(productPatchDto.getPrice());
         }
         if (productPatchDto.getAvailable() != null) {
-            newProduct.setAvailable(productPatchDto.getAvailable());
+            currentProduct.setAvailable(productPatchDto.getAvailable());
         }
         if (newDealerOption.isPresent()) {
             Dealer newDealer = newDealerOption.get();
-            newProduct.setDealer(newDealer);
+            currentProduct.setDealer(newDealer);
         }
-        return newProduct;
     }
 
     public static ProductDto mapProductToProductDto(Product product) {
