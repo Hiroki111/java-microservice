@@ -24,27 +24,6 @@ public class ProductMapper {
                 .build();
     }
 
-    public static void mapProductPatchDtoToProduct(
-            ProductPatchDto productPatchDto, Product currentProduct, Optional<Dealer> newDealerOption) {
-
-        if (productPatchDto.getName() != null) {
-            currentProduct.setName(productPatchDto.getName());
-        }
-        if (productPatchDto.getDescription() != null) {
-            currentProduct.setDescription(productPatchDto.getDescription());
-        }
-        if (productPatchDto.getPrice() != null) {
-            currentProduct.setPrice(productPatchDto.getPrice());
-        }
-        if (productPatchDto.getAvailable() != null) {
-            currentProduct.setAvailable(productPatchDto.getAvailable());
-        }
-        if (newDealerOption.isPresent()) {
-            Dealer newDealer = newDealerOption.get();
-            currentProduct.setDealer(newDealer);
-        }
-    }
-
     public static ProductDto mapProductToProductDto(Product product) {
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId());
@@ -71,5 +50,26 @@ public class ProductMapper {
                 .first(productPage.isFirst())
                 .last(productPage.isLast())
                 .build();
+    }
+
+    public static void updateProductFromPatchDto(
+            Product product, ProductPatchDto productPatchDto, Optional<Dealer> newDealerOption) {
+
+        if (productPatchDto.getName() != null) {
+            product.setName(productPatchDto.getName());
+        }
+        if (productPatchDto.getDescription() != null) {
+            product.setDescription(productPatchDto.getDescription());
+        }
+        if (productPatchDto.getPrice() != null) {
+            product.setPrice(productPatchDto.getPrice());
+        }
+        if (productPatchDto.getAvailable() != null) {
+            product.setAvailable(productPatchDto.getAvailable());
+        }
+        if (newDealerOption.isPresent()) {
+            Dealer newDealer = newDealerOption.get();
+            product.setDealer(newDealer);
+        }
     }
 }

@@ -233,7 +233,7 @@ public class ProductControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("PUT /api/products/{id}")
+    @DisplayName("PATCH /api/products/{id}")
     class UpdateProductTests {
         private Product product;
         private ProductPatchDto payload;
