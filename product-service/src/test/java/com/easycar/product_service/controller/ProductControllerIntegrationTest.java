@@ -230,6 +230,25 @@ public class ProductControllerIntegrationTest {
 
             assertThat(saved).isNotPresent();
         }
+
+        @Test
+        public void shouldReturnNotFound_withNonExistentDealer() throws Exception {
+            String productName = "Toyota Corolla";
+            long nonexistentDealerId = 999999L;
+            var productTestDto = new ProductTestDto(
+                    productName, "A popular sedan", BigDecimal.valueOf(20000), true, Category.SEDAN, nonexistentDealerId);
+
+            mockMvc.perform(post("/api/products")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(productTestDto)))
+                    .andExpect(status().isNotFound());
+
+            Optional<Product> saved = productRepository.findAll().stream()
+                    .filter(product -> product.getName().equals(productName))
+                    .findFirst();
+
+            assertThat(saved).isNotPresent();
+        }
     }
 
     @Nested
