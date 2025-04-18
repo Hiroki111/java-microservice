@@ -42,4 +42,11 @@ public class DealerService {
         DealerMapper.updateDealerFromPatchDto(dealer, dealerDto);
         dealerRepository.save(dealer);
     }
+
+    public void deleteDealer(Long id) {
+        Dealer dealer = dealerRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dealer", "id", id.toString()));
+        dealerRepository.delete(dealer);
+    }
 }
