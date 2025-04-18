@@ -12,11 +12,11 @@ import lombok.Data;
 @Schema(name = "ProductPatchDto", description = "Schema to partially update product information")
 public class ProductPatchDto {
     @Schema(nullable = true, example = "CR-V")
-    @Pattern(regexp = "^(?!\\s*$).+", message = "must not be blank")
+    @Pattern(regexp = "^(?!\\s*$).+", message = "name must not be blank")
     private String name;
 
     @Schema(nullable = true, example = "Popular SUV")
-    @Pattern(regexp = "^(?!\\s*$).+", message = "must not be blank")
+    @Pattern(regexp = "^(?!\\s*$).+", message = "description must not be blank")
     private String description;
 
     @Schema(nullable = true, example = "65000.50")

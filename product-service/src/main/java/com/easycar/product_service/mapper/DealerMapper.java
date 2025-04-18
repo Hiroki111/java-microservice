@@ -3,6 +3,7 @@ package com.easycar.product_service.mapper;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.dto.DealerCreateDto;
 import com.easycar.product_service.dto.DealerDto;
+import com.easycar.product_service.dto.DealerPatchDto;
 import com.easycar.product_service.dto.PageDto;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,5 +39,14 @@ public class DealerMapper {
                 .first(dealerPage.isFirst())
                 .last(dealerPage.isLast())
                 .build();
+    }
+
+    public static void updateDealerFromPatchDto(Dealer dealer, DealerPatchDto dealerDto) {
+        if (dealerDto.getName() != null) {
+            dealer.setName(dealerDto.getName());
+        }
+        if (dealerDto.getAddress() != null) {
+            dealer.setAddress(dealerDto.getAddress());
+        }
     }
 }

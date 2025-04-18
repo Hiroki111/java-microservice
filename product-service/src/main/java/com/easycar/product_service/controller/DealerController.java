@@ -69,4 +69,12 @@ public class DealerController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(ProductConstants.STATUS_201, ProductConstants.MESSAGE_201));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ResponseDto> patchDealer(
+            @PathVariable Long id, @Valid @RequestBody DealerPatchDto dealerDto) {
+        dealerService.patchDealer(id, dealerDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto(ProductConstants.STATUS_200, ProductConstants.MESSAGE_200));
+    }
 }
