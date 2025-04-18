@@ -77,4 +77,11 @@ public class DealerController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(ProductConstants.STATUS_200, ProductConstants.MESSAGE_200));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto> deleteDealer(@PathVariable Long id) {
+        dealerService.deleteDealer(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto(ProductConstants.STATUS_200, ProductConstants.MESSAGE_200));
+    }
 }

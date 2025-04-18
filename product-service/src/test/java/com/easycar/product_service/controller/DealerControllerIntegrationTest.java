@@ -263,4 +263,34 @@ public class DealerControllerIntegrationTest {
             assertThat(currentDealer.get().getAddress()).isEqualTo("Peach Street 123");
         }
     }
+
+    @Nested
+    @DisplayName("DELETE /api/dealers/{id}")
+    class DeleteDealerTests {
+        private Dealer dealer;
+
+        @BeforeEach
+        void setupDealerDb() {
+            dealer = dealerRepository.save(Dealer.builder()
+                    .name("AAA Auto")
+                    .address("Peach Street 123")
+                    .build());
+        }
+
+        @Test
+        public void shouldDeleteDealer() throws Exception {
+            mockMvc.perform(delete("/api/dealers/" + dealer.getId()).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+
+            Optional<Dealer> updated = dealerRepository.findById(dealer.getId());
+            assertThat(updated).isNotPresent();
+        }
+
+        @Test
+        public void shouldReturnNotFound_withNonExistentId() throws Exception {
+            long nonexistentId = 999999L;
+            mockMvc.perform(delete("/api/dealers/" + nonexistentId).contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+        }
+    }
 }
