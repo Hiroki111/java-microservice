@@ -13,17 +13,17 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Dealer {
+public class Dealer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "address", unique = true)
+    @Column(name = "address", unique = true, nullable = false)
     private String address;
 
     @OneToMany(mappedBy = "dealer", fetch = FetchType.LAZY)

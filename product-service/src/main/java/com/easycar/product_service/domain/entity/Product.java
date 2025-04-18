@@ -13,27 +13,27 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Product {
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "available")
+    @Column(name = "available", nullable = false)
     private boolean available;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "category")
+    @Column(name = "category", nullable = false)
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
