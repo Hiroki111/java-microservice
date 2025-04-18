@@ -3,10 +3,13 @@ package com.easycar.product_service.service;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.dto.DealerCreateDto;
 import com.easycar.product_service.dto.DealerDto;
+import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.exception.ResourceNotFoundException;
 import com.easycar.product_service.mapper.DealerMapper;
 import com.easycar.product_service.repository.DealerRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +22,11 @@ public class DealerService {
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
         return DealerMapper.mapDealerToDealerDto(dealer);
+    }
+
+    public PageDto<DealerDto> findDealers(Pageable pageable) {
+        Page<Dealer> dealerPage = dealerRepository.findAll(pageable);
+        return DealerMapper.mapDealerPageToPageDto(dealerPage);
     }
 
     public void createDealer(DealerCreateDto dealerDto) {
