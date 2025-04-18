@@ -1,6 +1,6 @@
-package com.easycar.product_service.entity;
+package com.easycar.product_service.domain.entity;
 
-import com.easycar.product_service.constants.Category;
+import com.easycar.product_service.domain.Category;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;

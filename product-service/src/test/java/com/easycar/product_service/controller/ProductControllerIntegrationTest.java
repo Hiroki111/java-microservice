@@ -8,10 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.easycar.product_service.constants.Category;
 import com.easycar.product_service.dto.ProductPatchDto;
-import com.easycar.product_service.entity.Dealer;
-import com.easycar.product_service.entity.Product;
+import com.easycar.product_service.domain.Category;
+import com.easycar.product_service.domain.entity.Dealer;
+import com.easycar.product_service.domain.entity.Product;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -236,7 +236,12 @@ public class ProductControllerIntegrationTest {
             String productName = "Toyota Corolla";
             long nonexistentDealerId = 999999L;
             var productTestDto = new ProductTestDto(
-                    productName, "A popular sedan", BigDecimal.valueOf(20000), true, Category.SEDAN, nonexistentDealerId);
+                    productName,
+                    "A popular sedan",
+                    BigDecimal.valueOf(20000),
+                    true,
+                    Category.SEDAN,
+                    nonexistentDealerId);
 
             mockMvc.perform(post("/api/products")
                             .contentType(MediaType.APPLICATION_JSON)

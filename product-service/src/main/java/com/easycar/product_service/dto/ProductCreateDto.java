@@ -1,6 +1,6 @@
 package com.easycar.product_service.dto;
 
-import com.easycar.product_service.constants.Category;
+import com.easycar.product_service.domain.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;

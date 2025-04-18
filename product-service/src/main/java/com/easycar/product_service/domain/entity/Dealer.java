@@ -1,4 +1,4 @@
-package com.easycar.product_service.entity;
+package com.easycar.product_service.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

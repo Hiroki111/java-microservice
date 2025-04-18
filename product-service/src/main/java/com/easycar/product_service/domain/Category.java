@@ -1,4 +1,4 @@
-package com.easycar.product_service.constants;
+package com.easycar.product_service.domain;
 
 public enum Category {
     SEDAN,

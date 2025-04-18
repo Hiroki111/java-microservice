@@ -1,6 +1,6 @@
 package com.easycar.product_service.repository;
 
-import com.easycar.product_service.entity.Product;
+import com.easycar.product_service.domain.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
