@@ -23,7 +23,7 @@ public class Dealer {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "address")
+    @Column(name = "address", unique = true)
     private String address;
 
     @OneToMany(mappedBy = "dealer", fetch = FetchType.LAZY)

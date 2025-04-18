@@ -91,12 +91,13 @@ public class ProductControllerIntegrationTest {
     @DisplayName("GET /api/products")
     class GetProductsTests {
         private List<Product> products;
+        private Dealer dealer;
         private final int numberOfProducts = 200;
         private final BigDecimal defaultPrice = BigDecimal.valueOf(100000);
 
         @BeforeEach
         void setupDbTables() {
-            Dealer dealer = dealerRepository.save(Dealer.builder()
+            dealer = dealerRepository.save(Dealer.builder()
                     .name("Sunshine Auto")
                     .address("123 Main Street, Springfield")
                     .build());
@@ -138,10 +139,6 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnProducts_byPrice() throws Exception {
-            Dealer dealer = dealerRepository.save(Dealer.builder()
-                    .name("Sunshine Auto")
-                    .address("123 Main Street, Springfield")
-                    .build());
             List<BigDecimal> prices =
                     Arrays.asList(BigDecimal.valueOf(4999), BigDecimal.valueOf(7000), BigDecimal.valueOf(15001));
             prices.forEach((price) -> {

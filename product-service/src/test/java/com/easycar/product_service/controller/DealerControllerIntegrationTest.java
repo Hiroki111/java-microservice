@@ -59,5 +59,69 @@ public class DealerControllerIntegrationTest {
             assertThat(saved).isPresent();
             assertThat(saved.get().getName()).isEqualTo(payload.getName());
         }
+
+        @Test
+        public void shouldReturnBadRequest_withEmptyName() throws Exception {
+            String dealerName = "";
+            DealerCreateDto payload = DealerCreateDto.builder()
+                    .name(dealerName)
+                    .address("Fairfield 5")
+                    .build();
+
+            mockMvc.perform(post("/api/dealers")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+
+            Optional<Dealer> firstEntity = dealerRepository.findAll().stream()
+                    .findFirst();
+
+            assertThat(firstEntity).isNotPresent();
+        }
+
+        @Test
+        public void shouldReturnBadRequest_withEmptyAddress() throws Exception {
+            String address = "";
+            DealerCreateDto payload = DealerCreateDto.builder()
+                    .name("Alpha Auto")
+                    .address(address)
+                    .build();
+
+            mockMvc.perform(post("/api/dealers")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+
+            Optional<Dealer> firstEntity = dealerRepository.findAll().stream()
+                    .findFirst();
+
+            assertThat(firstEntity).isNotPresent();
+        }
+
+        @Test
+        public void shouldReturnBadRequest_withDuplicateAddress() throws Exception {
+            String address = "Peach street 123";
+            dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address(address)
+                    .build());
+
+            String newDealerName = "Alpha Auto";
+            DealerCreateDto payload = DealerCreateDto.builder()
+                    .name(newDealerName)
+                    .address(address)
+                    .build();
+
+            mockMvc.perform(post("/api/dealers")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+
+            Optional<Dealer> newDealer = dealerRepository.findAll().stream()
+                    .filter(dealer -> dealer.getName().equals(newDealerName))
+                    .findFirst();
+
+            assertThat(newDealer).isNotPresent();
+        }
     }
 }
