@@ -8,6 +8,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = UniqueDealerAddressValidator.class)
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
+@SuppressWarnings("unused")
 public @interface UniqueDealerAddress {
     String message() default "address already exists";
 

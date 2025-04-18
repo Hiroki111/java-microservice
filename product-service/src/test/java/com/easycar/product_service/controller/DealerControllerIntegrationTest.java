@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(properties = {"spring.sql.init.mode=never"})
 @AutoConfigureMockMvc
+@SuppressWarnings("unused")
 public class DealerControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
