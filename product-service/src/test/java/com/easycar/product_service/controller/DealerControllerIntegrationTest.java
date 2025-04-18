@@ -1,7 +1,9 @@
 package com.easycar.product_service.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.easycar.product_service.domain.entity.Dealer;
@@ -9,10 +11,7 @@ import com.easycar.product_service.dto.DealerCreateDto;
 import com.easycar.product_service.repository.DealerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +34,33 @@ public class DealerControllerIntegrationTest {
     @AfterEach
     void cleanDb() {
         dealerRepository.deleteAll();
+    }
+
+    @Nested
+    @DisplayName("GET /api/dealers/{id}")
+    class GetProductTests {
+        private Dealer dealer;
+
+        @BeforeEach
+        void setupDbTable() {
+            dealer = dealerRepository.save(Dealer.builder()
+                    .name("Sunshine Auto")
+                    .address("123 Main Street, Springfield")
+                    .build());
+        }
+
+        @Test
+        public void shouldReturnDealerById() throws Exception {
+            mockMvc.perform(get("/api/dealers/" + dealer.getId()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value((dealer.getId())));
+        }
+
+        @Test
+        public void shouldReturnNotFound_withNonExistentId() throws Exception {
+            long nonexistentId = 999999L;
+            mockMvc.perform(get("/api/dealers/" + nonexistentId)).andExpect(status().isNotFound());
+        }
     }
 
     @Nested
