@@ -73,8 +73,7 @@ public class DealerControllerIntegrationTest {
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isBadRequest());
 
-            Optional<Dealer> firstEntity = dealerRepository.findAll().stream()
-                    .findFirst();
+            Optional<Dealer> firstEntity = dealerRepository.findAll().stream().findFirst();
 
             assertThat(firstEntity).isNotPresent();
         }
@@ -92,8 +91,7 @@ public class DealerControllerIntegrationTest {
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isBadRequest());
 
-            Optional<Dealer> firstEntity = dealerRepository.findAll().stream()
-                    .findFirst();
+            Optional<Dealer> firstEntity = dealerRepository.findAll().stream().findFirst();
 
             assertThat(firstEntity).isNotPresent();
         }
@@ -101,10 +99,8 @@ public class DealerControllerIntegrationTest {
         @Test
         public void shouldReturnBadRequest_withDuplicateAddress() throws Exception {
             String address = "Peach street 123";
-            dealerRepository.save(Dealer.builder()
-                    .name("Sunshine Auto")
-                    .address(address)
-                    .build());
+            dealerRepository.save(
+                    Dealer.builder().name("Sunshine Auto").address(address).build());
 
             String newDealerName = "Alpha Auto";
             DealerCreateDto payload = DealerCreateDto.builder()
