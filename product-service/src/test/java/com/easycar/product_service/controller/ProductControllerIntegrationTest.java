@@ -8,10 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.domain.Category;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
+import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest(properties = {"spring.sql.init.mode=never"})
 @AutoConfigureMockMvc
 public class ProductControllerIntegrationTest {
-
     @Autowired
     private MockMvc mockMvc;
 

@@ -1,5 +1,6 @@
 package com.easycar.product_service.constants;
 
+// TODO: Rename this so that this class can be used for other resources
 public class ProductConstants {
     private ProductConstants() {
         // restrict instantiation
