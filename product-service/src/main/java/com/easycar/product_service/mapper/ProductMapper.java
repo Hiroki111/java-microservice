@@ -25,15 +25,14 @@ public class ProductMapper {
     }
 
     public static ProductDto mapProductToProductDto(Product product) {
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setName(product.getName());
-        productDto.setDescription(product.getDescription());
-        productDto.setPrice(product.getPrice());
-        productDto.setAvailable(product.isAvailable());
-        productDto.setCategory(product.getCategory());
-
-        return productDto;
+        return ProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .available(product.isAvailable())
+                .category(product.getCategory())
+                .build();
     }
 
     public static PageDto<ProductDto> mapProductPageToPageDto(Page<Product> productPage) {
