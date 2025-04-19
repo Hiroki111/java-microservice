@@ -11,6 +11,7 @@
 	<groupId>com.easycar</groupId>
 	<artifactId>product-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>product-service</name>
 	<description>Microservice for products</description>
 	<url/>
