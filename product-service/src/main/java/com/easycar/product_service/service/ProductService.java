@@ -11,7 +11,6 @@ import com.easycar.product_service.mapper.ProductMapper;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import java.math.BigDecimal;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,17 +60,17 @@ public class ProductService {
         Product product = productRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
-        Optional<Dealer> newDealerOption = Optional.empty();
 
         if (productPatchDto.getDealerId() != null) {
-            newDealerOption = dealerRepository.findById(productPatchDto.getDealerId());
-            if (newDealerOption.isEmpty()) {
-                throw new ResourceNotFoundException(
-                        "Dealer", "id", productPatchDto.getDealerId().toString());
-            }
+            Dealer newDealer = dealerRepository
+                    .findById(productPatchDto.getDealerId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Dealer", "id", productPatchDto.getDealerId().toString()));
+            ProductMapper.updateProductFromPatchDto(product, productPatchDto, newDealer);
+        } else {
+            ProductMapper.updateProductFromPatchDto(product, productPatchDto);
         }
 
-        ProductMapper.updateProductFromPatchDto(product, productPatchDto, newDealerOption);
         productRepository.save(product);
     }
 
