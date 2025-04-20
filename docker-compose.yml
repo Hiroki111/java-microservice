@@ -1,0 +1,15 @@
+services:
+  product-service:
+    image: "hiroki111/easycar-product-service:1.0.0"
+    container_name: product-service-ms
+    ports:
+      - "8081:8081"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - easycar
+networks:
+  easycar:
+    driver: "bridge"
