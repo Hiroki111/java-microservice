@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+product-service:
+  message: "product-service related prod APIs "
+  contactDetails:
+    name: "Alice"
+    email: "alice@easycar.com"
+  onCallSupport:
+    - (111) 222-3333
+    - (111) 222-4444

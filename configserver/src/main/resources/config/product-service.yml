@@ -1,0 +1,11 @@
+build:
+  version: "3.0"
+
+product-service:
+  message: "product-service related dev APIs "
+  contactDetails:
+    name: "Carol"
+    email: "carol@easycar.com"
+  onCallSupport:
+    - (111) 222-7777
+    - (111) 222-8888

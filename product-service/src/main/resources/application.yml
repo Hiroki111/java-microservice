@@ -2,6 +2,10 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: "product-service"
+  profiles:
+    active: "default"
   data:
     web:
       pageable:
@@ -26,3 +30,5 @@ spring:
       # Use it only on dev/test environment
       ddl-auto: update
     show-sql: true
+  config:
+    import: "optional:configserver:http://localhost:8071/"
