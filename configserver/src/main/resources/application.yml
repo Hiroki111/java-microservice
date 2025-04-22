@@ -1,20 +1,26 @@
+# TODO: Activate GitHub based config after migrating to Kubernetes and/or building a CI/CD pipeline
 spring:
   application:
     name: "configserver"
   profiles:
-    active: git
-    #active: native
+    active: native
+    #active: git
   cloud:
     config:
       server:
-        git:
-          uri: "git@github.com:Hiroki111/java-microservice-config.git"
-          default-label: main
-          timeout: 5 # i.e. 5 minutes
-          clone-on-start: true
-          force-pull: true
-        #native:
-          #search-locations: "classpath:/config"
+        native:
+          search-locations: "classpath:/config"
+        #git:
+          #uri: https://github.com/Hiroki111/java-microservice-config.git
+          #username: Hiroki111
+          #password: ${GITHUB_TOKEN} # Store GITHUB_TOKEN as an environment variable or a Kubernetes secret.
+                                     # This is a token, not a GitHub password.
+                                     # Go to GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained tokens.
+                                     # Under Permissions, find Repository contents and check read-only.
+          #default-label: main
+          #timeout: 5 # i.e. 5 minutes
+          #clone-on-start: true
+          #force-pull: true
 
 server:
   port: 8071

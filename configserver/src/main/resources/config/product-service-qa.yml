@@ -1,3 +1,4 @@
+# TODO: Move this to https://github.com/Hiroki111/java-microservice-config after migrating to Kubernetes
 build:
   version: "2.0"
 
