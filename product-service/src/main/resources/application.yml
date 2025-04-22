@@ -32,3 +32,10 @@ spring:
     show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"
+
+# TODO: Check how to protect POST /actuator/* paths from unauthorized clients
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "refresh"
