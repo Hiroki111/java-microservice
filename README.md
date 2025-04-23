@@ -2,6 +2,12 @@
 
 - http://localhost:8081/h2-console
 - http://localhost:8081/swagger-ui/index.html
+- http://localhost:8081/actuator/busrefresh (refresh config properties set by `configserver`)
+
+
+## Dependencies
+
+- RabbitMQ (Use `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`)
 
 ## How to run a Java microservice from a .jar file
 
