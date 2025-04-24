@@ -33,9 +33,13 @@
 - docker stop <container-id> (It stops an existing container, not an image)
 - docker ps -a
 - docker image push docker.io/<dockerhub-user-name>/<image-name>:<tag>
-- docker compose up -d
+- docker compose up -d (Use it under `/docker-compose/<env>` folder)
+- docker compose -f docker-compose/<env>/docker-compose.yml up -d --build (Use it under the root of the project)
 - docker compose down (It deletes containers)
 - docker compose stop (It doesn't delete containers)
 - docker compose start (It runs existing containers)
 
-
+## How to use the Makefile
+- make # builds all the services and make images of them
+- make build-jar
+- make build-images
