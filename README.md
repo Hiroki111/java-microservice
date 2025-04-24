@@ -11,11 +11,12 @@
 
 ## How to run a Java microservice from a .jar file
 
-1. Delete all files and folders from `target` folder
-2. Open a terminal and `cd` to the root of the microservice
-2. Run `mvn clean install`
-3. There will be a .jar file in `target` folder, provided that pom.xml has `<packaging>jar</packaging>` tag. The .jar file has all the dependencies (e.g. Spring libraries, Tomcat server) except the runtime. 
-4. Run `mvn spring-boot:run` or `java -jar target/<jar-file-name>.jar`
+1. Delete all files and folders from `target` folder 
+2. Make sure that pom.xml has `<packaging>jar</packaging>` tag in the same level as `<artifactId>`
+3. Open a terminal and `cd` to the root of the microservice 
+4. Run `mvn clean install`
+5. There will be a .jar file in `target` folder. The .jar file has all the dependencies (e.g. Spring libraries, Tomcat server) except the runtime. 
+6. Run `mvn spring-boot:run` or `java -jar target/<jar-file-name>.jar`
 
 ## How to run a service by Docker
 
