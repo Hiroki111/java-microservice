@@ -9,7 +9,7 @@ spring:
     config:
       server:
         native:
-          search-locations: "classpath:/config"
+          search-locations: classpath:/config
         #git:
           #uri: https://github.com/Hiroki111/java-microservice-config.git
           #username: Hiroki111
@@ -26,6 +26,21 @@ spring:
     port: 5672
     username: "guest"
     password: "guest"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
 
 server:
   port: 8071
