@@ -1,17 +1,14 @@
 spring:
-  application:
-    name: "product-service"
-  profiles:
-    active: "default"
-  data:
-    web:
-      pageable:
-        max-page-size: 10000
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
     driverClassName: org.h2.Driver
     username: sa
     password: ''
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   h2:
     console:
       enabled: true
@@ -19,15 +16,5 @@ spring:
     init:
       mode=always
       schema-locations=classpath:schema-test.sql
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"
-  rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
