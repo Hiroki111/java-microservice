@@ -11,23 +11,14 @@ spring:
       pageable:
         max-page-size: 10000
   datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password: ''
-  h2:
-    console:
-      enabled: true
-  sql:
-    init:
-      mode=always
-      schema-locations=classpath:schema.sql
-      data-locations=classpath:data.sql
+    url: jdbc:postgresql://localhost:5432/product-service-db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: secret
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      # This "update" updates the schema if necessary and doesn't drop existing tables
-      # Use it only on dev/test environment
       ddl-auto: update
     show-sql: true
   config:
@@ -37,7 +28,7 @@ spring:
     port: 5672
     username: "guest"
     password: "guest"
-# TODO: Check how to protect POST /actuator/* paths from unauthorized clients
+
 management:
   endpoints:
     web:
