@@ -2,8 +2,10 @@
 
 - http://localhost:8081/h2-console
 - http://localhost:8081/swagger-ui/index.html
-- http://localhost:8081/actuator/busrefresh (refresh config properties set by `configserver`)
+- http://localhost:8081/actuator/busrefresh (It refreshes config properties set by `configserver`. It works on `rabbitmq:3.13-management`.)
 
+##
+- Consider removing 
 
 ## Dependencies
 
@@ -48,4 +50,3 @@
 - docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -p 5432:5432 -d postgres:17.4
 - docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -v postgres-data:/var/lib/postgresql/data -p 5432:5432 -d postgres:17.4 (This will persist the DB files even if the container is removed)
 - docker run -it --rm --name easycar-rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:3.13-management
-
