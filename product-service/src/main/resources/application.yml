@@ -3,9 +3,9 @@ server:
 
 spring:
   application:
-    name: "product-service"
+    name: product-service
   profiles:
-    active: "default"
+    active: default
   data:
     web:
       pageable:
@@ -22,12 +22,12 @@ spring:
       ddl-auto: update
     show-sql: true
   config:
-    import: "optional:configserver:http://localhost:8071/"
+    import: optional:configserver:http://localhost:8071/
   rabbitmq:
-    host: "localhost"
+    host: localhost
     port: 5672
-    username: "guest"
-    password: "guest"
+    username: guest
+    password: guest
 
 management:
   endpoints:
