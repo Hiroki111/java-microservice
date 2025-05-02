@@ -3,6 +3,7 @@
 - http://localhost:8081/h2-console
 - http://localhost:8081/swagger-ui/index.html
 - http://localhost:8081/actuator/busrefresh (It refreshes config properties set by `configserver`. It works on `rabbitmq:3.13-management`.)
+- http://localhost:8081/actuator/shutdown (De-register from Eureka server)
 - http://localhost:8070/ (Eureka server)
 
 ##
