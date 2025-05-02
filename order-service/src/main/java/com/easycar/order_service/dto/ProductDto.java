@@ -1,6 +1,6 @@
 package com.easycar.order_service.dto;
 
-import com.easycar.order_service.domain.Category;
+import com.easycar.order_service.domain.ProductCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
-
 @Data
 @Schema(name = "ProductDto", description = "Schema to hold product information")
 @Builder
@@ -33,5 +32,6 @@ public class ProductDto {
 
     @Schema(example = "SUV")
     @NotNull(message = "category can not be a null")
-    private Category category;
+    private ProductCategory category;
 }
+
