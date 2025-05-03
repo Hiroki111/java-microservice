@@ -16,10 +16,7 @@ import feign.Request;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,6 +54,15 @@ public class OrderControllerIntegrationTest {
     class CreateOrderTests {
         long productId = 1;
         String customerName = "John Smith";
+        OrderCreateDto payload;
+
+        @BeforeEach
+        void setup() {
+            payload = OrderCreateDto.builder()
+                    .productId(productId)
+                    .customerName(customerName)
+                    .build();
+        }
 
         @Test
         public void shouldPersistOrder() throws Exception {
@@ -65,11 +71,6 @@ public class OrderControllerIntegrationTest {
             ResponseEntity<ProductDto> response =
                     new ResponseEntity<ProductDto>(mockedProduct, HttpStatusCode.valueOf(201));
             when(productServiceFeignClient.fetchProduct(productId)).thenReturn(response);
-
-            OrderCreateDto payload = OrderCreateDto.builder()
-                    .productId(productId)
-                    .customerName(customerName)
-                    .build();
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -96,11 +97,6 @@ public class OrderControllerIntegrationTest {
             FeignException notFound = new FeignException.NotFound("Product not found", request, null, null);
             when(productServiceFeignClient.fetchProduct(productId)).thenThrow(notFound);
 
-            OrderCreateDto payload = OrderCreateDto.builder()
-                    .productId(productId)
-                    .customerName(customerName)
-                    .build();
-
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(payload)))
@@ -121,11 +117,6 @@ public class OrderControllerIntegrationTest {
             ResponseEntity<ProductDto> response =
                     new ResponseEntity<ProductDto>(mockedProduct, HttpStatusCode.valueOf(201));
             when(productServiceFeignClient.fetchProduct(productId)).thenReturn(response);
-
-            OrderCreateDto payload = OrderCreateDto.builder()
-                    .productId(productId)
-                    .customerName(customerName)
-                    .build();
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
