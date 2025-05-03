@@ -58,7 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             ProductUnavailableException exception, WebRequest webRequest) {
 
         ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
-                webRequest.getDescription(false), HttpStatus.BAD_REQUEST, exception.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
+                webRequest.getDescription(false), HttpStatus.CONFLICT, exception.getMessage(), LocalDateTime.now());
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.CONFLICT);
     }
 }
