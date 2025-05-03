@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @SuppressWarnings("unused")
 public class OrderController {
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @PostMapping
     public ResponseEntity<ResponseDto> createOrder(@Valid @RequestBody OrderCreateDto orderDto) {

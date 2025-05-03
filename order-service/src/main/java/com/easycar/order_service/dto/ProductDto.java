@@ -8,6 +8,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
+
 @Data
 @Schema(name = "ProductDto", description = "Schema to hold product information")
 @Builder
@@ -34,4 +35,3 @@ public class ProductDto {
     @NotNull(message = "category can not be a null")
     private ProductCategory category;
 }
-
