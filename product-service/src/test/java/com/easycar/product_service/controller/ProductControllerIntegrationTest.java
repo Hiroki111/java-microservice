@@ -15,6 +15,7 @@ import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -213,6 +214,29 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
+        public void shouldReturnBadRequest_withInvalidCategory() throws Exception {
+            String productName = "Toyota Corolla";
+            ObjectNode requestBody = objectMapper.createObjectNode();
+            requestBody.put("name", productName);
+            requestBody.put("description", "A popular sedan");
+            requestBody.put("price", 20000);
+            requestBody.put("available", true);
+            requestBody.put("category", "sedan"); // invalid category
+            requestBody.put("dealerId", dealer.getId());
+
+            mockMvc.perform(post("/api/products")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(requestBody)))
+                    .andExpect(status().isBadRequest());
+
+            Optional<Product> saved = productRepository.findAll().stream()
+                    .filter(product -> product.getName().equals(productName))
+                    .findFirst();
+
+            assertThat(saved).isNotPresent();
+        }
+
+        @Test
         public void shouldReturnBadRequest_withNegativePrice() throws Exception {
             String productName = "Toyota Corolla";
             var productTestDto = new ProductTestDto(
@@ -315,6 +339,17 @@ public class ProductControllerIntegrationTest {
         @Test
         public void shouldReturnBadRequest_withEmptyName() throws Exception {
             payload.setName("");
+
+            mockMvc.perform(patch("/api/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void shouldReturnBadRequest_withInvalidCategory() throws Exception {
+            ObjectNode payload = objectMapper.createObjectNode();
+            payload.put("category", "sedan"); // invalid category
 
             mockMvc.perform(patch("/api/products/" + product.getId())
                             .contentType(MediaType.APPLICATION_JSON)
