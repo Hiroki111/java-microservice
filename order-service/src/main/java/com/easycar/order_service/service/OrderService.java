@@ -1,5 +1,6 @@
 package com.easycar.order_service.service;
 
+import com.easycar.order_service.domain.entity.Order;
 import com.easycar.order_service.dto.OrderCreateDto;
 import com.easycar.order_service.dto.ProductDto;
 import com.easycar.order_service.exception.ProductUnavailableException;
@@ -7,7 +8,6 @@ import com.easycar.order_service.exception.ResourceNotFoundException;
 import com.easycar.order_service.mapper.OrderMapper;
 import com.easycar.order_service.repository.OrderRepository;
 import com.easycar.order_service.service.client.ProductServiceFeignClient;
-import com.easycar.order_service.domain.entity.Order;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
