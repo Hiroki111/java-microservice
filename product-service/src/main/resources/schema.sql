@@ -1,4 +1,3 @@
--- postgres
 CREATE TABLE IF NOT EXISTS dealers (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
