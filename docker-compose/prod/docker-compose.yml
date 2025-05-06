@@ -97,6 +97,8 @@ services:
     depends_on:
       configserver:
         condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
       product-service-db:
         condition: service_healthy
     environment:
@@ -113,6 +115,8 @@ services:
       - "8082:8082"
     depends_on:
       configserver:
+        condition: service_healthy
+      eurekaserver:
         condition: service_healthy
       order-service-db:
         condition: service_healthy
