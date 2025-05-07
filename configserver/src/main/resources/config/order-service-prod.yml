@@ -1,0 +1,12 @@
+# TODO: Move this to https://github.com/Hiroki111/java-microservice-config after migrating to Kubernetes
+build:
+  version: "1.0"
+
+order-service:
+  message: "order-service related prod APIs "
+  contactDetails:
+    name: "Alice"
+    email: "alice@easycar.com"
+  onCallSupport:
+    - (111) 222-3333
+    - (111) 222-4444
