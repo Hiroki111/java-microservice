@@ -15,6 +15,7 @@ public class GatewayserverApplication {
     }
 
     @Bean
+    @SuppressWarnings("unused")
     public RouteLocator easycarRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
         return routeLocatorBuilder
                 .routes()
