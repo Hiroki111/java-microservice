@@ -10,6 +10,7 @@ spring:
     gateway:
       discovery:
         locator:
+          # Make it true if I don't use "public RouteLocator easycarRouteConfig" in "GatewayserverApplication"
           enabled: false
           lowerCaseServiceId: true
 

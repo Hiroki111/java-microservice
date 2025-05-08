@@ -1,3 +1,4 @@
+# TODO: Move this info to application.yml of eurekaserver and delete this file
 server:
   port: 8070
 

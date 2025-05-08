@@ -53,3 +53,10 @@
 - docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -p 5432:5432 -d postgres:17.4
 - docker run --name order-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=order-service-db -p 5433:5432 -d postgres:17.4
 - docker run -it --rm --name easycar-rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:3.13-management
+
+## How to run all the services via IDE
+1. Start RabbitMQ (Use `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management` or restart an existing Docker container)
+2. Start configserver
+3. Start eurekaserver
+4. Start product and order services
+5. Start gatewayserver
