@@ -69,8 +69,7 @@ public class OrderControllerIntegrationTest {
         public void shouldPersistOrder() throws Exception {
             ProductDto mockedProduct =
                     ProductDto.builder().id(productId).available(true).build();
-            ResponseEntity<ProductDto> response =
-                    new ResponseEntity<>(mockedProduct, HttpStatusCode.valueOf(201));
+            ResponseEntity<ProductDto> response = new ResponseEntity<>(mockedProduct, HttpStatusCode.valueOf(201));
             when(productServiceFeignClient.fetchProduct(correlationId, productId))
                     .thenReturn(response);
 
@@ -119,8 +118,7 @@ public class OrderControllerIntegrationTest {
         public void shouldReturnConflict_withProductNotAvailable() throws Exception {
             ProductDto mockedProduct =
                     ProductDto.builder().id(productId).available(false).build();
-            ResponseEntity<ProductDto> response =
-                    new ResponseEntity<>(mockedProduct, HttpStatusCode.valueOf(201));
+            ResponseEntity<ProductDto> response = new ResponseEntity<>(mockedProduct, HttpStatusCode.valueOf(201));
             when(productServiceFeignClient.fetchProduct(correlationId, productId))
                     .thenReturn(response);
 

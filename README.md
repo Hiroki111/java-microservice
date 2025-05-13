@@ -6,8 +6,8 @@
 - http://localhost:8081/actuator/shutdown (De-register from Eureka server)
 - http://localhost:8070/ (Eureka server)
 
-##
-- Consider removing 
+## Future enhancements
+- Currently, `easycar-correlation-id` is used for logging inter-service communications (See `com.easycar.gatewayserver.filters` package of gatewayserver). Consider introducing Micrometer for global logging.
 
 ## Dependencies
 
