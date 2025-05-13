@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,11 +31,13 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @SuppressWarnings("unused")
 public class ProductController {
-
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     private ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
+    public ResponseEntity<ProductDto> getProduct(
+            @RequestHeader("easycar-correlation-id") String correlationId, @PathVariable Long id) {
+        logger.debug("easycar-correlation-id found: {} ", correlationId);
         ProductDto product = productService.findProductById(id);
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }

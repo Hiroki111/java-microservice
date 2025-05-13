@@ -61,6 +61,7 @@ public class ProductControllerIntegrationTest {
     @DisplayName("GET /api/products/{id}")
     class GetProductTests {
         private Product product;
+        String correlationId = "1";
 
         @BeforeEach
         void setupDbTable() {
@@ -80,14 +81,15 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnProductById() throws Exception {
-            mockMvc.perform(get("/api/products/" + product.getId()))
+            mockMvc.perform(get("/api/products/" + product.getId()).header("easycar-correlation-id", correlationId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.name").value(("Camry")));
         }
 
         @Test
         public void shouldReturnNotFound_withNonExistentId() throws Exception {
-            mockMvc.perform(get("/api/products/" + nonexistentId)).andExpect(status().isNotFound());
+            mockMvc.perform(get("/api/products/" + nonexistentId).header("easycar-correlation-id", correlationId))
+                    .andExpect(status().isNotFound());
         }
     }
 

@@ -19,17 +19,17 @@ public class OrderService {
     private OrderRepository orderRepository;
     private ProductServiceFeignClient productServiceFeignClient;
 
-    public void createOrder(OrderCreateDto orderDto) {
+    public void createOrder(String correlationId, OrderCreateDto orderDto) {
         ResponseEntity<ProductDto> responseEntity;
         Long productId = orderDto.getProductId();
         try {
-            responseEntity = productServiceFeignClient.fetchProduct(productId);
+            responseEntity = productServiceFeignClient.fetchProduct(correlationId, productId);
         } catch (FeignException.NotFound ex) {
             throw new ResourceNotFoundException("Product", "id", productId.toString());
         }
 
         ProductDto productDto = responseEntity.getBody();
-        if (!productDto.isAvailable()) {
+        if (productDto != null && !productDto.isAvailable()) {
             throw new ProductUnavailableException(productId.toString());
         }
 

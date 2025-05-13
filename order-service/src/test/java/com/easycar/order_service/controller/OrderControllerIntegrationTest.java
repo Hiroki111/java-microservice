@@ -55,6 +55,7 @@ public class OrderControllerIntegrationTest {
         long productId = 1;
         String customerName = "John Smith";
         OrderCreateDto payload;
+        String correlationId = "1";
 
         @BeforeEach
         void setup() {
@@ -69,11 +70,13 @@ public class OrderControllerIntegrationTest {
             ProductDto mockedProduct =
                     ProductDto.builder().id(productId).available(true).build();
             ResponseEntity<ProductDto> response =
-                    new ResponseEntity<ProductDto>(mockedProduct, HttpStatusCode.valueOf(201));
-            when(productServiceFeignClient.fetchProduct(productId)).thenReturn(response);
+                    new ResponseEntity<>(mockedProduct, HttpStatusCode.valueOf(201));
+            when(productServiceFeignClient.fetchProduct(correlationId, productId))
+                    .thenReturn(response);
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
+                            .header("easycar-correlation-id", correlationId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isCreated());
 
@@ -95,10 +98,12 @@ public class OrderControllerIntegrationTest {
                     Charset.defaultCharset(),
                     null);
             FeignException notFound = new FeignException.NotFound("Product not found", request, null, null);
-            when(productServiceFeignClient.fetchProduct(productId)).thenThrow(notFound);
+            when(productServiceFeignClient.fetchProduct(correlationId, productId))
+                    .thenThrow(notFound);
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
+                            .header("easycar-correlation-id", correlationId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isNotFound());
 
@@ -115,11 +120,13 @@ public class OrderControllerIntegrationTest {
             ProductDto mockedProduct =
                     ProductDto.builder().id(productId).available(false).build();
             ResponseEntity<ProductDto> response =
-                    new ResponseEntity<ProductDto>(mockedProduct, HttpStatusCode.valueOf(201));
-            when(productServiceFeignClient.fetchProduct(productId)).thenReturn(response);
+                    new ResponseEntity<>(mockedProduct, HttpStatusCode.valueOf(201));
+            when(productServiceFeignClient.fetchProduct(correlationId, productId))
+                    .thenReturn(response);
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
+                            .header("easycar-correlation-id", correlationId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isConflict());
 

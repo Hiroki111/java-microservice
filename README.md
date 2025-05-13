@@ -56,7 +56,8 @@
 
 ## How to run all the services via IDE
 1. Start RabbitMQ (Use `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management` or restart an existing Docker container)
-2. Start configserver
+2. Start DBs of product and order services 
+3. Start configserver
 3. Start eurekaserver
 4. Start product and order services
 5. Start gatewayserver

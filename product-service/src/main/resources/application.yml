@@ -55,3 +55,10 @@ info:
     name: product-service
     description: "easycar product service"
     version: 1.0.0
+
+logging:
+  level:
+    com:
+      easycar:
+        product_service: DEBUG
+
