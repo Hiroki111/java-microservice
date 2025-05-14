@@ -94,6 +94,12 @@ services:
     container_name: product-service-ms
     ports:
       - "8081:8081"
+    healthcheck:
+      test: "curl --fail --silent localhost:8081/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
       configserver:
         condition: service_healthy
@@ -113,6 +119,12 @@ services:
     container_name: order-service-ms
     ports:
       - "8082:8082"
+    healthcheck:
+      test: "curl --fail --silent localhost:8082/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
       configserver:
         condition: service_healthy
@@ -123,6 +135,22 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "order-service"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://order-service-db:5432/order-service-db"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  gatewayserver:
+    image: "hiroki111/easycar-gatewayserver:1.0.0"
+    container_name: gatewayserver-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      order-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "gatewayserver"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
