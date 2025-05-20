@@ -3,6 +3,7 @@ package com.easycar.order_service.service;
 import com.easycar.order_service.domain.entity.Order;
 import com.easycar.order_service.dto.OrderCreateDto;
 import com.easycar.order_service.dto.ProductDto;
+import com.easycar.order_service.exception.DownstreamServiceUnavailableException;
 import com.easycar.order_service.exception.ProductUnavailableException;
 import com.easycar.order_service.exception.ResourceNotFoundException;
 import com.easycar.order_service.mapper.OrderMapper;
@@ -10,6 +11,7 @@ import com.easycar.order_service.repository.OrderRepository;
 import com.easycar.order_service.service.client.ProductServiceFeignClient;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
+import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +26,15 @@ public class OrderService {
         Long productId = orderDto.getProductId();
         try {
             responseEntity = productServiceFeignClient.fetchProduct(correlationId, productId);
-        } catch (FeignException.NotFound ex) {
-            throw new ResourceNotFoundException("Product", "id", productId.toString());
+        } catch (NoFallbackAvailableException ex) {
+            if (ex.getCause() instanceof FeignException.NotFound) {
+                throw new ResourceNotFoundException("Product", "id", productId.toString());
+            }
+            throw new DownstreamServiceUnavailableException("product-service");
         }
 
         ProductDto productDto = responseEntity.getBody();
-        if (productDto != null && !productDto.isAvailable()) {
+        if (productDto == null || !productDto.isAvailable()) {
             throw new ProductUnavailableException(productId.toString());
         }
 
