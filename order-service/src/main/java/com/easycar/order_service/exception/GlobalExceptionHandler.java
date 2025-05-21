@@ -61,4 +61,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 webRequest.getDescription(false), HttpStatus.CONFLICT, exception.getMessage(), LocalDateTime.now());
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(DownstreamServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponseDto> handleDownstreamServiceUnavailableException(
+            DownstreamServiceUnavailableException exception, WebRequest webRequest) {
+
+        ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.SERVICE_UNAVAILABLE,
+                exception.getMessage(),
+                LocalDateTime.now());
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }
