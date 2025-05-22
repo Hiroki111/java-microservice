@@ -54,3 +54,10 @@ resilience4j.circuitbreaker:
       permittedNumberOfCallsInHalfOpenState: 2
       failureRateThreshold: 50
       waitDurationInOpenState: 10000
+
+# NOTE: The timeout duration should be 10 or 15s in prod and qa. 5s is probably too short for submitting an order
+resilience4j.timelimiter:
+  configs:
+    default:
+      timeout-duration: 5s
+      cancel-running-future: false

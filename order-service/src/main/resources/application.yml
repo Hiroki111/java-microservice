@@ -19,6 +19,10 @@ spring:
     show-sql: true
   config:
     import: optional:${SPRING_CONFIG_IMPORT:configserver:http://localhost:8071/}
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
   rabbitmq:
     host: ${SPRING_RABBITMQ_HOST:localhost}
     port: ${SPRING_RABBITMQ_PORT:5672}
@@ -70,3 +74,10 @@ logging:
       easycar:
         order_service: DEBUG
 
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 2
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
