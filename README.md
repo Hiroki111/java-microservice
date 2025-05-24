@@ -8,6 +8,7 @@
 
 ## Future enhancements
 - Currently, `easycar-correlation-id` is used for logging inter-service communications (See `com.easycar.gatewayserver.filters` package of gatewayserver). Consider introducing Micrometer for global logging.
+- `gatewayserver` implements a circuit breaker to `order-service`. Try implementing other resiliency patterns - [rate limit](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945186) and [retry](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945166) patterns. Before doing so, consider which pattern should be used for which situation.
 
 ## Dependencies
 
