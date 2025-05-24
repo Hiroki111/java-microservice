@@ -13,6 +13,11 @@ spring:
           # Make it true if I don't use "public RouteLocator easycarRouteConfig" in "GatewayserverApplication"
           enabled: false
           lowerCaseServiceId: true
+      httpclient:
+        # To configure Global http timeouts, connect-timeout must be specified in milliseconds
+        connect-timeout: 1000
+        # To configure Global http timeouts, response-timeout must be specified as a java.time.Duration
+        response-timeout: 10s
 
 management:
   endpoints:
@@ -53,7 +58,7 @@ resilience4j.circuitbreaker:
       slidingWindowSize: 10
       permittedNumberOfCallsInHalfOpenState: 2
       failureRateThreshold: 50
-      waitDurationInOpenState: 10000
+      waitDurationInOpenState: 10s
 
 # NOTE: The timeout duration should be 10 or 15s in prod and qa. 5s is probably too short for submitting an order
 resilience4j.timelimiter:

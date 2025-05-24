@@ -60,6 +60,8 @@ public class GlobalErrorHandler extends AbstractErrorWebExceptionHandler {
     }
 
     private String getErrorMessage(Throwable ex) {
+        // TODO: if the circuit breaker is open, it returns an ugly message.
+        // Set a proper message (I could use a fallback controller)
         if (ex instanceof ResponseStatusException rse) {
             return rse.getReason() != null ? rse.getReason() : rse.getMessage();
         }
