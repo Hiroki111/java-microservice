@@ -80,4 +80,4 @@ resilience4j.circuitbreaker:
       slidingWindowSize: 10
       permittedNumberOfCallsInHalfOpenState: 2
       failureRateThreshold: 50
-      waitDurationInOpenState: 10000
+      waitDurationInOpenState: 10s
