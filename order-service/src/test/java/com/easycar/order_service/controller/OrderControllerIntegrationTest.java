@@ -20,6 +20,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -97,14 +98,44 @@ public class OrderControllerIntegrationTest {
                     Charset.defaultCharset(),
                     null);
             FeignException notFound = new FeignException.NotFound("Product not found", request, null, null);
+            NoFallbackAvailableException exception = new NoFallbackAvailableException("fetchProduct failed", notFound);
             when(productServiceFeignClient.fetchProduct(correlationId, productId))
-                    .thenThrow(notFound);
+                    .thenThrow(exception);
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("easycar-correlation-id", correlationId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isNotFound());
+
+            Optional<Order> saved = orderRepository.findAll().stream()
+                    .filter(order -> order.getProductId().equals(productId)
+                            && order.getCustomerName().equals(customerName))
+                    .findFirst();
+
+            assertThat(saved).isNotPresent();
+        }
+
+        @Test
+        public void shouldReturnServiceUnavailable_withGenericException() throws Exception {
+            Request request = Request.create(
+                    Request.HttpMethod.GET,
+                    "/api/products/" + productId,
+                    Map.of(),
+                    null,
+                    Charset.defaultCharset(),
+                    null);
+            Exception cause = new Exception("Internal error");
+            NoFallbackAvailableException exception =
+                    new NoFallbackAvailableException("Downstream service unavailable", cause);
+            when(productServiceFeignClient.fetchProduct(correlationId, productId))
+                    .thenThrow(exception);
+
+            mockMvc.perform(post("/api/orders")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("easycar-correlation-id", correlationId)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isServiceUnavailable());
 
             Optional<Order> saved = orderRepository.findAll().stream()
                     .filter(order -> order.getProductId().equals(productId)
