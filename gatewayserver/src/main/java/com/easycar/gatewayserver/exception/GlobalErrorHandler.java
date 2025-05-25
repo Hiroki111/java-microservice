@@ -1,5 +1,7 @@
 package com.easycar.gatewayserver.exception;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
@@ -15,16 +17,12 @@ import org.springframework.web.reactive.function.server.*;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Component
 @Order(-2)
 public class GlobalErrorHandler extends AbstractErrorWebExceptionHandler {
 
-    public GlobalErrorHandler(ErrorAttributes errorAttributes,
-                              WebProperties webProperties,
-                              ApplicationContext applicationContext) {
+    public GlobalErrorHandler(
+            ErrorAttributes errorAttributes, WebProperties webProperties, ApplicationContext applicationContext) {
         super(errorAttributes, webProperties.getResources(), applicationContext);
         super.setMessageReaders(ServerCodecConfigurer.create().getReaders());
         super.setMessageWriters(ServerCodecConfigurer.create().getWriters());
@@ -46,8 +44,7 @@ public class GlobalErrorHandler extends AbstractErrorWebExceptionHandler {
         errorAttributes.put("message", getErrorMessage(error));
         errorAttributes.put("path", request.path());
 
-        return ServerResponse
-                .status(status)
+        return ServerResponse.status(status)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(errorAttributes));
     }
