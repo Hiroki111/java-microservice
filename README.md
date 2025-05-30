@@ -63,3 +63,6 @@
 3. Start eurekaserver
 4. Start product and order services
 5. Start gatewayserver
+
+## How to format code
+- mvn spotless:apply
