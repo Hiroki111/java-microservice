@@ -22,15 +22,12 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
         serverHttpSecurity
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.GET)
-                        .permitAll()
-                        .pathMatchers("/easycar/order-service/**")
-                        .hasRole("ORDER_SERVICE")
-                        .pathMatchers("/easycar/product-service/**")
-                        .hasRole("PRODUCT_SERVICE"))
+                        .pathMatchers(HttpMethod.GET).permitAll()
+                        .pathMatchers("/easycar/order-service/**").hasRole("ORDER_SERVICE")
+                        .pathMatchers("/easycar/product-service/**").hasRole("PRODUCT_SERVICE"))
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec.jwt(
                         jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
-        serverHttpSecurity.csrf(csrfSpec -> csrfSpec.disable());
+        serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable);
         return serverHttpSecurity.build();
     }
 
