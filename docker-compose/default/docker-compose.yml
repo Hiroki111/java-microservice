@@ -1,4 +1,17 @@
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.5
+    container_name: keycloak
+    ports:
+      - "7080:8080"
+    environment:
+      KEYCLOAK_ADMIN: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "admin"
+    command: "start-dev"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
   product-service-db:
     image: postgres
     container_name: product-service-db
@@ -92,8 +105,6 @@ services:
   product-service:
     image: "hiroki111/easycar-product-service:1.0.0"
     container_name: product-service-ms
-    ports:
-      - "8081:8081"
     healthcheck:
       test: "curl --fail --silent localhost:8081/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
@@ -117,8 +128,6 @@ services:
   order-service:
     image: "hiroki111/easycar-order-service:1.0.0"
     container_name: order-service-ms
-    ports:
-      - "8082:8082"
     healthcheck:
       test: "curl --fail --silent localhost:8082/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
@@ -151,6 +160,7 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "gatewayserver"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
