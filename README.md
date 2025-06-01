@@ -66,3 +66,18 @@
 
 ## How to format code
 - mvn spotless:apply
+
+## Keycloak
+
+### Set up a client, roles, and users
+`gatewayserver` protects API request by [authentication code grant type flow](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945514#overview). To use the protected endpoints, set up a client, ream roles and users.
+Run the Keycloak instance and do the following:
+- Click Clients -> Create client. Set Client ID (`easycar-client-authorization-code`). Enable Client authentication, disable Authorization, check only Standard flow. Put * to Valid redirect URIs and Web origins.
+- Click Realm roles -> Create role. Put INTERNAL_USER to Role name and save it. Do the same by putting CUSTOMER as the Role name. 
+- Click Users -> Add user. Create two users, one for a user and the other for an internal user, while Email verified is enabled. When a user is created, click Credentials tab on the user's detail page, and add password. Then, click Role mapping tab, click Assign role. Click the filter icon and choose Filter by realm roles and choose CUSTOMER or INTERNAL_USER.
+
+### Use tokens for API endpoints
+
+- Sign out from Keycloak
+- Open Postman, choose one of the endpoints that requires a token. Click Authorization tab, scroll down and find Get New Access Token button.
+- Click the button and you should see a login page of Keycloak
