@@ -16,7 +16,6 @@ public class OrderCreateDto {
     @NotNull(message = "Product ID cannot be null")
     private Long productId;
 
-    // TODO: Replace it with customer ID
     @Schema(example = "John Smith")
     @NotBlank(message = "Customer name cannot be empty")
     private String customerName;

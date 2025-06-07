@@ -19,19 +19,28 @@ import reactor.core.publisher.Mono;
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
-        serverHttpSecurity
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        http
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.GET)
-                        .permitAll()
-                        .pathMatchers("/easycar/order-service/**")
-                        .hasRole("ORDER_SERVICE")
-                        .pathMatchers("/easycar/product-service/**")
-                        .hasRole("PRODUCT_SERVICE"))
-                .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec.jwt(
-                        jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
-        serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable);
-        return serverHttpSecurity.build();
+                        // Product service
+                        .pathMatchers(HttpMethod.GET, "/easycar/product-service/api/products").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.POST, "/easycar/product-service/api/products").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.PATCH, "/easycar/product-service/api/products/*").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.DELETE, "/easycar/product-service/api/products/*").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.POST, "/easycar/product-service/api/dealers").hasRole("INTERNAL_USER")
+                        // Order service
+                        .pathMatchers(HttpMethod.GET, "/easycar/order-service/api/orders").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.GET, "/easycar/order-service/api/orders/*").hasAnyRole("INTERNAL_USER", "CUSTOMER") // Note: Ownership check inside service
+                        .pathMatchers(HttpMethod.POST, "/easycar/order-service/api/orders").hasAnyRole("INTERNAL_USER", "CUSTOMER")
+                        .pathMatchers(HttpMethod.DELETE, "/easycar/order-service/api/orders/*").hasRole("INTERNAL_USER")
+                        // Default fallback
+                        .anyExchange().permitAll()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(grantedAuthoritiesExtractor())))
+                .csrf(ServerHttpSecurity.CsrfSpec::disable);
+
+        return http.build();
     }
 
     private Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {

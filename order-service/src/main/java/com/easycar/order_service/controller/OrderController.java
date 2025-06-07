@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +24,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping(
@@ -38,25 +40,38 @@ public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
     private final OrderService orderService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaim("realm_access");
+        @SuppressWarnings("unchecked")
+        List<String> roles = (List<String>) realmAccess.get("roles");
+
+        OrderDto order = orderService.findOrderById(id, userId, roles);
+        return ResponseEntity.status(HttpStatus.OK).body(order);
+    }
+
     @GetMapping
     @Parameters({
-            @Parameter(
-                    name = "page",
-                    description = "page number (0-based)",
-                    in = ParameterIn.QUERY,
-                    schema = @Schema(type = "integer", defaultValue = "0")),
-            @Parameter(
-                    name = "size",
-                    description = "page size",
-                    in = ParameterIn.QUERY,
-                    schema = @Schema(type = "integer", defaultValue = "100")),
-            @Parameter(
-                    name = "sort",
-                    description = "sort specification by comma-separated value (e.g. 'id,desc')",
-                    in = ParameterIn.QUERY,
-                    schema = @Schema(type = "array"),
-                    explode = Explode.FALSE,
-                    style = ParameterStyle.SIMPLE),
+        @Parameter(
+                name = "page",
+                description = "page number (0-based)",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "integer", defaultValue = "0")),
+        @Parameter(
+                name = "size",
+                description = "page size",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "integer", defaultValue = "100")),
+        @Parameter(
+                name = "sort",
+                description = "sort specification by comma-separated value (e.g. 'id,desc')",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "array"),
+                explode = Explode.FALSE,
+                style = ParameterStyle.SIMPLE),
     })
     public ResponseEntity<PageDto<OrderDto>> getOrders(
             @ParameterObject @PageableDefault(size = 100) Pageable pageable) {
@@ -67,9 +82,11 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ResponseDto> createOrder(
             @RequestHeader("easycar-correlation-id") String correlationId,
-            @Valid @RequestBody OrderCreateDto orderDto) {
+            @Valid @RequestBody OrderCreateDto orderDto,
+            @AuthenticationPrincipal Jwt jwt) {
         logger.debug("easycar-correlation-id found: {} ", correlationId);
-        orderService.createOrder(correlationId, orderDto);
+        String customerId = jwt.getSubject();
+        orderService.createOrder(correlationId, orderDto, customerId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(RestApiConstants.STATUS_201, RestApiConstants.MESSAGE_201));
     }

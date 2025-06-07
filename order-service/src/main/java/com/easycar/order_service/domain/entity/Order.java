@@ -20,6 +20,9 @@ public class Order extends BaseEntity {
     @Column(name = "product_id")
     private Long productId;
 
+    @Column(name = "customer_id")
+    private String customerId;
+
     @Column(name = "customer_name", nullable = false)
     private String customerName;
 }

@@ -4,10 +4,9 @@ import com.easycar.order_service.domain.entity.Order;
 import com.easycar.order_service.dto.OrderCreateDto;
 import com.easycar.order_service.dto.OrderDto;
 import com.easycar.order_service.dto.PageDto;
-import org.springframework.data.domain.Page;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 public class OrderMapper {
     public static OrderDto mapOrderToOrderDto(Order order) {
@@ -15,6 +14,7 @@ public class OrderMapper {
                 .id(order.getId())
                 .productId(order.getProductId())
                 .customerName(order.getCustomerName())
+                .customerId(order.getCustomerId())
                 .build();
     }
 

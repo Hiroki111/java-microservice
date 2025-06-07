@@ -32,6 +32,12 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:7080/realms/master"
+          jwk-set-uri: "http://localhost:7080/realms/master/protocol/openid-connect/certs"
 
 management:
   endpoints:

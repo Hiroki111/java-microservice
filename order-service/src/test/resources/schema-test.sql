@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS orders (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     product_id BIGINT NOT NULL,
+    customer_id VARCHAR(36) NOT NULL,
     customer_name VARCHAR(255) NOT NULL
 );

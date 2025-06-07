@@ -14,6 +14,9 @@ public class OrderDto {
     @Schema(example = "2")
     private Long productId;
 
+    @Schema(example = "b8efe803-9d58-4229-854f-63b36da80b6c")
+    private String customerId;
+
     @Schema(example = "John Smith")
     private String customerName;
 }
