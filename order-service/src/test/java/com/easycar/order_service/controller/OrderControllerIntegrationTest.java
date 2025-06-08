@@ -15,11 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import feign.Request;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
-
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -79,10 +78,9 @@ public class OrderControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content.length()").value(100)) // Default page size
                     .andExpect(jsonPath("$.totalElements").value(numberOfOrders))
-                    .andExpect(jsonPath("$.content[0].id")
-                            .value(orders.getFirst().getId()))
                     .andExpect(
-                            jsonPath("$.content[99].id").value(orders.get(99).getId()));
+                            jsonPath("$.content[0].id").value(orders.getFirst().getId()))
+                    .andExpect(jsonPath("$.content[99].id").value(orders.get(99).getId()));
         }
 
         @Test
@@ -91,10 +89,8 @@ public class OrderControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content.length()").value(5))
                     .andExpect(jsonPath("$.totalElements").value(numberOfOrders))
-                    .andExpect(
-                            jsonPath("$.content[0].id").value(orders.get(194).getId()))
-                    .andExpect(
-                            jsonPath("$.content[4].id").value(orders.get(190).getId()));
+                    .andExpect(jsonPath("$.content[0].id").value(orders.get(194).getId()))
+                    .andExpect(jsonPath("$.content[4].id").value(orders.get(190).getId()));
         }
     }
 
