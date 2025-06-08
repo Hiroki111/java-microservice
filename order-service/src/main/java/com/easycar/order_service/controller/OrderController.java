@@ -13,8 +13,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +22,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,15 +37,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaim("realm_access");
-        @SuppressWarnings("unchecked")
-        List<String> roles = (List<String>) realmAccess.get("roles");
-
-        OrderDto order = orderService.findOrderById(id, userId, roles);
+    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id) {
+        OrderDto order = orderService.findOrderById(id);
         return ResponseEntity.status(HttpStatus.OK).body(order);
     }
 
@@ -82,11 +71,9 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ResponseDto> createOrder(
             @RequestHeader("easycar-correlation-id") String correlationId,
-            @Valid @RequestBody OrderCreateDto orderDto,
-            @AuthenticationPrincipal Jwt jwt) {
+            @Valid @RequestBody OrderCreateDto orderDto) {
         logger.debug("easycar-correlation-id found: {} ", correlationId);
-        String customerId = jwt.getSubject();
-        orderService.createOrder(correlationId, orderDto, customerId);
+        orderService.createOrder(correlationId, orderDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(RestApiConstants.STATUS_201, RestApiConstants.MESSAGE_201));
     }

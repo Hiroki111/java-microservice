@@ -58,6 +58,7 @@ public class OrderControllerIntegrationTest {
     @DisplayName("GET /api/orders")
     class GetOrdersTests {
         private List<Order> orders;
+        String customerId = "5c850b3f-8a18-4b2a-b112-f82d8e3e6c6e";
         private final int numberOfOrders = 200;
 
         @BeforeEach
@@ -65,6 +66,7 @@ public class OrderControllerIntegrationTest {
             orders = IntStream.rangeClosed(1, numberOfOrders)
                     .mapToObj(i -> Order.builder()
                             .customerName("Customer " + i)
+                            .customerId(customerId)
                             .productId((long) i)
                             .build())
                     .toList();
@@ -100,6 +102,7 @@ public class OrderControllerIntegrationTest {
     @DisplayName("POST /api/orders")
     class CreateOrderTests {
         long productId = 1;
+        String customerId = "5c850b3f-8a18-4b2a-b112-f82d8e3e6c6e";
         String customerName = "John Smith";
         OrderCreateDto payload;
         String correlationId = "1";
@@ -108,6 +111,7 @@ public class OrderControllerIntegrationTest {
         void setup() {
             payload = OrderCreateDto.builder()
                     .productId(productId)
+                    .customerId(customerId)
                     .customerName(customerName)
                     .build();
         }
@@ -132,6 +136,7 @@ public class OrderControllerIntegrationTest {
                     .findFirst();
 
             assertThat(saved).isPresent();
+            assertThat(saved.get().getCustomerId()).isEqualTo(customerId);
         }
 
         @Test
