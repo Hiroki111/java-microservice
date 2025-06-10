@@ -37,7 +37,6 @@ public class OrderMapper {
     public static Order mapOrderCreateDtoToOrder(OrderCreateDto orderCreateDto) {
         return Order.builder()
                 .productId(orderCreateDto.getProductId())
-                .customerId(orderCreateDto.getCustomerId())
                 .customerName(orderCreateDto.getCustomerName())
                 .build();
     }

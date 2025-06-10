@@ -107,7 +107,6 @@ public class OrderControllerIntegrationTest {
         void setup() {
             payload = OrderCreateDto.builder()
                     .productId(productId)
-                    .customerId(customerId)
                     .customerName(customerName)
                     .build();
         }
@@ -123,6 +122,7 @@ public class OrderControllerIntegrationTest {
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("easycar-correlation-id", correlationId)
+                            .header("X-User-Id", customerId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isCreated());
 
@@ -152,6 +152,7 @@ public class OrderControllerIntegrationTest {
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("easycar-correlation-id", correlationId)
+                            .header("X-User-Id", customerId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isNotFound());
 
@@ -181,6 +182,7 @@ public class OrderControllerIntegrationTest {
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("easycar-correlation-id", correlationId)
+                            .header("X-User-Id", customerId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isServiceUnavailable());
 
@@ -203,6 +205,7 @@ public class OrderControllerIntegrationTest {
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("easycar-correlation-id", correlationId)
+                            .header("X-User-Id", customerId)
                             .content(objectMapper.writeValueAsString(payload)))
                     .andExpect(status().isConflict());
 

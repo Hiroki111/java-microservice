@@ -71,9 +71,10 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ResponseDto> createOrder(
             @RequestHeader("easycar-correlation-id") String correlationId,
+            @RequestHeader("X-User-Id") String userId,
             @Valid @RequestBody OrderCreateDto orderDto) {
         logger.debug("easycar-correlation-id found: {} ", correlationId);
-        orderService.createOrder(correlationId, orderDto);
+        orderService.createOrder(correlationId, userId, orderDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(RestApiConstants.STATUS_201, RestApiConstants.MESSAGE_201));
     }

@@ -16,10 +16,6 @@ public class OrderCreateDto {
     @NotNull(message = "Product ID cannot be null")
     private Long productId;
 
-    @Schema(example = "b8efe803-9d58-4229-854f-63b36da80b6c")
-    @NotBlank(message = "Customer ID cannot be empty")
-    private String customerId;
-
     @Schema(example = "John Smith")
     @NotBlank(message = "Customer name cannot be empty")
     private String customerName;

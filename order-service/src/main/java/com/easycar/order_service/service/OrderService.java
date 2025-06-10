@@ -39,7 +39,7 @@ public class OrderService {
         return OrderMapper.mapOrderPageToOrderDto(orderPage);
     }
 
-    public void createOrder(String correlationId, OrderCreateDto orderDto) {
+    public void createOrder(String correlationId, String userId, OrderCreateDto orderDto) {
         ResponseEntity<ProductDto> responseEntity;
         Long productId = orderDto.getProductId();
         try {
@@ -57,6 +57,7 @@ public class OrderService {
         }
 
         Order order = OrderMapper.mapOrderCreateDtoToOrder(orderDto);
+        order.setCustomerId(userId);
         orderRepository.save(order);
     }
 }
