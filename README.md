@@ -19,7 +19,6 @@ public class JwtUtil {
     }
 }
 ```
-- `order-service` currently lacks integration tests. The service uses `@AuthenticationPrincipal` to parse JWTs, which requires the `spring.security.oauth2.resourceserver.jwt.issuer-uri` property to be set in application.yml. If this property is missing, none of the test cases (including OrderServiceApplicationTests) will run. However, relying on an external OAuth2 server isn't suitable for unit/integration tests. I haven't found a way to make the tests run without an actual OAuth2 server configured via that property. One potential solution is to implement the test cases using Testcontainers, so that `order-service` is wired up to a running instance of an OAuth2 server (e.g., Keycloak).
 
 ## Dependencies
 
