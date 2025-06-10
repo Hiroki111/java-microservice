@@ -55,7 +55,7 @@ public class OrderControllerIntegrationTest {
 
     @Nested
     @DisplayName("GET /api/orders/{id}")
-    class GetOrdersTest{
+    class GetOrdersTest {
         private Order order;
         private final String customerId = "5c850b3f-8a18-4b2a-b112-f82d8e3e6c6e";
 
@@ -71,9 +71,7 @@ public class OrderControllerIntegrationTest {
 
         @Test
         public void shouldReturnOrders() throws Exception {
-            mockMvc.perform(get("/api/orders/" + order.getId())
-                            .header("X-User-Id", customerId)
-                    )
+            mockMvc.perform(get("/api/orders/" + order.getId()).header("X-User-Id", customerId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value((order.getId())));
         }
@@ -81,9 +79,7 @@ public class OrderControllerIntegrationTest {
         @Test
         public void shouldReturnAccessDeniedException_withUnmatchingCustomerId() throws Exception {
             String differentCustomerId = "9932a768-6601-49fb-b462-7f03d89f1552";
-            mockMvc.perform(get("/api/orders/" + order.getId())
-                            .header("X-User-Id", differentCustomerId)
-                    )
+            mockMvc.perform(get("/api/orders/" + order.getId()).header("X-User-Id", differentCustomerId))
                     .andExpect(status().isForbidden());
         }
     }
