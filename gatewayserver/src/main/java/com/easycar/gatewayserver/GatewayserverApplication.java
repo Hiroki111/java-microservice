@@ -19,16 +19,19 @@ public class GatewayserverApplication {
     public RouteLocator easycarRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
         return routeLocatorBuilder
                 .routes()
-                .route(p -> p.path("/easycar/order-service/**")
-                        .filters(f -> f.rewritePath("/easycar/order-service/(?<segment>.*)", "/${segment}")
-                                .addResponseHeader(
-                                        "X-Response-Time", LocalDateTime.now().toString())
-                                .circuitBreaker(config -> config.setName("orderServiceCircuitBreaker")))
+                .route(p -> p
+                        .path("/easycar/order-service/**")
+                        .filters(f -> f
+                                .rewritePath("/easycar/order-service/(?<segment>.*)", "/${segment}")
+                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+                                .circuitBreaker(config -> config.setName("orderServiceCircuitBreaker"))
+                        )
                         .uri("lb://ORDER-SERVICE"))
-                .route(p -> p.path("/easycar/product-service/**")
+                .route(p -> p
+                        .path("/easycar/product-service/**")
                         .filters(f -> f.rewritePath("/easycar/product-service/(?<segment>.*)", "/${segment}")
-                                .addResponseHeader(
-                                        "X-Response-Time", LocalDateTime.now().toString()))
+                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+                        )
                         .uri("lb://PRODUCT-SERVICE"))
                 .build();
     }

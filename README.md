@@ -42,7 +42,7 @@ public class JwtUtil {
 
 ## Docker command cheat sheet
 
-- docker build . -t <dockerhub-user-name>/<image-name>:<tag>
+- docker build . -t <dockerhub-user-name>-<image-name>:<tag>
 - docker images
 - docker run -d -p <port-of-local-machine>:<port-used-by-the-image> <image-id> (e.g. `docker run -d -p 8080:8081 22b19` -> The app should be available at `http://localhost:8080/` in the local machine)
 - docker start <container-id> (It runs an existing container, not an image)
