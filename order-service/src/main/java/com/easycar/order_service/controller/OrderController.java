@@ -37,8 +37,10 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable Long id) {
-        OrderDto order = orderService.findOrderById(id);
+    public ResponseEntity<OrderDto> getOrder(
+            @RequestHeader("X-User-Id") String userId,
+            @PathVariable Long id) {
+        OrderDto order = orderService.findOrderById(id, userId);
         return ResponseEntity.status(HttpStatus.OK).body(order);
     }
 

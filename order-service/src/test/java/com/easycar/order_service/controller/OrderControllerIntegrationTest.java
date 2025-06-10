@@ -54,10 +54,45 @@ public class OrderControllerIntegrationTest {
     }
 
     @Nested
+    @DisplayName("GET /api/orders/{id}")
+    class GetOrdersTest{
+        private Order order;
+        private final String customerId = "5c850b3f-8a18-4b2a-b112-f82d8e3e6c6e";
+
+        @BeforeEach
+        void setup() {
+            order = Order.builder()
+                    .customerName("John Smith")
+                    .customerId(customerId)
+                    .productId((long) 1)
+                    .build();
+            orderRepository.save(order);
+        }
+
+        @Test
+        public void shouldReturnOrders() throws Exception {
+            mockMvc.perform(get("/api/orders/" + order.getId())
+                            .header("X-User-Id", customerId)
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value((order.getId())));
+        }
+
+        @Test
+        public void shouldReturnAccessDeniedException_withUnmatchingCustomerId() throws Exception {
+            String differentCustomerId = "9932a768-6601-49fb-b462-7f03d89f1552";
+            mockMvc.perform(get("/api/orders/" + order.getId())
+                            .header("X-User-Id", differentCustomerId)
+                    )
+                    .andExpect(status().isForbidden());
+        }
+    }
+
+    @Nested
     @DisplayName("GET /api/orders")
     class GetOrdersTests {
         private List<Order> orders;
-        String customerId = "5c850b3f-8a18-4b2a-b112-f82d8e3e6c6e";
+        private final String customerId = "5c850b3f-8a18-4b2a-b112-f82d8e3e6c6e";
         private final int numberOfOrders = 200;
 
         @BeforeEach

@@ -5,6 +5,7 @@ import com.easycar.order_service.dto.OrderCreateDto;
 import com.easycar.order_service.dto.OrderDto;
 import com.easycar.order_service.dto.PageDto;
 import com.easycar.order_service.dto.ProductDto;
+import com.easycar.order_service.exception.AccessDeniedException;
 import com.easycar.order_service.exception.DownstreamServiceUnavailableException;
 import com.easycar.order_service.exception.ProductUnavailableException;
 import com.easycar.order_service.exception.ResourceNotFoundException;
@@ -26,10 +27,15 @@ public class OrderService {
     private OrderRepository orderRepository;
     private ProductServiceFeignClient productServiceFeignClient;
 
-    public OrderDto findOrderById(Long id) {
+    public OrderDto findOrderById(Long id, String userId) {
         Order order = orderRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id.toString()));
+
+        if (!order.getCustomerId().equals(userId)) {
+            throw new AccessDeniedException("You are not allowed to view this order.");
+        }
+
         return OrderMapper.mapOrderToOrderDto(order);
     }
 
