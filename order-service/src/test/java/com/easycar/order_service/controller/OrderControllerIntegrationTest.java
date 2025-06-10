@@ -251,5 +251,27 @@ public class OrderControllerIntegrationTest {
 
             assertThat(saved).isNotPresent();
         }
+
+        @Test
+        public void shouldReturnBadRequest_withNoUserId() throws Exception {
+            ProductDto mockedProduct =
+                    ProductDto.builder().id(productId).available(true).build();
+            ResponseEntity<ProductDto> response = new ResponseEntity<>(mockedProduct, HttpStatusCode.valueOf(201));
+            when(productServiceFeignClient.fetchProduct(correlationId, productId))
+                    .thenReturn(response);
+
+            mockMvc.perform(post("/api/orders")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("easycar-correlation-id", correlationId)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+
+            Optional<Order> saved = orderRepository.findAll().stream()
+                    .filter(order -> order.getProductId().equals(productId)
+                            && order.getCustomerName().equals(customerName))
+                    .findFirst();
+
+            assertThat(saved).isNotPresent();
+        }
     }
 }
