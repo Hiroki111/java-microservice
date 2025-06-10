@@ -9,6 +9,7 @@ import org.springframework.web.server.ServerWebExchange;
 public class FilterUtility {
 
     public static final String CORRELATION_ID = "easycar-correlation-id";
+    public static final String USER_ID_HEADER = "X-User-Id";
 
     public String getCorrelationId(HttpHeaders requestHeaders) {
         if (requestHeaders.get(CORRELATION_ID) == null) {
@@ -29,5 +30,9 @@ public class FilterUtility {
 
     public ServerWebExchange setCorrelationId(ServerWebExchange exchange, String correlationId) {
         return this.setRequestHeader(exchange, CORRELATION_ID, correlationId);
+    }
+
+    public ServerWebExchange setUserId(ServerWebExchange exchange, String userId) {
+        return this.setRequestHeader(exchange, USER_ID_HEADER, userId);
     }
 }
