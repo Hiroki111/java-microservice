@@ -1,10 +1,7 @@
 package com.easycar.order_service.service;
 
 import com.easycar.order_service.domain.entity.Order;
-import com.easycar.order_service.dto.OrderCreateDto;
-import com.easycar.order_service.dto.OrderDto;
-import com.easycar.order_service.dto.PageDto;
-import com.easycar.order_service.dto.ProductDto;
+import com.easycar.order_service.dto.*;
 import com.easycar.order_service.exception.AccessDeniedException;
 import com.easycar.order_service.exception.DownstreamServiceUnavailableException;
 import com.easycar.order_service.exception.ProductUnavailableException;
@@ -15,17 +12,22 @@ import com.easycar.order_service.service.client.ProductServiceFeignClient;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @AllArgsConstructor
 public class OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     private OrderRepository orderRepository;
     private ProductServiceFeignClient productServiceFeignClient;
+    private final StreamBridge streamBridge;
 
     public OrderDto findOrderById(Long id, String userId) {
         Order order = orderRepository
@@ -65,5 +67,14 @@ public class OrderService {
         Order order = OrderMapper.mapOrderCreateDtoToOrder(orderDto);
         order.setCustomerId(userId);
         orderRepository.save(order);
+        sendCommunication(order);
+    }
+
+    private void sendCommunication(Order order) {
+        var orderMessageDto = new OrderMessageDto(order.getId(), order.getProductId(),
+                order.getCustomerId());
+        log.info("Sending Communication request for the details: {}", orderMessageDto);
+        var result = streamBridge.send("sendCommunication-out-0", orderMessageDto);
+        log.info("Is the Communication request successfully triggered ? : {}", result);
     }
 }

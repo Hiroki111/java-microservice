@@ -23,11 +23,21 @@ spring:
     openfeign:
       circuitbreaker:
         enabled: true
+    #function:
+    #  definition: updateCommunication
+    stream:
+      bindings:
+        #updateCommunication-in-0:
+        #  destination: communication-sent
+        #  group: ${spring.application.name}
+        sendCommunication-out-0:
+          destination: send-communication
   rabbitmq:
     host: ${SPRING_RABBITMQ_HOST:localhost}
     port: ${SPRING_RABBITMQ_PORT:5672}
     username: ${SPRING_RABBITMQ_USERNAME:guest}
     password: ${SPRING_RABBITMQ_PASSWORD:guest}
+    connection-timeout: 10s
   sql:
     init:
       mode: always

@@ -22,7 +22,7 @@ public class JwtUtil {
 
 ## Dependencies
 
-- RabbitMQ (Use `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`)
+- RabbitMQ (Use `docker run -d -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`)
 - Keycloak (Use `docker run -d -p 7080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev`)
 
 ## How to run a Java microservice from a .jar file
