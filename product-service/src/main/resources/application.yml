@@ -23,6 +23,14 @@ spring:
     show-sql: true
   config:
     import: optional:${SPRING_CONFIG_IMPORT:configserver:http://localhost:8071/}
+  cloud:
+    function:
+      definition: reserveProduct
+    stream:
+      bindings:
+        reserveProduct-in-0:
+          destination: reserve-product
+          group: ${spring.application.name}
   rabbitmq:
     host: ${SPRING_RABBITMQ_HOST:localhost}
     port: ${SPRING_RABBITMQ_PORT:5672}

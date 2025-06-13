@@ -74,7 +74,11 @@ public class OrderService {
         var orderMessageDto = new OrderMessageDto(order.getId(), order.getProductId(),
                 order.getCustomerId());
         log.info("Sending Communication request for the details: {}", orderMessageDto);
-        var result = streamBridge.send("sendCommunication-out-0", orderMessageDto);
-        log.info("Is the Communication request successfully triggered ? : {}", result);
+        var sendCommunicationTriggered = streamBridge.send("sendCommunication-out-0", orderMessageDto);
+        log.info("Is the Communication request successfully triggered ? : {}", sendCommunicationTriggered);
+
+        log.info("Sending Product reservation request for the details: {}", orderMessageDto);
+        var reserveProductTriggered = streamBridge.send("reserveProduct-out-0", orderMessageDto);
+        log.info("Is the Product reservation request successfully triggered ? : {}", reserveProductTriggered);
     }
 }
