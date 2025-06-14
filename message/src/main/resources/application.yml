@@ -6,10 +6,10 @@ spring:
     name: message
   cloud:
     function:
-      definition: email|sms
+      definition: email
     stream:
       bindings:
-        emailsms-in-0:
+        email-in-0:
           destination: send-communication
           group: ${spring.application.name}
   rabbitmq:

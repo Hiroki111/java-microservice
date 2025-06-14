@@ -2,25 +2,26 @@ package com.easycar.product_service.service;
 
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
-import com.easycar.product_service.dto.PageDto;
-import com.easycar.product_service.dto.ProductCreateDto;
-import com.easycar.product_service.dto.ProductDto;
-import com.easycar.product_service.dto.ProductPatchDto;
+import com.easycar.product_service.dto.*;
 import com.easycar.product_service.exception.ResourceNotFoundException;
+import com.easycar.product_service.functions.ProductFunctions;
 import com.easycar.product_service.mapper.ProductMapper;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class ProductService {
-
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
     private ProductRepository productRepository;
     private DealerRepository dealerRepository;
 
@@ -79,5 +80,18 @@ public class ProductService {
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
         productRepository.delete(product);
+    }
+
+    public void reserveProduct(Message<OrderMessageDto> message) {
+        var orderMessageDto = message.getPayload();
+        productRepository.findById(orderMessageDto.productId())
+                .ifPresent(product -> {
+                    if (!product.isAvailable()) {
+                        log.info("Product " + orderMessageDto.productId() + " already reserved, skipping.");
+                        return;
+                    }
+                    product.setAvailable(false);
+                    productRepository.save(product);
+                });
     }
 }
