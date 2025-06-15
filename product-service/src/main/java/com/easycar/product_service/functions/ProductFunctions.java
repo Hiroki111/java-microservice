@@ -2,12 +2,12 @@ package com.easycar.product_service.functions;
 
 import com.easycar.product_service.dto.OrderMessageDto;
 import com.easycar.product_service.service.ProductService;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
-import java.util.function.Consumer;
 
 @Configuration
 public class ProductFunctions {

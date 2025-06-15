@@ -11,6 +11,8 @@ import com.easycar.order_service.repository.OrderRepository;
 import com.easycar.order_service.service.client.ProductServiceFeignClient;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
@@ -21,8 +23,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 @AllArgsConstructor
@@ -71,10 +71,8 @@ public class OrderService {
         order.setCustomerId(userId);
         orderRepository.save(order);
 
-        var orderMessageDto = new OrderMessageDto(order.getId(), order.getProductId(),
-                order.getCustomerId());
-        Message<OrderMessageDto> message = MessageBuilder
-                .withPayload(orderMessageDto)
+        var orderMessageDto = new OrderMessageDto(order.getId(), order.getProductId(), order.getCustomerId());
+        Message<OrderMessageDto> message = MessageBuilder.withPayload(orderMessageDto)
                 .setHeader(MessageHeaders.CONTENT_TYPE, "application/json")
                 .setHeader("correlationId", correlationId)
                 .build();

@@ -4,7 +4,6 @@ import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
 import com.easycar.product_service.dto.*;
 import com.easycar.product_service.exception.ResourceNotFoundException;
-import com.easycar.product_service.functions.ProductFunctions;
 import com.easycar.product_service.mapper.ProductMapper;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
@@ -84,14 +83,13 @@ public class ProductService {
 
     public void reserveProduct(Message<OrderMessageDto> message) {
         var orderMessageDto = message.getPayload();
-        productRepository.findById(orderMessageDto.productId())
-                .ifPresent(product -> {
-                    if (!product.isAvailable()) {
-                        log.info("Product " + orderMessageDto.productId() + " already reserved, skipping.");
-                        return;
-                    }
-                    product.setAvailable(false);
-                    productRepository.save(product);
-                });
+        productRepository.findById(orderMessageDto.productId()).ifPresent(product -> {
+            if (!product.isAvailable()) {
+                log.info("Product " + orderMessageDto.productId() + " already reserved, skipping.");
+                return;
+            }
+            product.setAvailable(false);
+            productRepository.save(product);
+        });
     }
 }
