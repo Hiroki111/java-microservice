@@ -11,6 +11,7 @@
 	<groupId>com.easycar</groupId>
 	<artifactId>message</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>message</name>
 	<description>Microservice to support messaging in easycar</description>
 	<url/>

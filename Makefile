@@ -1,4 +1,4 @@
-SERVICES = configserver eurekaserver gatewayserver order-service product-service
+SERVICES = configserver eurekaserver gatewayserver order-service product-service message
 DOCKER_REPO = hiroki111/easycar
 
 .PHONY: all build-jar build-images

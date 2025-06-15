@@ -121,6 +121,7 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "product-service"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://product-service-db:5432/product-service-db"
+      SPRING_RABBITMQ_HOST: "rabbit"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -144,9 +145,22 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "order-service"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://order-service-db:5432/order-service-db"
+      SPRING_RABBITMQ_HOST: "rabbit"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
+
+  message:
+    image: "hiroki111/easycar-message:1.0.0"
+    container_name: message-ms
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: "rabbit"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   gatewayserver:
     image: "hiroki111/easycar-gatewayserver:1.0.0"
