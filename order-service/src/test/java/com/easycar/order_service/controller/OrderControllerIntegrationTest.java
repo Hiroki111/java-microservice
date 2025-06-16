@@ -1,7 +1,7 @@
 package com.easycar.order_service.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,9 @@ public class OrderControllerIntegrationTest {
 
     @MockitoBean
     private ProductServiceFeignClient productServiceFeignClient;
+
+    @MockitoBean
+    private StreamBridge streamBridge;
 
     @AfterEach
     void cleanDb() {
@@ -164,6 +168,8 @@ public class OrderControllerIntegrationTest {
 
             assertThat(saved).isPresent();
             assertThat(saved.get().getCustomerId()).isEqualTo(customerId);
+            verify(streamBridge, times(1)).send(eq("sendCommunication-out-0"), any());
+            verify(streamBridge, times(1)).send(eq("reserveProduct-out-0"), any());
         }
 
         @Test
@@ -193,6 +199,8 @@ public class OrderControllerIntegrationTest {
                     .findFirst();
 
             assertThat(saved).isNotPresent();
+            verify(streamBridge, times(0)).send(eq("sendCommunication-out-0"), any());
+            verify(streamBridge, times(0)).send(eq("reserveProduct-out-0"), any());
         }
 
         @Test
@@ -223,6 +231,8 @@ public class OrderControllerIntegrationTest {
                     .findFirst();
 
             assertThat(saved).isNotPresent();
+            verify(streamBridge, times(0)).send(eq("sendCommunication-out-0"), any());
+            verify(streamBridge, times(0)).send(eq("reserveProduct-out-0"), any());
         }
 
         @Test
@@ -246,6 +256,8 @@ public class OrderControllerIntegrationTest {
                     .findFirst();
 
             assertThat(saved).isNotPresent();
+            verify(streamBridge, times(0)).send(eq("sendCommunication-out-0"), any());
+            verify(streamBridge, times(0)).send(eq("reserveProduct-out-0"), any());
         }
 
         @Test
@@ -268,6 +280,8 @@ public class OrderControllerIntegrationTest {
                     .findFirst();
 
             assertThat(saved).isNotPresent();
+            verify(streamBridge, times(0)).send(eq("sendCommunication-out-0"), any());
+            verify(streamBridge, times(0)).send(eq("reserveProduct-out-0"), any());
         }
     }
 }
