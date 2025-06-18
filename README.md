@@ -19,7 +19,8 @@ public class JwtUtil {
     }
 }
 ```
-- Introduce Apache Kafka. Find a use case where Kafka is more suitable than RabbitMQ and incorporate it. See [this page](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945898#overview) to use Kafka with Docker.
+- Introduce Apache Kafka. Find a use case where Kafka is more suitable than RabbitMQ and incorporate it. See [this page](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945898#overview) to use Kafka with Docker. Note that using both Kafka and RabbitMQ with Spring Cloud Stream is probably impossible. Use Kafka with Spring Boot without Spring Cloud.
+
 
 ## Dependencies
 
