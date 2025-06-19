@@ -1,6 +1,5 @@
 package com.easycar.product_service.controller;
 
-import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.dto.*;
 import com.easycar.product_service.service.DealerService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,7 +8,6 @@ import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -61,27 +59,5 @@ public class DealerController {
             @ParameterObject @PageableDefault(size = 100) Pageable pageable) {
         PageDto<DealerDto> dealers = dealerService.findDealers(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(dealers);
-    }
-
-    @PostMapping
-    public ResponseEntity<ResponseDto> createDealer(@Valid @RequestBody DealerCreateDto dealerDto) {
-        dealerService.createDealer(dealerDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(ProductConstants.STATUS_201, ProductConstants.MESSAGE_201));
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto> patchDealer(
-            @PathVariable Long id, @Valid @RequestBody DealerPatchDto dealerDto) {
-        dealerService.patchDealer(id, dealerDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto(ProductConstants.STATUS_200, ProductConstants.MESSAGE_200));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto> deleteDealer(@PathVariable Long id) {
-        dealerService.deleteDealer(id);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto(ProductConstants.STATUS_200, ProductConstants.MESSAGE_200));
     }
 }
