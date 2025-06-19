@@ -23,16 +23,15 @@ public class SecurityConfig {
         http
                 .authorizeExchange(exchanges -> exchanges
                         // Product service
-                        .pathMatchers(HttpMethod.GET, "/easycar/product-service/api/products").hasRole("INTERNAL_USER")
-                        .pathMatchers(HttpMethod.POST, "/easycar/product-service/api/products").hasRole("INTERNAL_USER")
-                        .pathMatchers(HttpMethod.PATCH, "/easycar/product-service/api/products/*").hasRole("INTERNAL_USER")
-                        .pathMatchers(HttpMethod.DELETE, "/easycar/product-service/api/products/*").hasRole("INTERNAL_USER")
-                        .pathMatchers(HttpMethod.POST, "/easycar/product-service/api/dealers").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.GET, "/easycar/product-service/api/backstage/products").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.POST, "/easycar/product-service/api/backstage/products").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.PATCH, "/easycar/product-service/api/backstage/products/*").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.DELETE, "/easycar/product-service/api/backstage/products/*").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.POST, "/easycar/product-service/api/backstage/dealers").hasRole("INTERNAL_USER")
                         // Order service
-                        .pathMatchers(HttpMethod.GET, "/easycar/order-service/api/orders").hasRole("INTERNAL_USER")
+                        .pathMatchers(HttpMethod.GET, "/easycar/order-service/api/backstage/orders").hasRole("INTERNAL_USER")
                         .pathMatchers(HttpMethod.GET, "/easycar/order-service/api/orders/*").hasAnyRole("INTERNAL_USER", "CUSTOMER") // Note: Ownership check inside service
                         .pathMatchers(HttpMethod.POST, "/easycar/order-service/api/orders").hasAnyRole("INTERNAL_USER", "CUSTOMER")
-                        .pathMatchers(HttpMethod.DELETE, "/easycar/order-service/api/orders/*").hasRole("INTERNAL_USER")
                         // Default fallback
                         .anyExchange().permitAll()
                 )
