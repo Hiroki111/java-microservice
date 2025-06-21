@@ -231,6 +231,56 @@ public class BackstageProductControllerIntegrationTest {
         }
 
         @Test
+        public void shouldReturnBadRequest_withInvalidMake() throws Exception {
+            String productName = "Toyota Corolla";
+            ObjectNode requestBody = objectMapper.createObjectNode();
+            requestBody.put("name", productName);
+            requestBody.put("description", "A popular sedan");
+            requestBody.put("price", 20000);
+            requestBody.put("available", true);
+            requestBody.put("category", "SEDAN");
+            requestBody.put("make", "toyota"); // invalid make
+            requestBody.put("mileage", 1000);
+            requestBody.put("dealerId", dealer.getId());
+
+            mockMvc.perform(post("/api/backstage/products")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(requestBody)))
+                    .andExpect(status().isBadRequest());
+
+            Optional<Product> saved = productRepository.findAll().stream()
+                    .filter(product -> product.getName().equals(productName))
+                    .findFirst();
+
+            assertThat(saved).isNotPresent();
+        }
+
+        @Test
+        public void shouldReturnBadRequest_withNegativeMileage() throws Exception {
+            String productName = "Toyota Corolla";
+            var productTestDto = new BackstageProductControllerIntegrationTest.ProductTestDto(
+                    productName,
+                    "A popular sedan",
+                    BigDecimal.valueOf(20000),
+                    true,
+                    Category.SEDAN,
+                    Make.TOYOTA,
+                    -1000,
+                    dealer.getId());
+
+            mockMvc.perform(post("/api/backstage/products")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(productTestDto)))
+                    .andExpect(status().isBadRequest());
+
+            Optional<Product> saved = productRepository.findAll().stream()
+                    .filter(product -> product.getName().equals(productName))
+                    .findFirst();
+
+            assertThat(saved).isNotPresent();
+        }
+
+        @Test
         public void shouldReturnBadRequest_withNegativePrice() throws Exception {
             String productName = "Toyota Corolla";
             var productTestDto = new BackstageProductControllerIntegrationTest.ProductTestDto(
@@ -368,6 +418,17 @@ public class BackstageProductControllerIntegrationTest {
         }
 
         @Test
+        public void shouldReturnBadRequest_withInvalidMake() throws Exception {
+            ObjectNode payload = objectMapper.createObjectNode();
+            payload.put("make", "toyota"); // invalid make
+
+            mockMvc.perform(patch("/api/backstage/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
         public void shouldReturnBadRequest_withEmptyDescription() throws Exception {
             payload.setDescription("");
 
@@ -380,6 +441,16 @@ public class BackstageProductControllerIntegrationTest {
         @Test
         public void shouldReturnBadRequest_withNegativePrice() throws Exception {
             payload.setPrice(BigDecimal.valueOf(-54300));
+
+            mockMvc.perform(patch("/api/backstage/products/" + product.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(payload)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void shouldReturnBadRequest_withNegativeMileage() throws Exception {
+            payload.setMileage(-54300);
 
             mockMvc.perform(patch("/api/backstage/products/" + product.getId())
                             .contentType(MediaType.APPLICATION_JSON)
