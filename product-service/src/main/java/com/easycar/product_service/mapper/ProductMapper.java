@@ -19,6 +19,8 @@ public class ProductMapper {
                 .price(productDto.getPrice())
                 .available(productDto.getAvailable())
                 .category(productDto.getCategory())
+                .make(productDto.getMake())
+                .mileage(productDto.getMileage())
                 .dealer(dealer)
                 .build();
     }
@@ -63,6 +65,15 @@ public class ProductMapper {
         }
         if (productPatchDto.getAvailable() != null) {
             product.setAvailable(productPatchDto.getAvailable());
+        }
+        if (productPatchDto.getCategory() != null) {
+            product.setCategory(productPatchDto.getCategory());
+        }
+        if (productPatchDto.getMake() != null) {
+            product.setMake(productPatchDto.getMake());
+        }
+        if (productPatchDto.getMileage() != null) {
+            product.setMileage(productPatchDto.getMileage());
         }
     }
 

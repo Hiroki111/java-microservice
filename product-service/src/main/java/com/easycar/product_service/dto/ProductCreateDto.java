@@ -1,6 +1,7 @@
 package com.easycar.product_service.dto;
 
 import com.easycar.product_service.domain.Category;
+import com.easycar.product_service.domain.Make;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -28,6 +29,13 @@ public class ProductCreateDto {
 
     @Schema(example = "SUV")
     private Category category;
+
+    @Schema(example = "HONDA")
+    private Make make;
+
+    @Schema(example = "15000")
+    @DecimalMin(value = "0", message = "Mileage must be non-negative")
+    private Integer mileage;
 
     @Schema(example = "1")
     @Min(value = 1)

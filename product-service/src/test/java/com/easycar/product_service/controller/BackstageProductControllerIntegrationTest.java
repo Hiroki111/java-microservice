@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.easycar.product_service.domain.Category;
+import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
 import com.easycar.product_service.dto.ProductPatchDto;
@@ -47,7 +48,14 @@ public class BackstageProductControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     private record ProductTestDto(
-            String name, String description, BigDecimal price, Boolean available, Category category, Long dealerId) {}
+            String name,
+            String description,
+            BigDecimal price,
+            Boolean available,
+            Category category,
+            Make make,
+            Integer mileage,
+            Long dealerId) {}
 
     private final long nonexistentId = 999999L;
 
@@ -77,6 +85,8 @@ public class BackstageProductControllerIntegrationTest {
                             .description("Description " + i)
                             .price(defaultPrice)
                             .category(Category.SEDAN)
+                            .make(Make.TOYOTA)
+                            .mileage(1000)
                             .dealer(dealer)
                             .build())
                     .toList();
@@ -117,6 +127,8 @@ public class BackstageProductControllerIntegrationTest {
                         .description("Description ")
                         .price(price)
                         .category(Category.SEDAN)
+                        .make(Make.TOYOTA)
+                        .mileage(1000)
                         .dealer(dealer)
                         .build();
                 productRepository.save(product);
@@ -146,7 +158,14 @@ public class BackstageProductControllerIntegrationTest {
         public void shouldPersistProduct() throws Exception {
             String productName = "Toyota Corolla";
             var productTestDto = new BackstageProductControllerIntegrationTest.ProductTestDto(
-                    productName, "A popular sedan", BigDecimal.valueOf(20000), true, Category.SEDAN, dealer.getId());
+                    productName,
+                    "A popular sedan",
+                    BigDecimal.valueOf(20000),
+                    true,
+                    Category.SEDAN,
+                    Make.TOYOTA,
+                    1000,
+                    dealer.getId());
 
             mockMvc.perform(post("/api/backstage/products")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -165,7 +184,14 @@ public class BackstageProductControllerIntegrationTest {
         public void shouldReturnBadRequest_withEmptyName() throws Exception {
             String productName = "";
             var productTestDto = new BackstageProductControllerIntegrationTest.ProductTestDto(
-                    productName, "A popular sedan", BigDecimal.valueOf(20000), true, Category.SEDAN, dealer.getId());
+                    productName,
+                    "A popular sedan",
+                    BigDecimal.valueOf(20000),
+                    true,
+                    Category.SEDAN,
+                    Make.TOYOTA,
+                    1000,
+                    dealer.getId());
 
             mockMvc.perform(post("/api/backstage/products")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -188,6 +214,8 @@ public class BackstageProductControllerIntegrationTest {
             requestBody.put("price", 20000);
             requestBody.put("available", true);
             requestBody.put("category", "sedan"); // invalid category
+            requestBody.put("make", "TOYOTA");
+            requestBody.put("mileage", 1000);
             requestBody.put("dealerId", dealer.getId());
 
             mockMvc.perform(post("/api/backstage/products")
@@ -206,7 +234,14 @@ public class BackstageProductControllerIntegrationTest {
         public void shouldReturnBadRequest_withNegativePrice() throws Exception {
             String productName = "Toyota Corolla";
             var productTestDto = new BackstageProductControllerIntegrationTest.ProductTestDto(
-                    productName, "A popular sedan", BigDecimal.valueOf(-20000), true, Category.SEDAN, dealer.getId());
+                    productName,
+                    "A popular sedan",
+                    BigDecimal.valueOf(-20000),
+                    true,
+                    Category.SEDAN,
+                    Make.TOYOTA,
+                    1000,
+                    dealer.getId());
 
             mockMvc.perform(post("/api/backstage/products")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -230,6 +265,8 @@ public class BackstageProductControllerIntegrationTest {
                     BigDecimal.valueOf(20000),
                     true,
                     Category.SEDAN,
+                    Make.TOYOTA,
+                    1000,
                     nonexistentDealerId);
 
             mockMvc.perform(post("/api/backstage/products")
@@ -267,6 +304,8 @@ public class BackstageProductControllerIntegrationTest {
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
                     .category(Category.SEDAN)
+                    .make(Make.TOYOTA)
+                    .mileage(1000)
                     .dealer(currentDealer)
                     .build());
 
@@ -275,6 +314,8 @@ public class BackstageProductControllerIntegrationTest {
             payload.setDescription("Cool SUV");
             payload.setPrice(BigDecimal.valueOf(65000));
             payload.setCategory(Category.SUV);
+            payload.setMake(Make.HONDA);
+            payload.setMileage(500);
             payload.setDealerId(newDealer.getId());
         }
 
@@ -291,6 +332,9 @@ public class BackstageProductControllerIntegrationTest {
             assertThat(updated.get().getDescription()).isEqualTo("Cool SUV");
             assertThat(updated.get().getPrice().compareTo(BigDecimal.valueOf(65000)))
                     .isZero();
+            assertThat(updated.get().getCategory()).isEqualTo(Category.SUV);
+            assertThat(updated.get().getMake()).isEqualTo(Make.HONDA);
+            assertThat(updated.get().getMileage()).isEqualTo(500);
             assertThat(updated.get().getDealer().getId()).isEqualTo(newDealer.getId());
         }
 
@@ -371,6 +415,8 @@ public class BackstageProductControllerIntegrationTest {
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
                     .category(Category.SEDAN)
+                    .make(Make.TOYOTA)
+                    .mileage(1000)
                     .dealer(dealer)
                     .build());
         }

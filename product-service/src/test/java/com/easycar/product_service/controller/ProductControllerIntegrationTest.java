@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.easycar.product_service.domain.Category;
+import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
 import com.easycar.product_service.repository.DealerRepository;
@@ -62,6 +63,8 @@ public class ProductControllerIntegrationTest {
                     .description("Reliable car")
                     .price(BigDecimal.valueOf(55000))
                     .category(Category.SEDAN)
+                    .make(Make.TOYOTA)
+                    .mileage(1000)
                     .dealer(dealer)
                     .build());
         }

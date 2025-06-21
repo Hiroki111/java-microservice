@@ -1,6 +1,7 @@
 package com.easycar.product_service.dto;
 
 import com.easycar.product_service.domain.Category;
+import com.easycar.product_service.domain.Make;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -34,4 +35,13 @@ public class ProductDto {
     @Schema(example = "SUV")
     @NotNull(message = "category can not be a null")
     private Category category;
+
+    @Schema(example = "HONDA")
+    @NotEmpty(message = "make can not be a null or empty")
+    private Make make;
+
+    @Schema(example = "15000")
+    @PositiveOrZero(message = "The value must be positive or zero")
+    @NotNull(message = "mileage can not be a null")
+    private Integer mileage;
 }
