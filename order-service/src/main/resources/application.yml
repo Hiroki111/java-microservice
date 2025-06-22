@@ -35,10 +35,6 @@ spring:
     username: ${SPRING_RABBITMQ_USERNAME:guest}
     password: ${SPRING_RABBITMQ_PASSWORD:guest}
     connection-timeout: 10s
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
 
 management:
   endpoints:
