@@ -96,7 +96,7 @@ Run the Keycloak instance and do the following:
 
 ### How to use Flyway for DB migration
 
-Run this command for migrating a DB locally (replace **** with the port and the service name):
+- Run this command for migrating a DB locally (replace **** with the port and the service name):
 
 ```
 mvn flyway:migrate \
@@ -113,3 +113,4 @@ mvn flyway:migrate \
   -Dflyway.password=$FLYWAY_PASSWORD
 ```
 
+- Run `./flyway-create.sh` at the root of the service (e.g. product-service) to generate a new migration file
