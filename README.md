@@ -93,3 +93,23 @@ Run the Keycloak instance and do the following:
 - Sign out from Keycloak
 - Open Postman, choose one of the endpoints that requires a token. Click Authorization tab, scroll down and find Get New Access Token button.
 - Click the button and you should see a login page of Keycloak
+
+### How to use Flyway for DB migration
+
+Run this command for migrating a DB locally (replace **** with the port and the service name):
+
+```
+mvn flyway:migrate \
+  -Dflyway.url=jdbc:postgresql://localhost:****/****-service-db \
+  -Dflyway.user=postgres \
+  -Dflyway.password=secret
+```
+(Future enhance idea) In CI/CD, set url/user/password to env variables and try DB migration by something like:
+
+```
+mvn flyway:migrate \
+  -Dflyway.url=$FLYWAY_URL \
+  -Dflyway.user=$FLYWAY_USER \
+  -Dflyway.password=$FLYWAY_PASSWORD
+```
+
