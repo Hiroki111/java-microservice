@@ -88,7 +88,7 @@ public class ProductService {
         }
         if (dealerIds != null && !dealerIds.isEmpty()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    root.get("dealerId").get("id").in(dealerIds));
+                    root.get("dealer").get("id").in(dealerIds));
         }
 
         if (!pageable.getSort().isSorted()) {

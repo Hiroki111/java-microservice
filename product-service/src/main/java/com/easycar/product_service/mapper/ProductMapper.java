@@ -35,6 +35,7 @@ public class ProductMapper {
                 .category(product.getCategory())
                 .make(product.getMake())
                 .mileage(product.getMileage())
+                .dealerId(product.getDealer().getId())
                 .build();
     }
 

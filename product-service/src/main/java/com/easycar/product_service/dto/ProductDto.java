@@ -44,4 +44,7 @@ public class ProductDto {
     @PositiveOrZero(message = "The value must be positive or zero")
     @NotNull(message = "mileage can not be a null")
     private Integer mileage;
+
+    @Schema(example = "2")
+    private Long dealerId;
 }

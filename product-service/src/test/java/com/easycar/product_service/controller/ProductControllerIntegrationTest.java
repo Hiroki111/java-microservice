@@ -15,8 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -97,13 +99,16 @@ public class ProductControllerIntegrationTest {
         private final BigDecimal defaultPrice = BigDecimal.valueOf(100000);
 
         @BeforeEach
-        void setupDbTables() {
+        void setup() {
             products = new ArrayList<>();
             dealer = dealerRepository.save(Dealer.builder()
-                    .name("Dealer A")
+                    .name("Sample Dealer")
                     .address("123 Main Street, Springfield")
                     .build());
+        }
 
+        @Test
+        public void shouldReturnLatest10AvailableProducts() throws Exception {
             for (int i = 0; i < numberOfProducts; i++) {
                 var product = Product.builder()
                         .name("Product " + i)
@@ -113,21 +118,18 @@ public class ProductControllerIntegrationTest {
                         .make(Make.BMW)
                         .mileage(1000)
                         .dealer(dealer)
-                        // ID 11 and 41 are unavailable
-                        .available(i != 11 && i != 41)
+                        // ID 41 is unavailable
+                        .available(i != 41)
                         .build();
                 product.setCreatedAt(LocalDateTime.now().minusDays(numberOfProducts - i));
                 products.add(product);
                 productRepository.save(product);
             }
-        }
 
-        @Test
-        public void shouldReturnLatest10AvailableProducts() throws Exception {
             mockMvc.perform(get("/api/products"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(10)))
-                    .andExpect(jsonPath("$.totalElements").value(numberOfProducts - 2))
+                    .andExpect(jsonPath("$.totalElements").value(numberOfProducts - 1))
                     .andExpect(
                             jsonPath("$.content[0].id").value(products.get(49).getId()))
                     .andExpect(
@@ -153,14 +155,27 @@ public class ProductControllerIntegrationTest {
 
         @Test
         public void shouldReturnSecondPageOf10AvailableProducts_whenSortedByCreatedAtAsc() throws Exception {
-            var productsSortedByCreatedAt = products.stream()
-                    .sorted(Comparator.comparing(Product::getCreatedAt))
-                    .toList();
+            for (int i = 0; i < numberOfProducts; i++) {
+                var product = Product.builder()
+                        .name("Product " + i)
+                        .description("Description " + i)
+                        .price(defaultPrice)
+                        .category(Category.SEDAN)
+                        .make(Make.BMW)
+                        .mileage(1000)
+                        .dealer(dealer)
+                        // ID 11 is unavailable
+                        .available(i != 11)
+                        .build();
+                product.setCreatedAt(LocalDateTime.now().minusDays(numberOfProducts - i));
+                products.add(product);
+                productRepository.save(product);
+            }
 
             mockMvc.perform(get("/api/products?page=1&sort=createdAt,asc"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(10)))
-                    .andExpect(jsonPath("$.totalElements").value(numberOfProducts - 2))
+                    .andExpect(jsonPath("$.totalElements").value(numberOfProducts - 1))
                     .andExpect(
                             jsonPath("$.content[0].id").value(products.get(10).getId()))
                     // ID 11 is unavailable
@@ -182,6 +197,175 @@ public class ProductControllerIntegrationTest {
                             jsonPath("$.content[8].id").value(products.get(19).getId()))
                     .andExpect(
                             jsonPath("$.content[9].id").value(products.get(20).getId()));
+        }
+
+        @Test
+        public void shouldReturnAvailableProductsByPrice() throws Exception {
+            products = IntStream.range(0, numberOfProducts)
+                    .mapToObj(i -> Product.builder()
+                            .name("Product " + i)
+                            .description("Description " + i)
+                            .price(BigDecimal.valueOf(i))
+                            .category(Category.SEDAN)
+                            .make(Make.BMW)
+                            .mileage(1000)
+                            .dealer(dealer)
+                            .available(true)
+                            .build())
+                    .toList();
+            productRepository.saveAll(products);
+
+            var minPrice = BigDecimal.valueOf(10);
+            var maxPrice = BigDecimal.valueOf(11);
+            mockMvc.perform(get("/api/products?sort=price,asc&minPrice=" + minPrice + "&maxPrice=" + maxPrice))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(jsonPath("$.totalElements").value(2))
+                    .andExpect(jsonPath("$.content[0].price").value("10.0"))
+                    .andExpect(jsonPath("$.content[1].price").value("11.0"));
+        }
+
+        @Test
+        public void shouldReturnAvailableProductsByMileage() throws Exception {
+            products = IntStream.range(0, numberOfProducts)
+                    .mapToObj(i -> Product.builder()
+                            .name("Product " + i)
+                            .description("Description " + i)
+                            .price(defaultPrice)
+                            .category(Category.SEDAN)
+                            .make(Make.BMW)
+                            .mileage(i)
+                            .dealer(dealer)
+                            .available(true)
+                            .build())
+                    .toList();
+            productRepository.saveAll(products);
+
+            var minMileage = 10;
+            var maxMileage = 12;
+            mockMvc.perform(get("/api/products?sort=price,asc&minMileage=" + minMileage + "&maxMileage=" + maxMileage))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content", hasSize(3)))
+                    .andExpect(jsonPath("$.totalElements").value(3))
+                    .andExpect(jsonPath("$.content[0].mileage").value("10"))
+                    .andExpect(jsonPath("$.content[1].mileage").value("11"))
+                    .andExpect(jsonPath("$.content[2].mileage").value("12"));
+        }
+
+        @Test
+        public void shouldReturnAvailableProductsByMake() throws Exception {
+            products = IntStream.range(0, numberOfProducts)
+                    .mapToObj(i -> {
+                        Make make;
+                        if (i < 2) {
+                            make = Make.BMW;
+                        } else if (i < 4) {
+                            make = Make.VOLKSWAGEN;
+                        } else {
+                            make = Make.FORD;
+                        }
+                        return Product.builder()
+                                .name("Product " + i)
+                                .description("Description " + i)
+                                .price(defaultPrice)
+                                .category(Category.SEDAN)
+                                .make(make)
+                                .mileage(1000)
+                                .dealer(dealer)
+                                .available(true)
+                                .build();
+                    })
+                    .toList();
+            productRepository.saveAll(products);
+
+            Make[] makes = {Make.BMW, Make.HONDA, Make.VOLKSWAGEN};
+            String makesString = Arrays.stream(makes).map(Make::name).collect(Collectors.joining(","));
+            mockMvc.perform(get("/api/products?makes=" + makesString))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content", hasSize(4)))
+                    .andExpect(jsonPath("$.totalElements").value(4))
+                    .andExpect(jsonPath("$.content[0].make").value(Make.VOLKSWAGEN.toString()))
+                    .andExpect(jsonPath("$.content[1].make").value(Make.VOLKSWAGEN.toString()))
+                    .andExpect(jsonPath("$.content[2].make").value(Make.BMW.toString()))
+                    .andExpect(jsonPath("$.content[3].make").value(Make.BMW.toString()));
+        }
+
+        @Test
+        public void shouldReturnAvailableProductsByNames() throws Exception {
+            products = IntStream.range(0, numberOfProducts)
+                    .mapToObj(i -> {
+                        String name;
+                        if (i == 0 || i == numberOfProducts - 1) {
+                            name = "BMW 1 Series";
+                        } else {
+                            name = "BMW 2 Series";
+                        }
+
+                        return Product.builder()
+                                .name(name)
+                                .description("Description " + i)
+                                .price(defaultPrice)
+                                .category(Category.SEDAN)
+                                .make(Make.BMW)
+                                .mileage(1000)
+                                .dealer(dealer)
+                                .available(true)
+                                .build();
+                    })
+                    .toList();
+            productRepository.saveAll(products);
+
+            mockMvc.perform(get("/api/products?name=1 s"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(jsonPath("$.totalElements").value(2))
+                    .andExpect(jsonPath("$.content[0].name").value("BMW 1 Series"))
+                    .andExpect(jsonPath("$.content[1].name").value("BMW 1 Series"));
+        }
+
+        @Test
+        public void shouldReturnAvailableProductsByDealerIds() throws Exception {
+            Dealer dealerA = dealerRepository.save(
+                    Dealer.builder().name("Dealer A").address("Sample street 1").build());
+            Dealer dealerB = dealerRepository.save(
+                    Dealer.builder().name("Dealer B").address("Sample street 2").build());
+            Dealer dealerC = dealerRepository.save(
+                    Dealer.builder().name("Dealer C").address("Sample street 3").build());
+            products = IntStream.range(0, numberOfProducts)
+                    .mapToObj(i -> {
+                        Dealer dealer;
+                        if (i == 5) {
+                            dealer = dealerA;
+                        } else if (i == 10) {
+                            dealer = dealerB;
+                        } else {
+                            dealer = dealerC;
+                        }
+
+                        return Product.builder()
+                                .name("Product " + i)
+                                .description("Description " + i)
+                                .price(defaultPrice)
+                                .category(Category.SEDAN)
+                                .make(Make.BMW)
+                                .mileage(1000)
+                                .dealer(dealer)
+                                .available(true)
+                                .build();
+                    })
+                    .toList();
+            productRepository.saveAll(products);
+
+            String dealerIds = List.of(dealerA, dealerB).stream()
+                    .map(dealer -> dealer.getId().toString())
+                    .collect(Collectors.joining(","));
+
+            mockMvc.perform(get("/api/products?dealerIds=" + dealerIds))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(jsonPath("$.totalElements").value(2))
+                    .andExpect(jsonPath("$.content[0].dealerId").value(dealerB.getId()))
+                    .andExpect(jsonPath("$.content[1].dealerId").value(dealerA.getId()));
         }
     }
 }
