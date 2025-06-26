@@ -10,6 +10,7 @@ import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ProductService {
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
+    private static final Set<String> ALLOWED_SORT_PROPERTIES = Set.of("createdAt", "price", "mileage");
     private ProductRepository productRepository;
     private DealerRepository dealerRepository;
 
@@ -60,6 +62,14 @@ public class ProductService {
             List<Make> makes,
             List<Long> dealerIds,
             Pageable pageable) {
+
+        for (Sort.Order order : pageable.getSort()) {
+            if (!ALLOWED_SORT_PROPERTIES.contains(order.getProperty())) {
+                throw new IllegalArgumentException("Sorting by '" + order.getProperty()
+                        + "' is not allowed. Allowed properties: " + ALLOWED_SORT_PROPERTIES);
+            }
+        }
+
         Specification<Product> spec =
                 Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("available")));
 

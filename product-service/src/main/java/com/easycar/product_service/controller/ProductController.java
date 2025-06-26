@@ -57,7 +57,7 @@ public class ProductController {
                 schema = @Schema(type = "integer", defaultValue = "0")),
         @Parameter(
                 name = "sort",
-                description = "sort specification by comma-separated value (e.g. 'price,asc')",
+                description = "sort by one of: createdAt, price, mileage (e.g. 'price,asc')",
                 in = ParameterIn.QUERY,
                 schema = @Schema(type = "array"),
                 explode = Explode.FALSE,
