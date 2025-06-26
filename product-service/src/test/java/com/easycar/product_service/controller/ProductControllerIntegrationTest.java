@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -356,7 +358,7 @@ public class ProductControllerIntegrationTest {
                     .toList();
             productRepository.saveAll(products);
 
-            String dealerIds = List.of(dealerA, dealerB).stream()
+            String dealerIds = Stream.of(dealerA, dealerB)
                     .map(dealer -> dealer.getId().toString())
                     .collect(Collectors.joining(","));
 
