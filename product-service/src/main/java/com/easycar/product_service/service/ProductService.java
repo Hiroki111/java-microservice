@@ -1,5 +1,6 @@
 package com.easycar.product_service.service;
 
+import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
 import com.easycar.product_service.dto.*;
@@ -8,11 +9,14 @@ import com.easycar.product_service.mapper.ProductMapper;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
@@ -41,6 +45,55 @@ public class ProductService {
         if (maxPrice != null) {
             spec = spec.and(
                     (root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice));
+        }
+
+        Page<Product> productPage = productRepository.findAll(spec, pageable);
+        return ProductMapper.mapProductPageToPageDto(productPage);
+    }
+
+    public PageDto<ProductDto> findProductsForPublic(
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            BigDecimal minMileage,
+            BigDecimal maxMileage,
+            String name,
+            List<Make> makes,
+            List<Long> dealerIds,
+            Pageable pageable) {
+        Specification<Product> spec =
+                Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("available")));
+
+        if (minPrice != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice));
+        }
+        if (maxPrice != null) {
+            spec = spec.and(
+                    (root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice));
+        }
+        if (minMileage != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("mileage"), minMileage));
+        }
+        if (maxMileage != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("mileage"), maxMileage));
+        }
+        if (name != null && !name.isBlank()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+        if (makes != null && !makes.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> root.get("make").in(makes));
+        }
+        if (dealerIds != null && !dealerIds.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    root.get("dealerId").get("id").in(dealerIds));
+        }
+
+        if (!pageable.getSort().isSorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
         }
 
         Page<Product> productPage = productRepository.findAll(spec, pageable);

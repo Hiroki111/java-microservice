@@ -1,10 +1,22 @@
 package com.easycar.product_service.controller;
 
+import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.dto.*;
 import com.easycar.product_service.service.ProductService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.math.BigDecimal;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +40,40 @@ public class ProductController {
         logger.debug("easycar-correlation-id found: {} ", correlationId);
         ProductDto product = productService.findProductById(id);
         return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
+
+    // 1) The endpoint returns the latest 10 available products
+    // 2) The endpoint filters the output by price range, mileage range, makes, car name, dealer IDs
+    // 3) Cache the result once a day via cron job or something similar
+    // 4) Update the cache when the available status of any latest 10 products changes
+    // 5) When the endpoint receives a request that returns at least one product, log the request. The logs will be used
+    // for analyzing which search criteria are popular, and
+    @GetMapping
+    @Parameters({
+        @Parameter(
+                name = "page",
+                description = "page number (0-based)",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "integer", defaultValue = "0")),
+        @Parameter(
+                name = "sort",
+                description = "sort specification by comma-separated value (e.g. 'price,asc')",
+                in = ParameterIn.QUERY,
+                schema = @Schema(type = "array"),
+                explode = Explode.FALSE,
+                style = ParameterStyle.SIMPLE),
+    })
+    public ResponseEntity<PageDto<ProductDto>> getProductsForPublic(
+            @Parameter(description = "Min price (inclusive)") @RequestParam(required = false) BigDecimal minPrice,
+            @Parameter(description = "Max price (inclusive)") @RequestParam(required = false) BigDecimal maxPrice,
+            @Parameter(description = "Min mileage (inclusive)") @RequestParam(required = false) BigDecimal minMileage,
+            @Parameter(description = "Max mileage (inclusive)") @RequestParam(required = false) BigDecimal maxMileage,
+            @Parameter(description = "Name (case insensitive)") @RequestParam(required = false) String name,
+            @Parameter(description = "Makes") @RequestParam(required = false) List<Make> makes,
+            @Parameter(description = "Dealer IDs") @RequestParam(required = false) List<Long> dealerIds,
+            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        PageDto<ProductDto> products = productService.findProductsForPublic(
+                minPrice, maxPrice, minMileage, maxMileage, name, makes, dealerIds, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 }

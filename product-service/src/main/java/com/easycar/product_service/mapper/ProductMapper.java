@@ -33,6 +33,8 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .available(product.isAvailable())
                 .category(product.getCategory())
+                .make(product.getMake())
+                .mileage(product.getMileage())
                 .build();
     }
 
