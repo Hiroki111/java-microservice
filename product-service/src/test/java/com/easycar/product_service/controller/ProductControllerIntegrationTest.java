@@ -319,5 +319,17 @@ public class ProductControllerIntegrationTest {
                     .andExpect(jsonPath("$.content[0].dealerId").value(dealerB.getId()))
                     .andExpect(jsonPath("$.content[1].dealerId").value(dealerA.getId()));
         }
+
+        @Test
+        public void shouldReturnBadRequest_whenIdIsUsedForSorting() throws Exception {
+            products = IntStream.range(0, numberOfProducts)
+                    .mapToObj(i -> EntityBuilder.buildDefaultProductBuilder(dealer)
+                            .dealer(dealer)
+                            .build())
+                    .toList();
+            productRepository.saveAll(products);
+
+            mockMvc.perform(get("/api/products?sort=id")).andExpect(status().isBadRequest());
+        }
     }
 }
