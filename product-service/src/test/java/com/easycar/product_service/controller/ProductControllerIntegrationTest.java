@@ -9,6 +9,7 @@ import com.easycar.product_service.domain.Category;
 import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
+import com.easycar.product_service.helper.EntityBuilder;
 import com.easycar.product_service.repository.DealerRepository;
 import com.easycar.product_service.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -110,17 +110,9 @@ public class ProductControllerIntegrationTest {
         }
 
         @Test
-        public void shouldReturnLatest10AvailableProducts() throws Exception {
+        public void shouldReturnLatest10AvailableProducts_whenNoParameterIsUsed() throws Exception {
             for (int i = 0; i < numberOfProducts; i++) {
-                var product = Product.builder()
-                        .name("Product " + i)
-                        .description("Description " + i)
-                        .price(defaultPrice)
-                        .category(Category.SEDAN)
-                        .make(Make.BMW)
-                        .mileage(1000)
-                        .dealer(dealer)
-                        // ID 41 is unavailable
+                var product = EntityBuilder.buildDefaultProductBuilder(dealer)
                         .available(i != 41)
                         .build();
                 product.setCreatedAt(LocalDateTime.now().minusDays(numberOfProducts - i));
@@ -158,15 +150,7 @@ public class ProductControllerIntegrationTest {
         @Test
         public void shouldReturnSecondPageOf10AvailableProducts_whenSortedByCreatedAtAsc() throws Exception {
             for (int i = 0; i < numberOfProducts; i++) {
-                var product = Product.builder()
-                        .name("Product " + i)
-                        .description("Description " + i)
-                        .price(defaultPrice)
-                        .category(Category.SEDAN)
-                        .make(Make.BMW)
-                        .mileage(1000)
-                        .dealer(dealer)
-                        // ID 11 is unavailable
+                var product = EntityBuilder.buildDefaultProductBuilder(dealer)
                         .available(i != 11)
                         .build();
                 product.setCreatedAt(LocalDateTime.now().minusDays(numberOfProducts - i));
@@ -204,15 +188,8 @@ public class ProductControllerIntegrationTest {
         @Test
         public void shouldReturnAvailableProductsByPrice() throws Exception {
             products = IntStream.range(0, numberOfProducts)
-                    .mapToObj(i -> Product.builder()
-                            .name("Product " + i)
-                            .description("Description " + i)
+                    .mapToObj(i -> EntityBuilder.buildDefaultProductBuilder(dealer)
                             .price(BigDecimal.valueOf(i))
-                            .category(Category.SEDAN)
-                            .make(Make.BMW)
-                            .mileage(1000)
-                            .dealer(dealer)
-                            .available(true)
                             .build())
                     .toList();
             productRepository.saveAll(products);
@@ -230,15 +207,8 @@ public class ProductControllerIntegrationTest {
         @Test
         public void shouldReturnAvailableProductsByMileage() throws Exception {
             products = IntStream.range(0, numberOfProducts)
-                    .mapToObj(i -> Product.builder()
-                            .name("Product " + i)
-                            .description("Description " + i)
-                            .price(defaultPrice)
-                            .category(Category.SEDAN)
-                            .make(Make.BMW)
+                    .mapToObj(i -> EntityBuilder.buildDefaultProductBuilder(dealer)
                             .mileage(i)
-                            .dealer(dealer)
-                            .available(true)
                             .build())
                     .toList();
             productRepository.saveAll(products);
@@ -266,15 +236,9 @@ public class ProductControllerIntegrationTest {
                         } else {
                             make = Make.FORD;
                         }
-                        return Product.builder()
-                                .name("Product " + i)
-                                .description("Description " + i)
-                                .price(defaultPrice)
-                                .category(Category.SEDAN)
+
+                        return EntityBuilder.buildDefaultProductBuilder(dealer)
                                 .make(make)
-                                .mileage(1000)
-                                .dealer(dealer)
-                                .available(true)
                                 .build();
                     })
                     .toList();
@@ -303,15 +267,8 @@ public class ProductControllerIntegrationTest {
                             name = "BMW 2 Series";
                         }
 
-                        return Product.builder()
+                        return EntityBuilder.buildDefaultProductBuilder(dealer)
                                 .name(name)
-                                .description("Description " + i)
-                                .price(defaultPrice)
-                                .category(Category.SEDAN)
-                                .make(Make.BMW)
-                                .mileage(1000)
-                                .dealer(dealer)
-                                .available(true)
                                 .build();
                     })
                     .toList();
@@ -344,15 +301,8 @@ public class ProductControllerIntegrationTest {
                             dealer = dealerC;
                         }
 
-                        return Product.builder()
-                                .name("Product " + i)
-                                .description("Description " + i)
-                                .price(defaultPrice)
-                                .category(Category.SEDAN)
-                                .make(Make.BMW)
-                                .mileage(1000)
+                        return EntityBuilder.buildDefaultProductBuilder(dealer)
                                 .dealer(dealer)
-                                .available(true)
                                 .build();
                     })
                     .toList();
