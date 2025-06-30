@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +15,10 @@ import lombok.Data;
 @Data
 @Schema(name = "ProductDto", description = "Schema to hold product information")
 @Builder
-public class ProductDto {
+public class ProductDto implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Schema(example = "1")
     private Long id;
 

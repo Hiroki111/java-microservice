@@ -6,6 +6,9 @@ spring:
     name: product-service
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:default}
+  devtools:
+    restart:
+      enabled: false
   data:
     web:
       pageable:
@@ -36,6 +39,11 @@ spring:
     port: ${SPRING_RABBITMQ_PORT:5672}
     username: ${SPRING_RABBITMQ_USERNAME:guest}
     password: ${SPRING_RABBITMQ_PASSWORD:guest}
+  cache:
+    type: redis
+  redis:
+    host: ${SPRING_REDIS_HOST:localhost}
+    port: ${SPRING_REDIS_PORT:6379}
 
 management:
   endpoints:
