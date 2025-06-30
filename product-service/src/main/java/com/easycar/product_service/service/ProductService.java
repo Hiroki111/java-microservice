@@ -1,9 +1,14 @@
 package com.easycar.product_service.service;
 
+import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
-import com.easycar.product_service.dto.*;
+import com.easycar.product_service.dto.OrderMessageDto;
+import com.easycar.product_service.dto.PageDto;
+import com.easycar.product_service.dto.ProductCreateDto;
+import com.easycar.product_service.dto.ProductDto;
+import com.easycar.product_service.dto.ProductPatchDto;
 import com.easycar.product_service.exception.ResourceNotFoundException;
 import com.easycar.product_service.mapper.ProductMapper;
 import com.easycar.product_service.repository.DealerRepository;
@@ -14,6 +19,8 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +36,7 @@ public class ProductService {
     private static final Set<String> ALLOWED_SORT_PROPERTIES = Set.of("createdAt", "price", "mileage");
     private ProductRepository productRepository;
     private DealerRepository dealerRepository;
+    private ProductCacheService productCacheService;
 
     public ProductDto findProductById(Long id) {
         Product product = productRepository
@@ -110,6 +118,11 @@ public class ProductService {
         return ProductMapper.mapProductPageToPageDto(productPage);
     }
 
+    @Cacheable(value = "defaultProducts", key = "'default'", unless = "#result == null")
+    public PageDto<ProductDto> getDefaultProducts() {
+        return findProductsForPublic(null, null, null, null, null, null, null, ProductConstants.DEFAULT_PRODUCT_PAGEABLE);
+    }
+
     public void createProduct(ProductCreateDto productDto) {
         Dealer dealer = dealerRepository
                 .findById(productDto.getDealerId())
@@ -117,6 +130,7 @@ public class ProductService {
                         "Dealer", "id", productDto.getDealerId().toString()));
         Product product = ProductMapper.mapProductCreateDtoToProduct(productDto, dealer);
         productRepository.save(product);
+        productCacheService.refreshDefaultProducts();
     }
 
     public void patchProduct(Long id, ProductPatchDto productPatchDto) {
@@ -135,6 +149,7 @@ public class ProductService {
         }
 
         productRepository.save(product);
+        productCacheService.refreshDefaultProducts();
     }
 
     public void deleteProduct(Long id) {
@@ -142,6 +157,7 @@ public class ProductService {
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id.toString()));
         productRepository.delete(product);
+        productCacheService.refreshDefaultProducts();
     }
 
     public void reserveProduct(Message<OrderMessageDto> message) {
@@ -153,6 +169,7 @@ public class ProductService {
             }
             product.setAvailable(false);
             productRepository.save(product);
+            productCacheService.refreshDefaultProducts();
         });
     }
 }

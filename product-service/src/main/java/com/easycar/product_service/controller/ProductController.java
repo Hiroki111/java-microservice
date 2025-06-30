@@ -11,11 +11,13 @@ import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -72,8 +74,36 @@ public class ProductController {
             @Parameter(description = "Makes") @RequestParam(required = false) List<Make> makes,
             @Parameter(description = "Dealer IDs") @RequestParam(required = false) List<Long> dealerIds,
             @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        if (isDefaultSearch(minPrice, maxPrice, minMileage, maxMileage, name, makes, dealerIds, pageable)) {
+            return ResponseEntity.ok(productService.getDefaultProducts());
+        }
         PageDto<ProductDto> products = productService.findProductsForPublic(
                 minPrice, maxPrice, minMileage, maxMileage, name, makes, dealerIds, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(products);
+    }
+
+    private boolean isDefaultSearch(
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            BigDecimal minMileage,
+            BigDecimal maxMileage,
+            String name,
+            List<Make> makes,
+            List<Long> dealerIds,
+            Pageable pageable) {
+        return minPrice == null
+                && maxPrice == null
+                && minMileage == null
+                && maxMileage == null
+                && (name == null || name.isBlank())
+                && (makes == null || makes.isEmpty())
+                && (dealerIds == null || dealerIds.isEmpty())
+                && pageable.getPageNumber() == 0
+                && pageable.getPageSize() == 10
+                && (!pageable.getSort().isSorted()
+                        || pageable.getSort().getOrderFor("createdAt") != null
+                                && Objects.requireNonNull(pageable.getSort().getOrderFor("createdAt"))
+                                                .getDirection()
+                                        == Sort.Direction.DESC);
     }
 }
