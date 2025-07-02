@@ -17,6 +17,7 @@ public class ProductCacheService {
 
     @CachePut(value = "defaultProducts", key = "'default'")
     public PageDto<ProductDto> refreshDefaultProducts() {
-        return productService.findProductsForPublic(null, null, null, null, null, null, null, ProductConstants.DEFAULT_PRODUCT_PAGEABLE);
+        return productService.findProductsForPublic(
+                null, null, null, null, null, null, null, ProductConstants.DEFAULT_PRODUCT_PAGEABLE);
     }
 }

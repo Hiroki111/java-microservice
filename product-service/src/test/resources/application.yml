@@ -18,3 +18,5 @@ spring:
       schema-locations: classpath:schema-test.sql
   config:
     import: "optional:configserver:"
+  cache:
+    type: NONE

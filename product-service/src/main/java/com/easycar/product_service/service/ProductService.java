@@ -19,7 +19,6 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -120,7 +119,8 @@ public class ProductService {
 
     @Cacheable(value = "defaultProducts", key = "'default'", unless = "#result == null")
     public PageDto<ProductDto> getDefaultProducts() {
-        return findProductsForPublic(null, null, null, null, null, null, null, ProductConstants.DEFAULT_PRODUCT_PAGEABLE);
+        return this.findProductsForPublic(
+                null, null, null, null, null, null, null, ProductConstants.DEFAULT_PRODUCT_PAGEABLE);
     }
 
     public void createProduct(ProductCreateDto productDto) {

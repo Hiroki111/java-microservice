@@ -25,12 +25,14 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest()
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@EnableCaching
 @SuppressWarnings("unused")
 public class ProductControllerIntegrationTest {
     @Autowired
@@ -90,8 +92,6 @@ public class ProductControllerIntegrationTest {
         }
     }
 
-    // 1) The endpoint returns the latest 10 available products
-    // 2) The endpoint filters the output by price range, mileage range, makes, car names, dealer IDs
     @Nested
     @DisplayName("GET /api/products")
     class GetProductsTests {
