@@ -1,5 +1,6 @@
 package com.easycar.product_service.service;
 
+import com.easycar.product_service.constants.CacheConstants;
 import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
@@ -117,7 +118,7 @@ public class ProductService {
         return ProductMapper.mapProductPageToPageDto(productPage);
     }
 
-    @Cacheable(value = "defaultProducts", key = "'default'", unless = "#result == null")
+    @Cacheable(value = CacheConstants.DEFAULT_PRODUCTS_CACHE, unless = "#result == null")
     public PageDto<ProductDto> getDefaultProducts() {
         return this.findProductsForPublic(
                 null, null, null, null, null, null, null, ProductConstants.DEFAULT_PRODUCT_PAGEABLE);

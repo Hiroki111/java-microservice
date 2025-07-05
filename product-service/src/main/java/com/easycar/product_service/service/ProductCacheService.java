@@ -1,5 +1,6 @@
 package com.easycar.product_service.service;
 
+import com.easycar.product_service.constants.CacheConstants;
 import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductDto;
@@ -15,7 +16,8 @@ public class ProductCacheService {
         this.productService = productService;
     }
 
-    @CachePut(value = "defaultProducts", key = "'default'")
+    @SuppressWarnings("UnusedReturnValue")
+    @CachePut(value = CacheConstants.DEFAULT_PRODUCTS_CACHE)
     public PageDto<ProductDto> refreshDefaultProducts() {
         return productService.findProductsForPublic(
                 null, null, null, null, null, null, null, ProductConstants.DEFAULT_PRODUCT_PAGEABLE);

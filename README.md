@@ -114,3 +114,8 @@ mvn flyway:migrate \
 ```
 
 - Run `./flyway-create.sh` at the root of the service (e.g. product-service) to generate a new migration file
+
+
+### NOTE
+
+- Why @AllArgsConstructor is necessary for a class that has @NoArgsConstructor and @Builder? @Builder generates an all-args constructor if there are no other constructors defined. Without @AllArgsConstructor, there will be "actual and formal argument lists differ in length" compilation error.
