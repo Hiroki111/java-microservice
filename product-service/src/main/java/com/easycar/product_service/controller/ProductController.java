@@ -44,12 +44,6 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
-    // 1) The endpoint returns the latest 10 available products
-    // 2) The endpoint filters the output by price range, mileage range, makes, car name, dealer IDs
-    // 3) Cache the result once a day via cron job or something similar
-    // 4) Update the cache when the available status of any latest 10 products changes
-    // 5) When the endpoint receives a request that returns at least one product, log the request. The logs will be used
-    // for analyzing which search criteria are popular, and
     @GetMapping
     @Parameters({
         @Parameter(

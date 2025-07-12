@@ -20,6 +20,31 @@ public class JwtUtil {
 }
 ```
 - Introduce Apache Kafka. Find a use case where Kafka is more suitable than RabbitMQ and incorporate it. See [this page](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945898#overview) to use Kafka with Docker. Note that using both Kafka and RabbitMQ with Spring Cloud Stream is probably impossible. Use Kafka with Spring Boot without Spring Cloud.
+- `GET /api/product` endpoint caches results. However, it doesn't handle race conditions. (e.g., If two threads try to update the cache, the one that started first must not overwrite the result.) One potential approach to solve it is to (1) use RedisTemplate for getting/setting cached data (2) lock the cache setter in such a way that only one thread can overwrite the cache. RedisTemplate may require a new @Bean in RedisConfig, for example:
+```
+@Configuration
+public class RedisConfig {
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        return template;
+    }
+
+    @Bean
+    public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(60))
+                .disableCachingNullValues()
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
+                        new GenericJackson2JsonRedisSerializer()));
+
+        return RedisCacheManager.builder(factory).cacheDefaults(config).build();
+    }
+}
+```
 
 
 ## Dependencies
