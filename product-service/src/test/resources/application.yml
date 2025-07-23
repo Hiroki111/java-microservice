@@ -19,4 +19,4 @@ spring:
   config:
     import: "optional:configserver:"
   cache:
-    type: NONE
+    type: none
