@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.easycar.product_service.config.TestRedisConfiguration;
 import com.easycar.product_service.domain.Category;
 import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
@@ -26,11 +27,15 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+@Import(TestRedisConfiguration.class)
 @SpringBootTest()
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -49,6 +54,9 @@ public class BackstageProductControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     private record ProductTestDto(
             String name,
             String description,
@@ -65,6 +73,12 @@ public class BackstageProductControllerIntegrationTest {
     void cleanDb() {
         productRepository.deleteAll();
         dealerRepository.deleteAll();
+        cacheManager.getCacheNames().forEach(name -> {
+            Cache cache = cacheManager.getCache(name);
+            if (cache != null) {
+                cache.clear();
+            }
+        });
     }
 
     @Nested

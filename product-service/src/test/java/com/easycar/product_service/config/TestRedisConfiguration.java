@@ -2,7 +2,6 @@ package com.easycar.product_service.config;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import java.io.IOException;
 import org.springframework.boot.test.context.TestConfiguration;
 import redis.embedded.RedisServer;
 
