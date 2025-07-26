@@ -13,6 +13,9 @@ spring:
     web:
       pageable:
         max-page-size: 10000
+    redis:
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/product-service-db}
     driver-class-name: org.postgresql.Driver
@@ -41,9 +44,6 @@ spring:
     password: ${SPRING_RABBITMQ_PASSWORD:guest}
   cache:
     type: redis
-  redis:
-    host: ${SPRING_REDIS_HOST:localhost}
-    port: ${SPRING_REDIS_PORT:6379}
 
 management:
   endpoints:
@@ -85,4 +85,7 @@ logging:
     com:
       easycar:
         product_service: DEBUG
-
+    org:
+      springframework:
+        data:
+          redis=DEBUG:
