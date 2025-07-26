@@ -5,6 +5,7 @@
 - http://localhost:8081/actuator/busrefresh (It refreshes config properties set by `configserver`. It works on `rabbitmq:3.13-management`.)
 - http://localhost:8081/actuator/shutdown (De-register from Eureka server)
 - http://localhost:8070/ (Eureka server)
+- http://localhost:7080/ (Keycloak)
 
 ## Future enhancements
 - Currently, `easycar-correlation-id` is used for logging inter-service communications (See `com.easycar.gatewayserver.filters` package of gatewayserver). Consider introducing Micrometer for global logging.
@@ -20,31 +21,7 @@ public class JwtUtil {
 }
 ```
 - Introduce Apache Kafka. Find a use case where Kafka is more suitable than RabbitMQ and incorporate it. See [this page](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945898#overview) to use Kafka with Docker. Note that using both Kafka and RabbitMQ with Spring Cloud Stream is probably impossible. Use Kafka with Spring Boot without Spring Cloud.
-- `GET /api/product` endpoint caches results. However, it doesn't handle race conditions. (e.g., If two threads try to update the cache, the one that started first must not overwrite the result.) One potential approach to solve it is to (1) use RedisTemplate for getting/setting cached data (2) lock the cache setter in such a way that only one thread can overwrite the cache. RedisTemplate may require a new @Bean in RedisConfig, for example:
-```
-@Configuration
-public class RedisConfig {
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        return template;
-    }
-
-    @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(60))
-                .disableCachingNullValues()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
-                        new GenericJackson2JsonRedisSerializer()));
-
-        return RedisCacheManager.builder(factory).cacheDefaults(config).build();
-    }
-}
-```
+- `GET /api/product` endpoint caches results. However, it doesn't handle race conditions. Consider how to prevent them.
 
 
 ## Dependencies
@@ -77,6 +54,7 @@ public class RedisConfig {
 - docker ps -a
 - docker image push docker.io/<dockerhub-user-name>/<image-name>:<tag>
 - docker compose up -d --build (Use it under `/docker-compose/<env>` folder)
+- docker compose up -d --build --force-recreate (Recreate all the containers. Try this is product/order services or gatewayserver can't fetch data from the configserver. Chances are that they have old DNS resolution from Docker's internal network)
 - docker compose -f docker-compose/<env>/docker-compose.yml up -d --build (Use it under the root of the project)
 - docker compose down (It deletes containers)
 - docker compose stop (It doesn't delete containers)
