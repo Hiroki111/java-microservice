@@ -2,16 +2,20 @@
 
 - http://localhost:8081/h2-console
 - http://localhost:8081/swagger-ui/index.html
-- http://localhost:8081/actuator/busrefresh (It refreshes config properties set by `configserver`. It works on `rabbitmq:3.13-management`.)
-- http://localhost:8081/actuator/shutdown (De-register from Eureka server)
-- http://localhost:8070/ (Eureka server)
-- http://localhost:7080/ (Keycloak)
+- http://localhost:8081/actuator/busrefresh – Refreshes config properties provided by `configserver`. Works with `rabbitmq:3.13-management`.
+- http://localhost:8081/actuator/shutdown – Deregisters the service from the Eureka server.
+- http://localhost:8070/ – Eureka server
+- http://localhost:7080/ – Keycloak
 
-## Future enhancements
-- Currently, `easycar-correlation-id` is used for logging inter-service communications (See `com.easycar.gatewayserver.filters` package of gatewayserver). Consider introducing Micrometer for global logging.
-- `gatewayserver` implements a circuit breaker to `order-service`. Try implementing other resiliency patterns - [rate limit](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945186) and [retry](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945166) patterns. Before doing so, consider which pattern should be used for which situation.
-- Create a util class to clean up the logic for getting `"realm_access"` from JWT. e.g.:
-```
+---
+
+## Future Enhancements
+
+- Currently, `easycar-correlation-id` is used for logging inter-service communication (see the `com.easycar.gatewayserver.filters` package in `gatewayserver`). Consider using Micrometer for centralized logging.
+- `gatewayserver` implements a circuit breaker for `order-service`. Try implementing additional resiliency patterns such as [rate limiting](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945186) and [retry](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945166). Consider which pattern is best suited for each scenario before implementing them.
+- Create a utility class to clean up the logic for extracting `"realm_access"` roles from JWTs. For example:
+
+```java
 public class JwtUtil {
     public static List<String> extractRoles(Jwt jwt) {
         Map<String, Object> realmAccess = jwt.getClaim("realm_access");
@@ -20,136 +24,193 @@ public class JwtUtil {
     }
 }
 ```
-- Introduce Apache Kafka. Find a use case where Kafka is more suitable than RabbitMQ and incorporate it. See [this page](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945898#overview) to use Kafka with Docker. Note that using both Kafka and RabbitMQ with Spring Cloud Stream is probably impossible. Use Kafka with Spring Boot without Spring Cloud.
-- `GET /api/product` endpoint caches results. However, it doesn't handle race conditions. Consider how to prevent them.
 
+- Introduce Apache Kafka. Identify a use case where Kafka is more appropriate than RabbitMQ and integrate it. See [this page](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945898#overview) for using Kafka with Docker. Note that using both Kafka and RabbitMQ with Spring Cloud Stream is likely not supported. Use Kafka with Spring Boot directly (without Spring Cloud).
+- The `GET /api/product` endpoint caches results but does not handle race conditions. Consider strategies to prevent this issue.
+
+---
 
 ## Dependencies
 
-- RabbitMQ (Use `docker run -d -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`)
-- Keycloak (Use `docker run -d -p 7080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev`)
+- RabbitMQ  
+  `docker run -d -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`
+- Keycloak  
+  `docker run -d -p 7080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev`
+- Redis
+  `docker run --name redis -d -p 6379:6379 redis`
 
-## How to run a Java microservice from a .jar file
+---
 
-1. Make sure that pom.xml has `<packaging>jar</packaging>` tag in the same level as `<artifactId>`
-2. Open a terminal and `cd` to the root of the microservice 
-3. Run `mvn clean install`
-4. There will be a .jar file in `target` folder. The .jar file has all the dependencies (e.g. Spring libraries, Tomcat server) except the runtime. 
-5. Run `mvn spring-boot:run` or `java -jar target/<jar-file-name>.jar`
+## Running a Java Microservice from a .jar File
 
-## How to run a service by Docker
+1. Ensure your `pom.xml` includes `<packaging>jar</packaging>` at the same level as `<artifactId>`.
+2. In a terminal, `cd` to the root of the microservice.
+3. Run `mvn clean install`.
+4. A `.jar` file will be generated in the `target` folder. This file includes all dependencies (e.g., Spring libraries, embedded Tomcat) except the Java runtime.
+5. Start the service with `mvn spring-boot:run` or `java -jar target/<jar-file-name>.jar`.
 
-1. Build the .jar file by following (see above)
-2. Create Dockerfile
-3. Use `docker build` and `docker run` commands (see below)
-4. To work with Docker compose, add the service information to docker-compose.yml 
+---
 
-## Docker command cheat sheet
+## Running a Service with Docker
 
-- docker build . -t <dockerhub-user-name>-<image-name>:<tag>
-- docker images
-- docker run -d -p <port-of-local-machine>:<port-used-by-the-image> <image-id> (e.g. `docker run -d -p 8080:8081 22b19` -> The app should be available at `http://localhost:8080/` in the local machine)
-- docker start <container-id> (It runs an existing container, not an image)
-- docker stop <container-id> (It stops an existing container, not an image)
-- docker ps -a
-- docker image push docker.io/<dockerhub-user-name>/<image-name>:<tag>
-- docker compose up -d --build (Use it under `/docker-compose/<env>` folder)
-- docker compose up -d --build --force-recreate (Recreate all the containers. Try this is product/order services or gatewayserver can't fetch data from the configserver. Chances are that they have old DNS resolution from Docker's internal network)
-- docker compose -f docker-compose/<env>/docker-compose.yml up -d --build (Use it under the root of the project)
-- docker compose down (It deletes containers)
-- docker compose stop (It doesn't delete containers)
-- docker compose start (It runs existing containers)
+1. Build the `.jar` file (as described above).
+2. Create a `Dockerfile`.
+3. Use `docker build` and `docker run` (see commands below).
+4. To use Docker Compose, add service definitions to `docker-compose.yml`.
 
-## How to use the Makefile
-- make # builds all the services and make images of them
-- make build-jar
-- make build-images
+---
 
-## How to run infra services via Docker
-- docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -v postgres-data:/var/lib/postgresql/data -p 5432:5432 -d postgres:17.4 (This will persist the DB files even if the container is removed)
-- docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -p 5432:5432 -d postgres:17.4
-- docker run --name order-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=order-service-db -p 5433:5432 -d postgres:17.4
-- docker run -it --rm --name easycar-rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:3.13-management
+## Docker Command Cheat Sheet
 
-## How to run all the services via IDE
-1. Start RabbitMQ (Use `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management` or restart an existing Docker container)
-2. Start DBs of product and order services 
-3. Start configserver
-3. Start eurekaserver
-4. Start product and order services
-5. Start gatewayserver
+```bash
+docker build . -t <dockerhub-username>/<image-name>:<tag>
+docker images
+docker run -d -p <host-port>:<container-port> <image-id>  # Example: docker run -d -p 8080:8081 22b19
+docker start <container-id>  # Start an existing container
+docker stop <container-id>   # Stop an existing container
+docker ps -a
+docker image push docker.io/<dockerhub-username>/<image-name>:<tag>
+docker compose up -d --build  # Run from `/docker-compose/<env>` folder
+docker compose up -d --build --force-recreate  # Recreate containers (useful if configserver DNS is outdated)
+docker compose -f docker-compose/<env>/docker-compose.yml up -d --build
+docker compose stop     # Stop containers without deleting
+docker compose start    # Start stopped containers
+docker compose down     # DON'T USE THIS because it removes containers, so DB and Keycloak data will be erased
+```
 
-## How to format code
-- mvn spotless:apply
+---
+
+## Using the Makefile
+
+```bash
+make                  # Build all services and create images
+make build-jar
+make build-images
+```
+
+---
+
+## Running Infrastructure Services with Docker
+
+```bash
+# Product service DB (persistent)
+docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -v postgres-data:/var/lib/postgresql/data -p 5432:5432 -d postgres:17.4
+
+# Product service DB (non-persistent)
+docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -p 5432:5432 -d postgres:17.4
+
+# Order service DB
+docker run --name order-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=order-service-db -p 5433:5432 -d postgres:17.4
+
+# RabbitMQ
+docker run -it --rm --name easycar-rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:3.13-management
+```
+
+---
+
+## Running All Services via IDE
+
+1. Start RabbitMQ  
+   `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`
+2. Start the databases for product and order services
+3. Start `configserver`
+4. Start `eurekaserver`
+5. Start `product` and `order` services
+6. Start `gatewayserver`
+
+---
+
+## Code Formatting
+
+```bash
+mvn spotless:apply
+```
+
+---
 
 ## Keycloak
 
-### Set up a client, roles, and users
-`gatewayserver` protects API request by [authentication code grant type flow](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945514#overview).
-To use the protected endpoints, set up a client, ream roles, users, and use the access token given by Keycloak.
+### Set Up Clients, Roles, and Users
 
-To set up a client, roles, and users, run the Keycloak instance and visit Keycloak UI (http://localhost:7080/admin/master/console/). Both the user name and password are `admin`.
-Then, do the following:
-1. Create a client
-- Click Clients on the sidebar -> Create client. 
-- Client type = OpenID Connect, Client ID = `easycar-client-authorization-code`, Name = `easycar UI` (or keep it empty), click Next. 
-- Enable Client authentication, disable Authorization, check only Standard flow, click Next 
-- Put * to Valid redirect URIs and Web origins (In the real world, use the actual authentication UI's URI to Valid redirect URIs), click Save.
-2. Create a user
-- Click Users on the sidebar -> Add user. 
-- Enable Email verified, set username (e.g., `customer`, `internaluser`), click Create.
-- Click Credentials tab on the user's detail page, add password, disable Temporary, click Save, click Save Password.
-3. Create a role
-- Click Realm roles on the sidebar -> Create role. 
-- Put `INTERNAL_USER` to Role name, click Save. Do the same by using `CUSTOMER` as the Role name. (Search gatewayserver for `INTERNAL_USER` and `CUSTOMER` to see how these roles are used.)
-4. Assign a role to a user
-- Click Users on the sidebar -> choose a user that was created by Step 2
-- Click Role mapping tab on the user's detail page, click Assign role. Click the filter icon and choose Filter by realm roles and choose CUSTOMER or INTERNAL_USER depending on the user.
+`gatewayserver` protects API requests using the [Authorization Code Grant](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945514#overview) flow.
 
-### How to use the protected endpoints by Postman
-1. Open Postman and select one of the protected endpoints 
-2. Click Authorization tag 
-3. On the left hand side, Set Auth Type = `OAuth 2.0` and Add authorization data to = `Request Headers`
-4. On the right hand side:
-- Token = `authcode_accesstoken` 
-- Use Token Type = `Access Token` (Token can be empty at the beginning) 
-- Header Prefix = `Bearer`
-- Token Name = `authcode_accesstoken` 
-- Grant type = `Authorization Code`
-- Below Callback URL's input box, enable `Authorize using browser` checkbox 
-- Auth URL = `http://localhost:7080/realms/master/protocol/openid-connect/auth` 
-- Access Token URL = `http://localhost:7080/realms/master/protocol/openid-connect/token` 
-- Client ID = `easycar-client-authorization-code`
-- Client Secret -> Go to Keycloak UI, choose Clients on the sidebar, choose easycar-client-authorization-code, click Credentials tab, find Client Secret and use it
-- Scope = `openid email profile`
-- State is a random value. Use a random string (e.g., 123456)
-- Client Authentication = `Send client credentials in body`
-5. If you're opening Keycloak UI, sign out.
-6. Click Get New Access Token on Postman's Authorization tab
+To access protected endpoints:
 
+1. Start Keycloak (`http://localhost:7080/`) and open the admin console (`http://localhost:7080/admin/master/console/`)
+2. Login: `admin` / `admin`
 
-### How to use Flyway for DB migration
+Then:
 
-- Run this command for migrating a DB locally (replace **** with the port and the service name):
+1. **Create a Client**
+    - Navigate to **Clients** → **Create client**
+    - Type: OpenID Connect
+    - Client ID: `easycar-client-authorization-code`
+    - Enable *Client authentication*, disable *Authorization*, check only *Standard flow*
+    - Set `*` as the value for Valid Redirect URIs and Web Origins (use specific URIs in production)
+    - Save
 
+2. **Create Users**
+    - Navigate to **Users** → **Add user**
+    - Enable *Email verified*, set a username (e.g., `customer`, `internaluser`), create
+    - Go to **Credentials** tab → set password → disable *Temporary* → Save
+
+3. **Create Roles**
+    - Navigate to **Realm roles** → **Create role**
+    - Create roles named `INTERNAL_USER` and `CUSTOMER` (These roles are used in `gatewayserver` code)
+
+4. **Assign Roles to Users**
+    - Navigate to **Users** → Choose the user created by Step 2 → **Role Mappings** → **Assign Role**
+    - Select roles from *Realm roles* and assign appropriately
+
+---
+
+### Using Protected Endpoints with Postman
+
+1. Open Postman and select a protected endpoint
+2. Go to the **Authorization** tab
+3. Set:
+    - **Auth Type**: `OAuth 2.0`
+    - **Add authorization data to**: `Request Headers`
+    - **Token**: `authcode_accesstoken`
+    - **Use Token Type**: `Access Token` (Token can be empty at the beginning)
+    - **Header Prefix**: `Bearer`
+    - **Token Name**: `authcode_accesstoken`
+    - **Grant Type**: `Authorization Code`
+    - **Authorize using browser**: Enabled
+    - **Callback URL**: Use the default or your own
+    - **Auth URL**: `http://localhost:7080/realms/master/protocol/openid-connect/auth`
+    - **Access Token URL**: `http://localhost:7080/realms/master/protocol/openid-connect/token`
+    - **Client ID**: `easycar-client-authorization-code`
+    - **Client Secret**: Get it from Keycloak UI (Clients → `easycar-client-authorization-code` → Credentials)
+    - **Scope**: `openid email profile`
+    - **State**: Any random string (e.g., `123456`)
+    - **Client Authentication**: `Send client credentials in body`
+4. Sign out of Keycloak UI if you're logged in
+5. Click **Get New Access Token** in Postman
+
+---
+
+## Using Flyway for DB Migration
+
+### Run Locally
+
+```bash
+mvn flyway:migrate   -Dflyway.url=jdbc:postgresql://localhost:<port>/<service>-service-db   -Dflyway.user=postgres   -Dflyway.password=secret
 ```
-mvn flyway:migrate \
-  -Dflyway.url=jdbc:postgresql://localhost:****/****-service-db \
-  -Dflyway.user=postgres \
-  -Dflyway.password=secret
-```
-(Future enhance idea) In CI/CD, set url/user/password to env variables and try DB migration by something like:
 
-```
-mvn flyway:migrate \
-  -Dflyway.url=$FLYWAY_URL \
-  -Dflyway.user=$FLYWAY_USER \
-  -Dflyway.password=$FLYWAY_PASSWORD
+### In CI/CD (Idea)
+
+```bash
+mvn flyway:migrate   -Dflyway.url=$FLYWAY_URL   -Dflyway.user=$FLYWAY_USER   -Dflyway.password=$FLYWAY_PASSWORD
 ```
 
-- Run `./flyway-create.sh` at the root of the service (e.g. product-service) to generate a new migration file
+### Create New Migration File
 
+Run `./flyway-create.sh` from the root of a service (e.g., `product-service`).
 
-### NOTE
+---
 
-- Why @AllArgsConstructor is necessary for a class that has @NoArgsConstructor and @Builder? @Builder generates an all-args constructor if there are no other constructors defined. Without @AllArgsConstructor, there will be "actual and formal argument lists differ in length" compilation error.
+### Note
+
+> Why is `@AllArgsConstructor` needed when using `@NoArgsConstructor` and `@Builder`?  
+> `@Builder` generates an all-args constructor only if none exists. If you’ve defined `@NoArgsConstructor`, you must also define `@AllArgsConstructor`; otherwise, a compilation error like “actual and formal argument lists differ in length” may occur.
