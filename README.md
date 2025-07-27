@@ -85,11 +85,47 @@ public class JwtUtil {
 ## Keycloak
 
 ### Set up a client, roles, and users
-`gatewayserver` protects API request by [authentication code grant type flow](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945514#overview). To use the protected endpoints, set up a client, ream roles and users.
-Run the Keycloak instance and do the following:
-- Click Clients -> Create client. Set Client ID (`easycar-client-authorization-code`). Enable Client authentication, disable Authorization, check only Standard flow. Put * to Valid redirect URIs and Web origins.
-- Click Realm roles -> Create role. Put INTERNAL_USER to Role name and save it. Do the same by putting CUSTOMER as the Role name. 
-- Click Users -> Add user. Create two users, one for a user and the other for an internal user, while Email verified is enabled. When a user is created, click Credentials tab on the user's detail page, and add password. Then, click Role mapping tab, click Assign role. Click the filter icon and choose Filter by realm roles and choose CUSTOMER or INTERNAL_USER.
+`gatewayserver` protects API request by [authentication code grant type flow](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945514#overview).
+To use the protected endpoints, set up a client, ream roles, users, and use the access token given by Keycloak.
+
+To set up a client, roles, and users, run the Keycloak instance and visit Keycloak UI (http://localhost:7080/admin/master/console/). Both the user name and password are `admin`.
+Then, do the following:
+1. Create a client
+- Click Clients on the sidebar -> Create client. 
+- Client type = OpenID Connect, Client ID = `easycar-client-authorization-code`, Name = `easycar UI` (or keep it empty), click Next. 
+- Enable Client authentication, disable Authorization, check only Standard flow, click Next 
+- Put * to Valid redirect URIs and Web origins (In the real world, use the actual authentication UI's URI to Valid redirect URIs), click Save.
+2. Create a user
+- Click Users on the sidebar -> Add user. 
+- Enable Email verified, set username (e.g., `customer`, `internaluser`), click Create.
+- Click Credentials tab on the user's detail page, add password, disable Temporary, click Save, click Save Password.
+3. Create a role
+- Click Realm roles on the sidebar -> Create role. 
+- Put `INTERNAL_USER` to Role name, click Save. Do the same by using `CUSTOMER` as the Role name. (Search gatewayserver for `INTERNAL_USER` and `CUSTOMER` to see how these roles are used.)
+4. Assign a role to a user
+- Click Users on the sidebar -> choose a user that was created by Step 2
+- Click Role mapping tab on the user's detail page, click Assign role. Click the filter icon and choose Filter by realm roles and choose CUSTOMER or INTERNAL_USER depending on the user.
+
+To use the protected endpoints, do the following:
+1. Open Postman and select one of the protected endpoints 
+2. Click Authorization tag 
+3. On the left hand side, Set Auth Type = `OAuth 2.0` and Add authorization data to = `Request Headers`
+4. On the right hand side:
+- Token = `authcode_accesstoken` 
+- Use Token Type = `Access Token` (Token can be empty at the beginning) 
+- Header Prefix = `Bearer`
+- Token Name = `authcode_accesstoken` 
+- Grant type = `Authorization Code`
+- Below Callback URL's input box, enable `Authorize using browser` checkbox 
+- Auth URL = `http://localhost:7080/realms/master/protocol/openid-connect/auth` 
+- Access Token URL = `http://localhost:7080/realms/master/protocol/openid-connect/token` 
+- Client ID = `easycar-client-authorization-code`
+- Client Secret -> Go to Keycloak UI, choose Clients on the sidebar, choose easycar-client-authorization-code, click Credentials tab, find Client Secret and use it
+- Scope = `openid email profile`
+- State is a random value. Use a random string (e.g., 123456)
+- Client Authentication = `Send client credentials in body`
+5. If you're opening Keycloak UI, sign out.
+6. Click Get New Access Token on Postman's Authorization tab
 
 ### Use tokens for API endpoints
 
