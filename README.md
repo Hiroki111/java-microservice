@@ -106,7 +106,7 @@ Then, do the following:
 - Click Users on the sidebar -> choose a user that was created by Step 2
 - Click Role mapping tab on the user's detail page, click Assign role. Click the filter icon and choose Filter by realm roles and choose CUSTOMER or INTERNAL_USER depending on the user.
 
-To use the protected endpoints, do the following:
+### How to use the protected endpoints by Postman
 1. Open Postman and select one of the protected endpoints 
 2. Click Authorization tag 
 3. On the left hand side, Set Auth Type = `OAuth 2.0` and Add authorization data to = `Request Headers`
@@ -127,11 +127,6 @@ To use the protected endpoints, do the following:
 5. If you're opening Keycloak UI, sign out.
 6. Click Get New Access Token on Postman's Authorization tab
 
-### Use tokens for API endpoints
-
-- Sign out from Keycloak
-- Open Postman, choose one of the endpoints that requires a token. Click Authorization tab, scroll down and find Get New Access Token button.
-- Click the button and you should see a login page of Keycloak
 
 ### How to use Flyway for DB migration
 
