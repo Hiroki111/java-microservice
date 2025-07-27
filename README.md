@@ -30,17 +30,6 @@ public class JwtUtil {
 
 ---
 
-## Dependencies
-
-- RabbitMQ  
-  `docker run -d -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`
-- Keycloak  
-  `docker run -d -p 7080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev`
-- Redis
-  `docker run --name redis -d -p 6379:6379 redis`
-
----
-
 ## Running a Java Microservice from a .jar File
 
 1. Ensure your `pom.xml` includes `<packaging>jar</packaging>` at the same level as `<artifactId>`.
@@ -103,7 +92,13 @@ docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSW
 docker run --name order-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=order-service-db -p 5433:5432 -d postgres:17.4
 
 # RabbitMQ
-docker run -it --rm --name easycar-rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:3.13-management
+docker run -d -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
+
+# Redis
+docker run --name redis -d -p 6379:6379 redis
+
+# Keycloak  
+docker run -d -p 7080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev
 ```
 
 ---
@@ -111,8 +106,12 @@ docker run -it --rm --name easycar-rabbitmq -p 5672:5672 -p 15672:15672 -d rabbi
 ## Running All Services via IDE
 
 1. Start RabbitMQ  
-   `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`
-2. Start the databases for product and order services
+   `docker run -d -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management`
+2. Start Redis
+   `docker run --name redis -d -p 6379:6379 redis`
+3. Start Keycloak
+   `docker run -d -p 7080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev`
+4. Start the databases for product and order services
 3. Start `configserver`
 4. Start `eurekaserver`
 5. Start `product` and `order` services
