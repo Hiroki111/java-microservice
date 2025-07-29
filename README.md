@@ -47,6 +47,7 @@ public class JwtUtil {
 3. Use `docker build` and `docker run` (see commands below).
 4. To use Docker Compose, add service definitions to `docker-compose.yml`.
 
+(To run all the services together, `cd` to `/docker-compose/default` and run `docker compose up`)
 ---
 
 ## Docker Command Cheat Sheet
