@@ -25,6 +25,9 @@ spec:
           image: hiroki111/easycar-configserver:1.0.0
           ports:
             - containerPort: 8071
+          env:
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbitmq"
 ---
 apiVersion: v1
 kind: Service
