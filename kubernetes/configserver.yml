@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configserver-deployment
+  labels:
+    # It says “This Deployment belongs to the configserver app.”
+    # But it doesn’t control what Pods the Deployment manages.
+    app: configserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      # It tells the Deployment which Pods it owns and will monitor/replace if needed.
+      # It must match the labels defined in the Pod template (below)
+      app: configserver
+  template:
+    metadata:
+      labels:
+        # Labels for the Pods that the Deployment creates.
+        # It says "The Deployment will manage any Pod that has the label app: configserver."
+        app: configserver
+    spec:
+      containers:
+        - name: configserver
+          image: hiroki111/easycar-configserver:1.0.0
+          ports:
+            - containerPort: 8071
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configserver
+spec:
+  selector:
+    app: configserver
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8071
+      targetPort: 8071
+
+#  Visual Relationship:
+#  +------------------------------+
+#  |      Deployment              |
+#  | name: configserver-deployment|
+#  | labels: app: configserver    |
+#  +------------------------------+
+#  |
+#  | (selector.matchLabels: app: configserver)
+#  V
+#  +-----------------------------+
+#  |        Pod (template)       |
+#  | labels: app: configserver   | <- matched!
+#  +-----------------------------+
