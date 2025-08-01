@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gatewayserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gatewayserver
+  template:
+    metadata:
+      labels:
+        app: gatewayserver
+    spec:
+      containers:
+        - name: gatewayserver
+          image: hiroki111/easycar-gatewayserver:1.0.0
+          ports:
+            - containerPort: 8072
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: "gatewayserver"
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI
+              value: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gatewayserver
+spec:
+  selector:
+    app: gatewayserver
+  ports:
+    - port: 8072
+      targetPort: 8072
+  type: LoadBalancer

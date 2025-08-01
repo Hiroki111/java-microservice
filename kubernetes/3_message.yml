@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: message
+  template:
+    metadata:
+      labels:
+        app: message
+    spec:
+      containers:
+        - name: message
+          image: hiroki111/easycar-message:1.0.0
+          env:
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbit"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: message
+spec:
+  selector:
+    app: message
+  ports:
+    - port: 8083
+      targetPort: 8083
+      protocol: TCP
