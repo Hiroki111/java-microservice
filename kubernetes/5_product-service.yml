@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product-service
+  name: product-service-deployment
 spec:
   replicas: 1
   selector:
@@ -19,15 +19,70 @@ spec:
             - containerPort: 8081
           env:
             - name: SPRING_APPLICATION_NAME
-              value: "product-service"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: PRODUCT_SERVICE_APPLICATION_NAME
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_PROFILES_ACTIVE
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://product-service-db:5432/product-service-db"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: PRODUCT_SERVICE_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: SPRING_CONFIG_IMPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_CONFIG_IMPORT
             - name: SPRING_RABBITMQ_HOST
-              value: "rabbit"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_RABBITMQ_HOST
+            - name: SPRING_RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_RABBITMQ_PORT
+            - name: SPRING_RABBITMQ_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_RABBITMQ_USERNAME
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_RABBITMQ_PASSWORD
             - name: SPRING_REDIS_HOST
-              value: "redis"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_REDIS_HOST
             - name: SPRING_REDIS_PORT
-              value: "6379"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_REDIS_PORT
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness

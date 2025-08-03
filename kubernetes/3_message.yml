@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message
+  name: message-deployment
 spec:
   replicas: 1
   selector:
@@ -17,7 +17,10 @@ spec:
           image: hiroki111/easycar-message:1.0.0
           env:
             - name: SPRING_RABBITMQ_HOST
-              value: "rabbit"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_RABBITMQ_HOST
 ---
 apiVersion: v1
 kind: Service

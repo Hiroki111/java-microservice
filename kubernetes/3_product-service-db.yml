@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product-service-db
+  name: product-service-db-deployment
 spec:
   replicas: 1
   selector:
@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres
+          image: postgres:17.5
           ports:
             - containerPort: 5432
+          # TODO: Organize these variables by ConfigMaps
           env:
             - name: POSTGRES_USER
               value: "postgres"

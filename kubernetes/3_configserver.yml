@@ -27,7 +27,10 @@ spec:
             - containerPort: 8071
           env:
             - name: SPRING_RABBITMQ_HOST
-              value: "rabbitmq"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_RABBITMQ_HOST
 ---
 apiVersion: v1
 kind: Service

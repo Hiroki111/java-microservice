@@ -31,7 +31,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq
+  # NOTE: This is "rabbit", not "rabbitmq".
+  name: rabbit
 spec:
   selector:
     app: rabbitmq

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: eurekaserver
+  name: eurekaserver-deployment
 spec:
   replicas: 1
   selector:
@@ -19,7 +19,15 @@ spec:
             - containerPort: 8070
           env:
             - name: SPRING_APPLICATION_NAME
-              value: "eurekaserver"
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: EUREKA_APPLICATION_NAME
+            - name: SPRING_CONFIG_IMPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: easycar-configmap
+                  key: SPRING_CONFIG_IMPORT
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
