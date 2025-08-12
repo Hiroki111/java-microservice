@@ -1,0 +1,6 @@
+dependencies:
+- name: easycar-common
+  repository: file://../../easycar-common
+  version: 0.1.0
+digest: sha256:88a9088628bdd1a9f3bd209fd25afaf75bc45e9d779759b60c1314780db68bf9
+generated: "2025-08-12T06:18:29.4358023+02:00"

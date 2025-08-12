@@ -1,0 +1,26 @@
+deploymentName: message-deployment
+serviceName: message
+appLabel: message
+appName: message
+
+replicaCount: 1
+
+image:
+  repository: hiroki111/easycar-message
+  tag: 1.0.0
+
+containerPort: 8083
+
+service:
+  type: ClusterIP
+  port: 8083
+  targetPort: 8083
+
+appname_enabled: true
+profile_enabled: false
+config_enabled: false
+eureka_enabled: false
+resouceserver_enabled: false
+rabbitmq_enabled: true
+datasource_enabled: false
+redis_enabled: false

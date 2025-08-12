@@ -1,0 +1,24 @@
+dependencies:
+- name: easycar-common
+  repository: file://../../easycar-common
+  version: 0.1.0
+- name: configserver
+  repository: file://../../easycar-services/configserver
+  version: 0.1.0
+- name: eurekaserver
+  repository: file://../../easycar-services/eurekaserver
+  version: 0.1.0
+- name: gatewayserver
+  repository: file://../../easycar-services/gatewayserver
+  version: 0.1.0
+- name: message
+  repository: file://../../easycar-services/message
+  version: 0.1.0
+- name: order-service
+  repository: file://../../easycar-services/order-service
+  version: 0.1.0
+- name: product-service
+  repository: file://../../easycar-services/product-service
+  version: 0.1.0
+digest: sha256:044f153a05c9ed348e1a7427bdbda7cbf54f7404a0cda841d20e92e4f2f8d41f
+generated: "2025-08-12T07:38:40.1602454+02:00"

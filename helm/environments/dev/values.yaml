@@ -1,0 +1,19 @@
+# TODO: run "helm dependencies build"
+global:
+  configMapName: easycar-dev-configmap
+  activeProfile: default
+  configServerURL: configserver:http://configserver:8071/
+  eurekaServerURL: http://eurekaserver:8070/eureka/
+  # TODO: Check if I need to use this URL for production build
+  #keyCloakURL: http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs
+  keyCloakURL: http://keycloak:7080/realms/master/protocol/openid-connect/certs
+  rabbitmqHost: rabbit
+  rabbitmqPort: 5672
+  rabbitmqUsername: guest
+  rabbitmqPassword: guest
+  redisHost: redis
+  redisPort: 6379
+  datasourceUserName: postgres
+  datasourcePassword: secret
+  orderServiceDatasourceUrl: jdbc:postgresql://order-service-db:5432/order-service-db
+  productServiceDatasourceUrl: jdbc:postgresql://product-service-db:5432/product-service-db

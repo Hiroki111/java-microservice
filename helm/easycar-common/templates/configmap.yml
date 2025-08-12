@@ -1,0 +1,41 @@
+{{- define "common.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.configMapName }}
+data:
+  # NOTE: values of ".Values.global" will come from /environments folder
+
+  # Environment
+  SPRING_PROFILES_ACTIVE: {{ .Values.global.activeProfile }}
+
+  # Configserver
+  SPRING_CONFIG_IMPORT: {{ .Values.global.configServerURL }}
+
+  # Eurekaserver
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: {{ .Values.global.eurekaServerURL }}
+
+  # Keycloak
+  # KEYCLOAK_ADMIN: "admin" -> deprecated
+  # KEYCLOAK_ADMIN_PASSWORD: "admin" -> deprecated
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.global.keyCloakURL }}
+
+  # RabbitMQ
+  SPRING_RABBITMQ_HOST: {{ .Values.global.rabbitmqHost }} # "rabbit"
+  SPRING_RABBITMQ_PORT: {{ .Values.global.rabbitmqPort }} # "5672"
+  SPRING_RABBITMQ_USERNAME: {{ .Values.global.rabbitmqUsername }} # "guest"
+  SPRING_RABBITMQ_PASSWORD: {{ .Values.global.rabbitmqPassword }} # "guest"
+
+  # Redis
+  SPRING_REDIS_HOST: {{ .Values.global.redisHost }}
+  SPRING_REDIS_PORT: {{ .Values.global.redisPort }}
+
+  # Postgres
+  # NOTE: In real projects, set unique credentials per service
+  SPRING_DATASOURCE_USERNAME: {{ .Values.global.datasourceUserName }}
+  SPRING_DATASOURCE_PASSWORD: {{ .Values.global.datasourcePassword }}
+
+  # Datasource URLs
+  ORDER_SERVICE_DATASOURCE_URL: {{ .Values.global.orderServiceDatasourceUrl }}
+  PRODUCT_SERVICE_DATASOURCE_URL: {{ .Values.global.productServiceDatasourceUrl }}
+  {{- end -}}
