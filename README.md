@@ -11,6 +11,8 @@
 
 ## Future Enhancements
 
+- Start using `bitnami/rabbitmq:4.1.3-debian-12-r1` for Docker Compose. This is a stable Docker image used by Bitnami's Docker Helm chart that I use. Now, rabbitmq's v3.13.7 is used for Docker Compose, but I don't see Bitnami RabbitMQ chart that uses this version.
+- Update every occurance of `SPRING_RABBITMQ_HOST: "rabbit"` with `SPRING_RABBITMQ_HOST: "rabbitmq"` in Docker Compose and Kubernetes manifest files and update the service name from  `rabbit` to `rabbitmq`.
 - Currently, `easycar-correlation-id` is used for logging inter-service communication (see the `com.easycar.gatewayserver.filters` package in `gatewayserver`). Consider using Micrometer for centralized logging.
 - `gatewayserver` implements a circuit breaker for `order-service`. Try implementing additional resiliency patterns such as [rate limiting](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945186) and [retry](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945166). Consider which pattern is best suited for each scenario before implementing them.
 - Create a utility class to clean up the logic for extracting `"realm_access"` roles from JWTs. For example:
@@ -159,8 +161,8 @@ Then:
     - Create roles named `INTERNAL_USER` and `CUSTOMER` (These roles are used in `gatewayserver` code)
 
 4. **Assign Roles to Users**
-    - Navigate to **Users** → Choose the user created by Step 2 → **Role Mappings** → **Assign Role**
-    - Select roles from *Realm roles* and assign appropriately
+    - Navigate to **Users** → Choose the user created by Step 2 → **Role Mappings** → **Assign Role** → **Realm roles**
+    - Select a role → Assign
 
 ---
 
@@ -210,7 +212,92 @@ Run `./flyway-create.sh` from the root of a service (e.g., `product-service`).
 
 ---
 
-### Note
+## Kubernetes
+
+### Where to set shortcuts
+
+On Windows, run `notepad $PROFILE`.
+On Linux or Git Bash, run `nano ~/.bashrc`.
+
+
+### Installing and running K8s dashboaard UI
+
+1. Install Helm: https://helm.sh/docs/intro/install/
+2. Follow this guide: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui
+
+Commands:
+
+```bash
+# Run this to install kubernetes-dashboard
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+
+# Then run this
+kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+
+# If the above command causes a CrashLoopBackOff error in kong, you would need to re-install kubernetes-dashboard with --set kong.admin.tls.enabled=false
+helm uninstall kubernetes-dashboard -n kubernetes-dashboard
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --namespace kubernetes-dashboard --set kong.proxy.image.tag=3.6 --set kong.admin.tls.enabled=false
+
+# Then try this again
+kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+
+# Use this to generate a token
+kubectl -n kubernetes-dashboard create token admin-user
+```
+
+### Running All Services via Kubernetes
+
+1. Run `cd` to `kubernetes`
+2. Run `k apply -f rabbitmq.yml`, `k apply -f configserver.yml`
+
+
+### Useful commands
+
+```bash
+# Apply a deployment manifest file (Use it at the root folder)
+kubectl apply -f kubernetes/<manifest-file>.yml
+
+# Make configserver's pod accessible via localhost:8071
+kubectl port-forward service/configserver 8071:8071
+
+kubectl delete pod <pod-name>
+
+# Change the size of <deployment-name> to <number>
+kubectl scale deployment <deployment-name> --replicas=<number>
+```
+
+---
+
+## Helm
+
+### Useful commands
+
+```bash
+# Keycloak
+# To access Keycloak from outside the cluster execute the following commands:
+# 1. Get the Keycloak URL by running these commands:
+export HTTP_SERVICE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[?(@.name=='http')].port}" services keycloak)
+export SERVICE_IP=$(kubectl get svc --namespace default keycloak -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+# 2. Access Keycloak using the obtained URL.
+echo "http://${SERVICE_IP}:${HTTP_SERVICE_PORT}/"
+
+# 3. Access the Administration Console using the following credentials:
+echo Username: admin
+echo Password: $(kubectl get secret --namespace default keycloak -o jsonpath="{.data.admin-password}" | base64 -d)
+
+#  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+#        You can watch its status by running:
+kubectl get --namespace default svc -w keycloak
+
+# See which IP is used by running:
+kubectl get svc keycloak
+
+# If the external IP isn't localhost, do port-forwarding (change <port> with what you see by `kubectl get svc keycloak`):
+kubectl port-forward svc/keycloak 8080:<port>
+```
+
+## Note
 
 > Why is `@AllArgsConstructor` needed when using `@NoArgsConstructor` and `@Builder`?  
 > `@Builder` generates an all-args constructor only if none exists. If you’ve defined `@NoArgsConstructor`, you must also define `@AllArgsConstructor`; otherwise, a compilation error like “actual and formal argument lists differ in length” may occur.
