@@ -16,8 +16,6 @@ data:
   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: {{ .Values.global.eurekaServerURL }}
 
   # Keycloak
-  # KEYCLOAK_ADMIN: "admin" -> deprecated
-  # KEYCLOAK_ADMIN_PASSWORD: "admin" -> deprecated
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.global.keyCloakURL }}
 
   # RabbitMQ
