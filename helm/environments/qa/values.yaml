@@ -9,7 +9,8 @@ global:
   rabbitmqPort: 5672
   rabbitmqUsername: guest
   rabbitmqPassword: guest
-  redisHost: redis
+  # NOTE: This isn't "redis"
+  redisHost: redis-master
   redisPort: 6379
   datasourceUserName: postgres
   datasourcePassword: secret
