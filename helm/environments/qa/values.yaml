@@ -6,12 +6,12 @@ global:
   keyCloakURL: http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs
   # NOTE: This isn't "rabbit"
   rabbitmqHost: rabbitmq
-  rabbitmqPort: 5672
+  rabbitmqPort: "'5672'"
   rabbitmqUsername: guest
   rabbitmqPassword: guest
   # NOTE: This isn't "redis"
   redisHost: redis-master
-  redisPort: 6379
+  redisPort: "'6379'"
   datasourceUserName: postgres
   datasourcePassword: secret
   orderServiceDatasourceUrl: jdbc:postgresql://order-service-db:5432/order-service-db
