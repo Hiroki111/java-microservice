@@ -17,6 +17,7 @@ import lombok.*;
 public class Product extends BaseEntity {
 
     @Id
+    // TODO: Try GenerationType.IDENTITY. GenerationType.AUTO causes an issue with Flyway
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;

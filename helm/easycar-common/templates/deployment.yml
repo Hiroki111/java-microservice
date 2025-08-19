@@ -83,7 +83,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: {{ .Values.global.configMapName }}
-              key: ORDER_SERVICE_DATASOURCE_URL
+              key: {{ .Values.datasourceKey }}
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             configMapKeyRef:

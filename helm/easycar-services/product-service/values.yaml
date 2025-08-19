@@ -16,6 +16,8 @@ service:
   port: 8081
   targetPort: 8081
 
+datasourceKey: PRODUCT_SERVICE_DATASOURCE_URL
+
 appname_enabled: true
 profile_enabled: true
 config_enabled: true

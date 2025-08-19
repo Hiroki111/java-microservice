@@ -16,6 +16,8 @@ service:
   port: 8082
   targetPort: 8082
 
+datasourceKey: ORDER_SERVICE_DATASOURCE_URL
+
 appname_enabled: true
 profile_enabled: true
 config_enabled: true
