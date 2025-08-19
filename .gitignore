@@ -18,3 +18,4 @@
 *.mv.db
 *.h2.db
 
+helm/**/charts/*.tgz
