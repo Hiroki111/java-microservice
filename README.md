@@ -11,7 +11,14 @@
 
 ## Future Enhancements
 
-- Start using `bitnami/rabbitmq:4.1.3-debian-12-r1` for Docker Compose. This is a stable Docker image used by Bitnami's Docker Helm chart that I use. Now, rabbitmq's v3.13.7 is used for Docker Compose, but I don't see Bitnami RabbitMQ chart that uses this version.
+- Introduce e2e testing.
+- Remove RabbitMQ, Keycloak and Redis Helm chart folder from `/helm` folder. Those folders bloating this repo. Instead, try using charts by remote chart. For example:
+```bash
+# I haven't tested this approach
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install keycloak bitnami/keycloak -f my-values.yaml
+```
+- Set credentials for Redis. Currently, no authentication is required.
 - Update every occurance of `SPRING_RABBITMQ_HOST: "rabbit"` with `SPRING_RABBITMQ_HOST: "rabbitmq"` in Docker Compose and Kubernetes manifest files and update the service name from  `rabbit` to `rabbitmq`.
 - Currently, `easycar-correlation-id` is used for logging inter-service communication (see the `com.easycar.gatewayserver.filters` package in `gatewayserver`). Consider using Micrometer for centralized logging.
 - `gatewayserver` implements a circuit breaker for `order-service`. Try implementing additional resiliency patterns such as [rate limiting](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945186) and [retry](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945166). Consider which pattern is best suited for each scenario before implementing them.
@@ -194,10 +201,21 @@ Then:
 
 ## Using Flyway for DB Migration
 
-### Run Locally
+### Run Locally (local development)
 
 ```bash
 mvn flyway:migrate   -Dflyway.url=jdbc:postgresql://localhost:<port>/<service>-service-db   -Dflyway.user=postgres   -Dflyway.password=secret
+```
+
+### Run Locally (Helm and Kubernetes)
+
+```bash
+# NOTE: This doesn't work on Powershell
+kubectl port-forward svc/<service>-service-db 5432:5432
+# Open a new terminal
+cd <service>
+mvn flyway:migrate   -Dflyway.url=jdbc:postgresql://localhost:5432/<service>-service-db   -Dflyway.user=postgres   -Dflyway.password=secret
+
 ```
 
 ### In CI/CD (Idea)
@@ -273,28 +291,32 @@ kubectl scale deployment <deployment-name> --replicas=<number>
 ### Useful commands
 
 ```bash
-# Keycloak
-# To access Keycloak from outside the cluster execute the following commands:
-# 1. Get the Keycloak URL by running these commands:
-export HTTP_SERVICE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[?(@.name=='http')].port}" services keycloak)
-export SERVICE_IP=$(kubectl get svc --namespace default keycloak -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+# Crate a blank chart (e.g., easycar-common)
+helm create <chart>
 
-# 2. Access Keycloak using the obtained URL.
-echo "http://${SERVICE_IP}:${HTTP_SERVICE_PORT}/"
+# Create a single manifest file that contains all the charts' information (Use this for debugging)
+helm template easycar helm/environments/dev/ > rendered.yaml
 
-# 3. Access the Administration Console using the following credentials:
-echo Username: admin
-echo Password: $(kubectl get secret --namespace default keycloak -o jsonpath="{.data.admin-password}" | base64 -d)
+# Deploy easycar microservies for dev env (easycar is the release name)
+helm install easycar helm/environments/dev/
 
-#  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-#        You can watch its status by running:
-kubectl get --namespace default svc -w keycloak
+# Shut down the deployments and services for easycar microservies on dev env
+helm uninstall easycar
 
-# See which IP is used by running:
-kubectl get svc keycloak
+# Show all the releases
+helm list
 
-# If the external IP isn't localhost, do port-forwarding (change <port> with what you see by `kubectl get svc keycloak`):
-kubectl port-forward svc/keycloak 8080:<port>
+# Use this when a dependency for a chart is updated (e.g., If I update /helm/easycar-services/gatewayserver/values.yaml, I should cd to /helm/environments/dev and run helm dependencies build)
+helm dependencies build
+
+# <env> is dev, qa or prod
+helm upgrade easycar <env>
+
+# Show all the previous revisions
+helm history easycar
+
+# Rollback to a previous revision (<revisionNumber> is a number)
+helm rollback easycar <revisionNumber>
 ```
 
 ## Note
