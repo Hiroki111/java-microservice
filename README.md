@@ -9,6 +9,12 @@
 
 ---
 
+## Older Versions
+
+- 1.0.0: V1 uses Eureka Server for client-side service discovery and can run with Docker Compose. Starting from v2, Eureka Server is replaced by Kubernetes server-side service discovery, which is not supported in Docker Compose.
+
+---
+
 ## Future Enhancements
 
 - Introduce e2e testing.
@@ -261,6 +267,11 @@ kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy
 
 # Use this to generate a token
 kubectl -n kubernetes-dashboard create token admin-user
+```
+### Set up Kubernetes service discovery (1 time activity)
+
+```bash
+kubectl apply -f kubernetes/kubernetes-discoveryserver.yml
 ```
 
 ### Running All Services via Kubernetes
