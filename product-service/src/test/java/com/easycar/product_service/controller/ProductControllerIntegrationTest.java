@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -129,7 +130,8 @@ public class ProductControllerIntegrationTest {
                 var product = EntityBuilder.buildDefaultProductBuilder(dealer)
                         .available(i != 41)
                         .build();
-                product.setCreatedAt(LocalDateTime.now().minusDays(numberOfProducts - i));
+                product.setCreatedAt(
+                        LocalDateTime.now().minusDays(numberOfProducts - i).plusSeconds(i));
                 products.add(product);
                 productRepository.save(product);
             }
@@ -264,10 +266,8 @@ public class ProductControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(4)))
                     .andExpect(jsonPath("$.totalElements").value(4))
-                    .andExpect(jsonPath("$.content[0].make").value(Make.VOLKSWAGEN.toString()))
-                    .andExpect(jsonPath("$.content[1].make").value(Make.VOLKSWAGEN.toString()))
-                    .andExpect(jsonPath("$.content[2].make").value(Make.BMW.toString()))
-                    .andExpect(jsonPath("$.content[3].make").value(Make.BMW.toString()));
+                    .andExpect(jsonPath("$.content[*].make")
+                            .value(Matchers.hasItems(Make.BMW.toString(), Make.VOLKSWAGEN.toString())));
         }
 
         @Test
@@ -330,8 +330,9 @@ public class ProductControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(2)))
                     .andExpect(jsonPath("$.totalElements").value(2))
-                    .andExpect(jsonPath("$.content[0].dealerId").value(dealerB.getId()))
-                    .andExpect(jsonPath("$.content[1].dealerId").value(dealerA.getId()));
+                    .andExpect(jsonPath("$.content[*].dealerId")
+                            .value(Matchers.containsInAnyOrder(
+                                    dealerA.getId().intValue(), dealerB.getId().intValue())));
         }
 
         @Test

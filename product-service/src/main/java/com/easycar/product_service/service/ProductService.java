@@ -111,7 +111,9 @@ public class ProductService {
 
         if (!pageable.getSort().isSorted()) {
             pageable = PageRequest.of(
-                    pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdAt").and(Sort.by(Sort.Direction.DESC, "id")));
         }
 
         Page<Product> productPage = productRepository.findAll(spec, pageable);
