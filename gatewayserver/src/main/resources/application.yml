@@ -8,16 +8,19 @@ spring:
     import: optional:${SPRING_CONFIG_IMPORT:configserver:http://localhost:8071/}
   cloud:
     gateway:
-      discovery:
-        locator:
-          # Make it true if I don't use "public RouteLocator easycarRouteConfig" in "GatewayserverApplication"
-          enabled: false
-          lowerCaseServiceId: true
       httpclient:
         # To configure Global http timeouts, connect-timeout must be specified in milliseconds
         connect-timeout: 1000
         # To configure Global http timeouts, response-timeout must be specified as a java.time.Duration
         response-timeout: 10s
+    kubernetes:
+      discovery:
+        enabled: true
+        all-namespaces: true
+    discovery:
+      client:
+        health-indicator:
+          enabled: false
   security:
     oauth2:
       resourceserver:
