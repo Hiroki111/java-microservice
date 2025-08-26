@@ -63,7 +63,7 @@ info:
   app:
     name: order-service
     description: "easycar order service"
-    version: 1.0.0
+    version: 2.0.0
 
 logging:
   level:

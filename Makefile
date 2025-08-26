@@ -1,4 +1,4 @@
-SERVICES = configserver eurekaserver gatewayserver order-service product-service message
+SERVICES = configserver gatewayserver order-service product-service message
 DOCKER_REPO = hiroki111/easycar
 
 .PHONY: all build-jar build-images
@@ -14,5 +14,11 @@ build-jar:
 build-images:
 	@for s in $(SERVICES); do \
 		echo "🐳 Building Docker image for $$s..."; \
-		docker build -t $(DOCKER_REPO)-$$s:1.0.0 $$s; \
+		docker build -t $(DOCKER_REPO)-$$s:2.0.0 $$s; \
+	done
+
+push-images:
+	@for s in $(SERVICES); do \
+		echo "🐳 Pushing Docker image for $$s..."; \
+		docker image push docker.io/$(DOCKER_REPO)-$$s:2.0.0; \
 	done
