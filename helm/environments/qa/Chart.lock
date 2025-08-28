@@ -5,9 +5,6 @@ dependencies:
 - name: configserver
   repository: file://../../easycar-services/configserver
   version: 0.1.0
-- name: eurekaserver
-  repository: file://../../easycar-services/eurekaserver
-  version: 0.1.0
 - name: gatewayserver
   repository: file://../../easycar-services/gatewayserver
   version: 0.1.0
@@ -20,5 +17,5 @@ dependencies:
 - name: product-service
   repository: file://../../easycar-services/product-service
   version: 0.1.0
-digest: sha256:044f153a05c9ed348e1a7427bdbda7cbf54f7404a0cda841d20e92e4f2f8d41f
-generated: "2025-08-12T07:38:20.0196123+02:00"
+digest: sha256:c4810f33a78f8a1edd73f7959ddbd08c6126e0d82473724b667278d389d20b69
+generated: "2025-08-26T07:54:39.3204867+02:00"
