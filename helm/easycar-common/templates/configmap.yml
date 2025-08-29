@@ -12,8 +12,8 @@ data:
   # Configserver
   SPRING_CONFIG_IMPORT: {{ .Values.global.configServerURL }}
 
-  # Eurekaserver
-  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: {{ .Values.global.eurekaServerURL }}
+  # Service discovery
+  SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.global.discoveryServerURL }}
 
   # Keycloak
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: {{ .Values.global.keyCloakURL }}

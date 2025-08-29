@@ -151,8 +151,11 @@ mvn spotless:apply
 
 To access protected endpoints:
 
-1. Start Keycloak (`http://localhost:7080/`) and open the admin console (`http://localhost:7080/admin/master/console/`)
-2. Login: `admin` / `admin`
+1. Start Keycloak by `helm install keycloak <directory-of-keycloak>`
+2. Check if `keycloak` Kubernetes service is running by `kubectl get svc`
+3. If `keycloak` is running, do port-forwarding (e.g., If the ports are `80:30510/TCP`, run `kubectl port-forward svc/keycloak 7080:80` where 7080 is any available port)
+4. Open the admin console (e.g., `http://localhost:7080/admin/master/console/`)
+5. Login: `admin` / `admin`
 
 Then:
 
@@ -181,9 +184,12 @@ Then:
 
 ### Using Protected Endpoints with Postman
 
-1. Open Postman and select a protected endpoint
-2. Go to the **Authorization** tab
-3. Set:
+1. Get a client secret from Keycloak admin console (see above)  
+2. Check if `gatewayserver` Kubernetes service is running by `kubectl get svc` and find the ports
+3. Do port-forwarding (e.g., Given the exposed port is 8072, run `kubectl port-forward svc/gatewayserver 8072:8072`)
+4. Open Postman and select a protected endpoint
+5. Go to the **Authorization** tab
+6. Set:
     - **Auth Type**: `OAuth 2.0`
     - **Add authorization data to**: `Request Headers`
     - **Token**: `authcode_accesstoken`
@@ -193,8 +199,8 @@ Then:
     - **Grant Type**: `Authorization Code`
     - **Authorize using browser**: Enabled
     - **Callback URL**: Use the default or your own
-    - **Auth URL**: `http://localhost:7080/realms/master/protocol/openid-connect/auth`
-    - **Access Token URL**: `http://localhost:7080/realms/master/protocol/openid-connect/token`
+    - **Auth URL**: `http://localhost:7080/realms/master/protocol/openid-connect/auth` (Given that Keycloak service is running at localhost:7080) 
+    - **Access Token URL**: `http://localhost:7080/realms/master/protocol/openid-connect/token` (Given that Keycloak service is running at localhost:7080)
     - **Client ID**: `easycar-client-authorization-code`
     - **Client Secret**: Get it from Keycloak UI (Clients → `easycar-client-authorization-code` → Credentials)
     - **Scope**: `openid email profile`
@@ -305,8 +311,11 @@ kubectl scale deployment <deployment-name> --replicas=<number>
 # Crate a blank chart (e.g., easycar-common)
 helm create <chart>
 
-# Create a single manifest file that contains all the charts' information (Use this for debugging)
+# Create a single manifest file that contains all the charts' information (This works only if there is no compilation issue, so use this for debugging)
 helm template easycar helm/environments/dev/ > rendered.yaml
+
+# Show all the charts' information
+helm template easycar helm/environments/dev/
 
 # Deploy easycar microservies for dev env (easycar is the release name)
 helm install easycar helm/environments/dev/
@@ -329,6 +338,11 @@ helm history easycar
 # Rollback to a previous revision (<revisionNumber> is a number)
 helm rollback easycar <revisionNumber>
 ```
+
+### Miscellaneous
+
+- Stop Helm releases when they aren't used, since they keep the PC busy.
+- If I uninstall and install Keycloak chart, Keycloak's pod may crash loop backoff. In that case, remove pvc of Keycloak and trying installing again.
 
 ## Note
 

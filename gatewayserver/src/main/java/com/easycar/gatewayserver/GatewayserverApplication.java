@@ -28,13 +28,13 @@ public class GatewayserverApplication {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("orderServiceCircuitBreaker"))
                         )
-                        .uri("lb://http://order-service:8082"))
+                        .uri("http://order-service:8082"))
                 .route(p -> p
                         .path("/easycar/product-service/**")
                         .filters(f -> f.rewritePath("/easycar/product-service/(?<segment>.*)", "/${segment}")
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                         )
-                        .uri("lb://http://product-service:8081"))
+                        .uri("http://product-service:8081"))
                 .build();
     }
 }
