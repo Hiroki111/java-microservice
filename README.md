@@ -11,7 +11,8 @@
 
 ## Older Versions
 
-- 1.0.0: V1 uses Eureka Server for client-side service discovery and can run with Docker Compose. Starting from v2, Eureka Server is replaced by Kubernetes server-side service discovery, which is not supported in Docker Compose.
+- 2.0.0: Eureka Server is replaced by Kubernetes server-side service discovery, which is not supported in Docker Compose. Tiltfile is introduced for local development, but it has issues while pulling images from Tilt and pushing them into a Kubernetes cluster running locally. The file is supposed to be fixed in the next version.
+- 1.0.0: V1 uses Eureka Server for client-side service discovery and can run with Docker Compose. The app can be ran by Docker Compose and Kubernetes (with or without Helm).
 
 ---
 
