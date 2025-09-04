@@ -15,6 +15,36 @@
 
 ---
 
+## Prerequisites
+
+1. Local Kubernetes cluster – e.g. Minikube, Kind, or Docker Desktop Kubernetes
+2. kubectl configured to talk to that cluster
+3. Helm installed
+4. Tilt installed
+5. Java v21 installed
+6. Maven installed
+
+---
+
+## How to run the project for local development
+
+1. `cd <root-of-app>`
+2. Make sure keycloak helm release is running (Run `helm list` to check it). If not, run `helm install keycloak helm/keycloak`
+3. `make install-infra-helm`
+4. `tilt up`
+
+---
+
+## How to stop the project for local development
+
+1. `cd <root-of-app>`
+2. `tilt down`
+3. `make uninstall-infra-helm`
+
+NOTE: If you uninstall keycloak's Helm release, you may need to delete pvc of the k8s pod too. Otherwise, when you re-install the release, keycloak may not work properly. However, by uninstalling keycloak's Helm release, you have to create clients, roles, and roles again (See `Set Up Clients, Roles, and Users` below for how to create them). If you're fine, run `helm uninstall keycloak`.
+
+---
+
 ## Future Enhancements
 
 - Introduce e2e testing.
@@ -25,7 +55,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm install keycloak bitnami/keycloak -f my-values.yaml
 ```
 - Set credentials for Redis. Currently, no authentication is required.
-- Update every occurance of `SPRING_RABBITMQ_HOST: "rabbit"` with `SPRING_RABBITMQ_HOST: "rabbitmq"` in Docker Compose and Kubernetes manifest files and update the service name from  `rabbit` to `rabbitmq`.
+- Update every occurrence of `SPRING_RABBITMQ_HOST: "rabbit"` with `SPRING_RABBITMQ_HOST: "rabbitmq"` in Docker Compose and Kubernetes manifest files and update the service name from  `rabbit` to `rabbitmq`.
 - Currently, `easycar-correlation-id` is used for logging inter-service communication (see the `com.easycar.gatewayserver.filters` package in `gatewayserver`). Consider using Micrometer for centralized logging.
 - `gatewayserver` implements a circuit breaker for `order-service`. Try implementing additional resiliency patterns such as [rate limiting](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945186) and [retry](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945166). Consider which pattern is best suited for each scenario before implementing them.
 - Create a utility class to clean up the logic for extracting `"realm_access"` roles from JWTs. For example:
