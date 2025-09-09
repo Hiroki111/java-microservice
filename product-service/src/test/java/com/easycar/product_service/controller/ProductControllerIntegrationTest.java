@@ -130,8 +130,8 @@ public class ProductControllerIntegrationTest {
                 var product = EntityBuilder.buildDefaultProductBuilder(dealer)
                         .available(i != 41)
                         .build();
-                product.setCreatedAt(
-                        LocalDateTime.now().minusDays(numberOfProducts - i).plusSeconds(i));
+                productRepository.save(product);
+                product.setCreatedAt(LocalDateTime.now().minusDays(numberOfProducts - i));
                 products.add(product);
                 productRepository.save(product);
             }
@@ -169,8 +169,8 @@ public class ProductControllerIntegrationTest {
                 var product = EntityBuilder.buildDefaultProductBuilder(dealer)
                         .available(i != 11)
                         .build();
-                product.setCreatedAt(
-                        LocalDateTime.now().minusDays(numberOfProducts - i).plusSeconds(i));
+                productRepository.save(product);
+                product.setCreatedAt(LocalDateTime.now().minusDays(numberOfProducts - i));
                 products.add(product);
                 productRepository.save(product);
             }
