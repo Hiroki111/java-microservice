@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -34,10 +35,13 @@
 		<lombok.version>1.18.36</lombok.version>
 		<mockito.version>5.14.2</mockito.version>
 		<embedded-redis.version>0.7.3</embedded-redis.version>
+		<flyway.version>11.9.1</flyway.version>
+		<spotless.version>2.44.4</spotless.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Spring Boot BOM -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
@@ -45,6 +49,17 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+			<!-- Spring Cloud BOM -->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Common libraries -->
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
@@ -54,13 +69,6 @@
 				<groupId>org.springdoc</groupId>
 				<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 				<version>${spring-doc.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
@@ -96,9 +104,28 @@
 						</compilerArgs>
 					</configuration>
 				</plugin>
+
+				<!-- Spotless (centralized version) -->
+				<plugin>
+					<groupId>com.diffplug.spotless</groupId>
+					<artifactId>spotless-maven-plugin</artifactId>
+					<version>${spotless.version}</version>
+				</plugin>
+
+				<!-- Flyway (centralized version) -->
+				<plugin>
+					<groupId>org.flywaydb</groupId>
+					<artifactId>flyway-maven-plugin</artifactId>
+					<version>${flyway.version}</version>
+				</plugin>
+
+				<!-- Flyway PostgreSQL extension -->
+				<plugin>
+					<groupId>org.flywaydb</groupId>
+					<artifactId>flyway-database-postgresql</artifactId>
+					<version>${flyway.version}</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
-
 	</build>
-
 </project>
