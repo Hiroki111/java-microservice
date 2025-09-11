@@ -18,12 +18,7 @@
 	<name>message</name>
 	<description>Microservice to support messaging in easycar</description>
 
-	<properties>
-		<java.version>21</java.version>
-	</properties>
-
 	<dependencies>
-		<!-- No versions needed, they come from BOM -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-stream</artifactId>
@@ -33,7 +28,6 @@
 			<artifactId>spring-cloud-stream-binder-rabbit</artifactId>
 		</dependency>
 
-		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -51,6 +45,13 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
