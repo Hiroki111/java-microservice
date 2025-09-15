@@ -1,0 +1,57 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: easycar
+
+build:
+  artifacts:
+    - image: easycar-configserver
+      context: configserver
+      docker:
+        dockerfile: Dockerfile
+    - image: easycar-gatewayserver
+      context: gatewayserver
+      docker:
+        dockerfile: Dockerfile
+    - image: easycar-message
+      context: message
+      docker:
+        dockerfile: Dockerfile
+    - image: easycar-order-service
+      context: order-service
+      jib:
+        type: maven
+      sync:
+        auto: true
+    - image: easycar-product-service
+      context: product-service
+      docker:
+        dockerfile: Dockerfile
+  local:
+    push: false
+
+deploy:
+  helm:
+    releases:
+      - name: easycar
+        chartPath: helm/environments/dev
+        # Map Helm values to Skaffold-built images.
+        # Keys on the left must match the values keys used by the environment chart.
+        setValueTemplates:
+          configserver.image.repository: "{{.IMAGE_REPO_easycar_configserver}}"
+          configserver.image.tag: "{{.IMAGE_TAG_easycar_configserver}}@{{.IMAGE_DIGEST_easycar_configserver}}"
+          gatewayserver.image.repository: "{{.IMAGE_REPO_easycar_gatewayserver}}"
+          gatewayserver.image.tag: "{{.IMAGE_TAG_easycar_gatewayserver}}@{{.IMAGE_DIGEST_easycar_gatewayserver}}"
+          message.image.repository: "{{.IMAGE_REPO_easycar_message}}"
+          message.image.tag: "{{.IMAGE_TAG_easycar_message}}@{{.IMAGE_DIGEST_easycar_message}}"
+          "order-service.image.repository": "{{.IMAGE_REPO_easycar_order_service}}"
+          "order-service.image.tag": "{{.IMAGE_TAG_easycar_order_service}}@{{.IMAGE_DIGEST_easycar_order_service}}"
+          product-service.image.repository: "{{.IMAGE_REPO_easycar_product_service}}"
+          product-service.image.tag: "{{.IMAGE_TAG_easycar_product_service}}@{{.IMAGE_DIGEST_easycar_product_service}}"
+        setValues:
+          # Ensure pull policy is sane for local images
+          configserver.image.pullPolicy: IfNotPresent
+          gatewayserver.image.pullPolicy: IfNotPresent
+          message.image.pullPolicy: IfNotPresent
+          "order-service.image.pullPolicy": IfNotPresent
+          product-service.image.pullPolicy: IfNotPresent

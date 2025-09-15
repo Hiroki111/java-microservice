@@ -110,6 +110,17 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>${jib.version}</version>
+				<configuration>
+					<to>
+						<image>docker.io/hiroki111/easycar-${project.artifactId}:${image.tag}</image>
+					</to>
+				</configuration>
+			</plugin>
+
 			<!-- Compiler plugin (inherits config from BOM) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

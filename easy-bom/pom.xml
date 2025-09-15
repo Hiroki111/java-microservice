@@ -37,6 +37,8 @@
 		<embedded-redis.version>0.7.3</embedded-redis.version>
 		<flyway.version>11.9.1</flyway.version>
 		<spotless.version>2.44.4</spotless.version>
+		<jib.version>3.4.2</jib.version>
+		<image.tag>2.0.0</image.tag>
 	</properties>
 
 	<dependencyManagement>
