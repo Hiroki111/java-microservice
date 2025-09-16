@@ -7,16 +7,22 @@ build:
   artifacts:
     - image: easycar-configserver
       context: configserver
-      docker:
-        dockerfile: Dockerfile
+      jib:
+        type: maven
+      sync:
+        auto: true
     - image: easycar-gatewayserver
       context: gatewayserver
-      docker:
-        dockerfile: Dockerfile
+      jib:
+        type: maven
+      sync:
+        auto: true
     - image: easycar-message
       context: message
-      docker:
-        dockerfile: Dockerfile
+      jib:
+        type: maven
+      sync:
+        auto: true
     - image: easycar-order-service
       context: order-service
       jib:
@@ -25,8 +31,10 @@ build:
         auto: true
     - image: easycar-product-service
       context: product-service
-      docker:
-        dockerfile: Dockerfile
+      jib:
+        type: maven
+      sync:
+        auto: true
   local:
     push: false
 
@@ -44,8 +52,8 @@ deploy:
           gatewayserver.image.tag: "{{.IMAGE_TAG_easycar_gatewayserver}}@{{.IMAGE_DIGEST_easycar_gatewayserver}}"
           message.image.repository: "{{.IMAGE_REPO_easycar_message}}"
           message.image.tag: "{{.IMAGE_TAG_easycar_message}}@{{.IMAGE_DIGEST_easycar_message}}"
-          "order-service.image.repository": "{{.IMAGE_REPO_easycar_order_service}}"
-          "order-service.image.tag": "{{.IMAGE_TAG_easycar_order_service}}@{{.IMAGE_DIGEST_easycar_order_service}}"
+          order-service.image.repository: "{{.IMAGE_REPO_easycar_order_service}}"
+          order-service.image.tag: "{{.IMAGE_TAG_easycar_order_service}}@{{.IMAGE_DIGEST_easycar_order_service}}"
           product-service.image.repository: "{{.IMAGE_REPO_easycar_product_service}}"
           product-service.image.tag: "{{.IMAGE_TAG_easycar_product_service}}@{{.IMAGE_DIGEST_easycar_product_service}}"
         setValues:
@@ -53,5 +61,5 @@ deploy:
           configserver.image.pullPolicy: IfNotPresent
           gatewayserver.image.pullPolicy: IfNotPresent
           message.image.pullPolicy: IfNotPresent
-          "order-service.image.pullPolicy": IfNotPresent
+          order-service.image.pullPolicy: IfNotPresent
           product-service.image.pullPolicy: IfNotPresent
