@@ -11,7 +11,7 @@
 
 ## Older Versions
 
-- 2.0.0: Eureka Server is replaced by Kubernetes server-side service discovery, which is not supported in Docker Compose. Tiltfile is introduced for local development, but it has issues while pulling images from Tilt and pushing them into a Kubernetes cluster running locally. The file is supposed to be fixed in the next version.
+- 2.0.0: Eureka Server is replaced by Kubernetes server-side service discovery, which is not supported in Docker Compose.
 - 1.0.0: V1 uses Eureka Server for client-side service discovery and can run with Docker Compose. The app can be ran by Docker Compose and Kubernetes (with or without Helm).
 
 ---
@@ -21,7 +21,7 @@
 1. Local Kubernetes cluster – e.g. Minikube, Kind, or Docker Desktop Kubernetes
 2. kubectl configured to talk to that cluster
 3. Helm installed
-4. Tilt installed
+4. Skaffold (Standalone: https://skaffold.dev/docs/quickstart/) installed
 5. Java v21 installed
 6. Maven installed
 
@@ -32,15 +32,14 @@
 1. `cd <root-of-app>`
 2. Make sure keycloak helm release is running (Run `helm list` to check it). If not, run `helm install keycloak helm/keycloak`
 3. `make install-infra-helm`
-4. `tilt up`
+4. `skaffold dev`
 
 ---
 
 ## How to stop the project for local development
 
-1. `cd <root-of-app>`
-2. `tilt down`
-3. `make uninstall-infra-helm`
+1. Terminate `skaffold dev` by Ctrl + C
+2. `make uninstall-infra-helm`
 
 NOTE: If you uninstall keycloak's Helm release, you may need to delete pvc of the k8s pod too. Otherwise, when you re-install the release, keycloak may not work properly. However, by uninstalling keycloak's Helm release, you have to create clients, roles, and roles again (See `Set Up Clients, Roles, and Users` below for how to create them). If you're fine, run `helm uninstall keycloak`.
 
@@ -48,6 +47,7 @@ NOTE: If you uninstall keycloak's Helm release, you may need to delete pvc of th
 
 ## Future Enhancements
 
+- `skaffold debug` doesn't break properly. Breakpoints aren't hit while I put them on IntelliJ. I may need to use Cloud Code as [recommended here](https://skaffold.dev/docs/workflows/debug/#recommended-debugging-using-cloud-code).
 - Introduce e2e testing.
 - Remove RabbitMQ, Keycloak and Redis Helm chart folder from `/helm` folder. Those folders bloating this repo. Instead, try using charts by remote chart. For example:
 ```bash
@@ -96,56 +96,21 @@ public class JwtUtil {
 (To run all the services together, `cd` to `/docker-compose/default` and run `docker compose up`)
 ---
 
-## Docker Command Cheat Sheet
+## How to use Jib to containerize Java apps
 
 ```bash
-docker build . -t <dockerhub-username>/<image-name>:<tag>
-docker images
-docker run -d -p <host-port>:<container-port> <image-id>  # Example: docker run -d -p 8080:8081 22b19
-docker start <container-id>  # Start an existing container
-docker stop <container-id>   # Stop an existing container
-docker ps -a
-docker image push docker.io/<dockerhub-username>/<image-name>:<tag>
-docker compose up -d --build  # Run from `/docker-compose/<env>` folder
-docker compose up -d --build --force-recreate  # Recreate containers (useful if configserver DNS is outdated)
-docker compose -f docker-compose/<env>/docker-compose.yml up -d --build
-docker compose stop     # Stop containers without deleting
-docker compose start    # Start stopped containers
-docker compose down     # DON'T USE THIS because it removes containers, so DB and Keycloak data will be erased
+# Builds to a container image registry.
+mvn compile jib:build
+# Builds to a Docker daemon.
+mvn compile jib:dockerBuild
 ```
 
 ---
 
-## Using the Makefile
+## Using the Makefile for build jar files of all the services
 
 ```bash
 make                  # Build all services and create images
-make build-jar
-make build-images
-```
-
----
-
-## Running Infrastructure Services with Docker
-
-```bash
-# Product service DB (persistent)
-docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -v postgres-data:/var/lib/postgresql/data -p 5432:5432 -d postgres:17.4
-
-# Product service DB (non-persistent)
-docker run --name product-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=product-service-db -p 5432:5432 -d postgres:17.4
-
-# Order service DB
-docker run --name order-service-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=order-service-db -p 5433:5432 -d postgres:17.4
-
-# RabbitMQ
-docker run -d -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
-
-# Redis
-docker run --name redis -d -p 6379:6379 redis
-
-# Keycloak  
-docker run -d -p 7080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev
 ```
 
 ---
@@ -186,7 +151,7 @@ To access protected endpoints:
 2. Check if `keycloak` Kubernetes service is running by `kubectl get svc`
 3. If `keycloak` is running, do port-forwarding (e.g., If the ports are `80:30510/TCP`, run `kubectl port-forward svc/keycloak 7080:80` where 7080 is any available port)
 4. Open the admin console (e.g., `http://localhost:7080/admin/master/console/`)
-5. Login: `admin` / `admin`
+5. Login: `admin` / `admin` (This credential is set in Keycloak helm chart under `/helm` folder)
 
 Then:
 
@@ -194,21 +159,23 @@ Then:
     - Navigate to **Clients** → **Create client**
     - Type: OpenID Connect
     - Client ID: `easycar-client-authorization-code`
+    - Click Next
     - Enable *Client authentication*, disable *Authorization*, check only *Standard flow*
+    - Click Next
     - Set `*` as the value for Valid Redirect URIs and Web Origins (use specific URIs in production)
     - Save
 
 2. **Create Users**
     - Navigate to **Users** → **Add user**
     - Enable *Email verified*, set a username (e.g., `customer`, `internaluser`), create
-    - Go to **Credentials** tab → set password → disable *Temporary* → Save
+    - Go to **Credentials** tab → set password → enter password and disable *Temporary* → Save
 
 3. **Create Roles**
     - Navigate to **Realm roles** → **Create role**
     - Create roles named `INTERNAL_USER` and `CUSTOMER` (These roles are used in `gatewayserver` code)
 
 4. **Assign Roles to Users**
-    - Navigate to **Users** → Choose the user created by Step 2 → **Role Mappings** → **Assign Role** → **Realm roles**
+    - Navigate to **Users** → Choose the user created by Step 2 → **Role Mappings** → Arrow icon next to **Assign Role** → **Realm roles**
     - Select a role → Assign
 
 ---
@@ -243,6 +210,8 @@ Then:
 ---
 
 ## Using Flyway for DB Migration
+
+Use Flyway when the DB is empty without running the service that uses the DB. Otherwise, Flyway doesn't work due to missing `flywa_schema_history`.
 
 ### Run Locally (local development)
 
@@ -373,7 +342,16 @@ helm rollback easycar <revisionNumber>
 ### Miscellaneous
 
 - Stop Helm releases when they aren't used, since they keep the PC busy.
-- If I uninstall and install Keycloak chart, Keycloak's pod may crash loop backoff. In that case, remove pvc of Keycloak and trying installing again.
+- If I uninstall and install Keycloak chart, Keycloak's pod may crash loop backoff. In that case, remove pvc of Keycloak (See below how to do it) and trying installing again.
+- Use `kubectl delete pvc <pvc-name>` to delete one PVC by its exact name. 
+- Use `kubectl delete pvc -l app.kubernetes.io/instance=<release-name>` to delete all PVCs that belong to a Helm release by matching their labels. Helm charts add labels to all their resources. For PostgreSQL, Bitnami applies something like the following. So the -l app.kubernetes.io/instance=<release-name> flag means "Delete every PVC where the label app.kubernetes.io/instance matches my Helm release name." 
+
+```yaml
+labels:
+  app.kubernetes.io/name: postgresql
+  app.kubernetes.io/instance: postgresql   # <--- release name
+```
+
 
 ## Note
 
