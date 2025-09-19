@@ -6,30 +6,35 @@ metadata:
 build:
   artifacts:
     - image: easycar-configserver
+      runtimeType: jvm
       context: configserver
       jib:
         type: maven
       sync:
         auto: true
     - image: easycar-gatewayserver
+      runtimeType: jvm
       context: gatewayserver
       jib:
         type: maven
       sync:
         auto: true
     - image: easycar-message
+      runtimeType: jvm
       context: message
       jib:
         type: maven
       sync:
         auto: true
     - image: easycar-order-service
+      runtimeType: jvm
       context: order-service
       jib:
         type: maven
       sync:
         auto: true
     - image: easycar-product-service
+      runtimeType: jvm
       context: product-service
       jib:
         type: maven
