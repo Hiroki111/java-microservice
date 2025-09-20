@@ -1,14 +1,5 @@
 # java-microservice
 
-- http://localhost:8081/h2-console
-- http://localhost:8081/swagger-ui/index.html
-- http://localhost:8081/actuator/busrefresh – Refreshes config properties provided by `configserver`. Works with `rabbitmq:3.13-management`.
-- http://localhost:8081/actuator/shutdown – Deregisters the service from the Eureka server.
-- http://localhost:8070/ – Eureka server
-- http://localhost:7080/ – Keycloak
-
----
-
 ## Older Versions
 
 - 2.0.0: Eureka Server is replaced by Kubernetes server-side service discovery, which is not supported in Docker Compose.
@@ -30,9 +21,10 @@
 ## How to run the project
 
 1. `cd <root-of-app>`
-2. Make sure keycloak helm release is running (Run `helm list` to check it). If not, run `helm install keycloak helm/keycloak`
-3. `make install-infra-helm`
-4. `helm install easycar helm/environments/dev/` or `skaffold dev` (If Skaffold is installed)
+2. Make sure the Kubernetes cluster is running
+3. Make sure keycloak helm release is running (Run `helm list` to check it). If not, run `helm install keycloak helm/keycloak`
+4. `make install-infra-helm`
+5. `helm install easycar helm/environments/dev/` or `skaffold dev` (If Skaffold is installed)
 
 NOTE:
 - To stop the app after you run `helm install easycar helm/environments/dev/`, run `helm uninstall easycar`. Also, run `make uninstall-infra-helm` to stop all the infra services
@@ -99,6 +91,13 @@ mvn compile jib:build
 # Builds to a Docker daemon.
 mvn compile jib:dockerBuild
 ```
+
+---
+
+## How to refresh config properties provided by `configserver`
+
+- Do port-forward for the service that needs to refresh its config properties (e.g., `kubectl port-forward service/product-service 8081:8081`)
+- Hit `GET http://localhost:8081/actuator/busrefresh`
 
 ---
 
