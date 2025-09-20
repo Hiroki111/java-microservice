@@ -1,34 +1,66 @@
 # java-microservice
 
-## Older Versions
+## Version History
 
-- 2.0.0: Eureka Server is replaced by Kubernetes server-side service discovery, which is not supported in Docker Compose.
-- 1.0.0: V1 uses Eureka Server for client-side service discovery and can run with Docker Compose. The app can be ran by Docker Compose and Kubernetes (with or without Helm).
+- **2.0.0** – Replaced Eureka Server with Kubernetes server-side service discovery (not supported in Docker Compose).
+- **1.0.0** – Used Eureka Server for client-side service discovery. Can run with Docker Compose or Kubernetes (with or without Helm).
 
 ---
 
 ## Prerequisites
 
-1. Skaffold and minikube installed (Only if you want to run the app by Skaffold. Otherwise, other local Kubernetes cluster, such as Kind and Docker Desktop Kubernetes, can be used too)
-2. kubectl configured to talk to the Kubernetes cluster that you chose
-3. Helm installed
-4. Java v21 installed
-5. Maven installed
-6. Optional: Skaffold (Standalone: https://skaffold.dev/docs/quickstart/) installed
+1. **Kubernetes cluster**
+    - Skaffold and Minikube (only required if you want to run the app with Skaffold).
+    - Other clusters such as Kind or Docker Desktop Kubernetes also work.
+2. **kubectl** configured for your cluster
+3. **Helm** installed
+4. **Java 21** installed
+5. **Maven** installed
+6. *(Optional)* **Skaffold** installed ([quickstart](https://skaffold.dev/docs/quickstart/))
 
 ---
 
-## How to run the project
+## Running the Project
 
-1. `cd <root-of-app>`
-2. Make sure the Kubernetes cluster is running
-3. Make sure keycloak helm release is running (Run `helm list` to check it). If not, run `helm install keycloak helm/keycloak`
-4. `make install-infra-helm`
-5. `helm install easycar helm/environments/dev/` or `skaffold dev` (If Skaffold is installed)
+1. Go to the project root:
+   ```bash
+   cd <root-of-app>
+   ```
+2. Start your Kubernetes cluster.
+3. Check if the Keycloak Helm release is running:
+   ```bash
+   helm list
+   ```
+   If not, install it:
+   ```bash
+   helm install keycloak helm/keycloak
+   ```
+4. Install infrastructure:
+   ```bash
+   make install-infra-helm
+   ```
+5. Start the app:
+   ```bash
+   helm install easycar helm/environments/dev/
+   ```
+   or, if Skaffold is installed:
+   ```bash
+   skaffold dev
+   ```
 
-NOTE:
-- To stop the app after you run `helm install easycar helm/environments/dev/`, run `helm uninstall easycar`. Also, run `make uninstall-infra-helm` to stop all the infra services
-- If you uninstall keycloak's Helm release, you may need to delete pvc of the k8s pod too. Otherwise, when you re-install the release, keycloak may not work properly. However, by uninstalling keycloak's Helm release, you have to create clients, roles, and roles again (See `Set Up Clients, Roles, and Users` below for how to create them). If you're fine, run `helm uninstall keycloak`.
+### Stopping the App
+
+- If you started it with Helm:
+  ```bash
+  helm uninstall easycar
+  make uninstall-infra-helm
+  ```
+- If you uninstall Keycloak, you may also need to delete its PVCs. Otherwise, reinstalling may fail.
+  ```bash
+  helm uninstall keycloak
+  kubectl delete pvc -l app.kubernetes.io/instance=keycloak
+  ```
+  ⚠️ After reinstalling Keycloak, you must re-create clients, roles, and users. See [Set Up Clients, Roles, and Users](#set-up-clients-roles-and-users).
 
 ---
 
@@ -71,16 +103,6 @@ public class JwtUtil {
 4. A `.jar` file will be generated in the `target` folder. This file includes all dependencies (e.g., Spring libraries, embedded Tomcat) except the Java runtime.
 5. Start the service with `mvn spring-boot:run` or `java -jar target/<jar-file-name>.jar`.
 
----
-
-## Running a Service with Docker
-
-1. Build the `.jar` file (as described above).
-2. Create a `Dockerfile`.
-3. Use `docker build` and `docker run` (see commands below).
-4. To use Docker Compose, add service definitions to `docker-compose.yml`.
-
-(To run all the services together, `cd` to `/docker-compose/default` and run `docker compose up`)
 ---
 
 ## How to use Jib to containerize Java apps
@@ -293,13 +315,6 @@ kubectl delete pod <pod-name>
 
 # Change the size of <deployment-name> to <number>
 kubectl scale deployment <deployment-name> --replicas=<number>
-
-
-minikube start
-
-minikube status
-
-minikube stop
 
 ```
 
