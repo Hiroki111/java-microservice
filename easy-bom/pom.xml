@@ -38,7 +38,7 @@
 		<flyway.version>11.9.1</flyway.version>
 		<spotless.version>2.44.4</spotless.version>
 		<jib.version>3.4.2</jib.version>
-		<image.tag>2.0.0</image.tag>
+		<image.tag>2.1.0</image.tag>
 	</properties>
 
 	<modules>
