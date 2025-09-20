@@ -18,30 +18,25 @@
 
 ## Prerequisites
 
-1. Local Kubernetes cluster – e.g. Minikube, Kind, or Docker Desktop Kubernetes
-2. kubectl configured to talk to that cluster
+1. If you want to run the app by Skaffold, Minikube (Otherwise, other local Kubernetes cluster, such as Kind and Docker Desktop Kubernetes, can be used too)
+2. kubectl configured to talk to the Kubernetes cluster that you chose
 3. Helm installed
-4. Skaffold (Standalone: https://skaffold.dev/docs/quickstart/) installed
-5. Java v21 installed
-6. Maven installed
+4. Java v21 installed
+5. Maven installed
+6. Optional: Skaffold (Standalone: https://skaffold.dev/docs/quickstart/) installed
 
 ---
 
-## How to run the project for local development
+## How to run the project
 
 1. `cd <root-of-app>`
 2. Make sure keycloak helm release is running (Run `helm list` to check it). If not, run `helm install keycloak helm/keycloak`
 3. `make install-infra-helm`
-4. `skaffold dev`
+4. `helm install easycar helm/environments/dev/` or `skaffold dev` (If Skaffold is installed)
 
----
-
-## How to stop the project for local development
-
-1. Terminate `skaffold dev` by Ctrl + C
-2. `make uninstall-infra-helm`
-
-NOTE: If you uninstall keycloak's Helm release, you may need to delete pvc of the k8s pod too. Otherwise, when you re-install the release, keycloak may not work properly. However, by uninstalling keycloak's Helm release, you have to create clients, roles, and roles again (See `Set Up Clients, Roles, and Users` below for how to create them). If you're fine, run `helm uninstall keycloak`.
+NOTE:
+- To stop the app after you run `helm install easycar helm/environments/dev/`, run `helm uninstall easycar`. Also, run `make uninstall-infra-helm` to stop all the infra services
+- If you uninstall keycloak's Helm release, you may need to delete pvc of the k8s pod too. Otherwise, when you re-install the release, keycloak may not work properly. However, by uninstalling keycloak's Helm release, you have to create clients, roles, and roles again (See `Set Up Clients, Roles, and Users` below for how to create them). If you're fine, run `helm uninstall keycloak`.
 
 ---
 
