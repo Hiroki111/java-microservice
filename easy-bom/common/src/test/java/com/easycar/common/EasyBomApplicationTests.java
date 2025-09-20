@@ -1,4 +1,4 @@
-package com.easycar.easy_bom;
+package com.easycar.common;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

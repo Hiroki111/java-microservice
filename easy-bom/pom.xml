@@ -41,6 +41,18 @@
 		<image.tag>2.0.0</image.tag>
 	</properties>
 
+	<modules>
+		<module>common</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<dependencyManagement>
 		<dependencies>
 			<!-- Spring Boot BOM -->
