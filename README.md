@@ -9,7 +9,7 @@
 
 ## Prerequisites
 
-1. If you want to run the app by Skaffold, Minikube (Otherwise, other local Kubernetes cluster, such as Kind and Docker Desktop Kubernetes, can be used too)
+1. Skaffold and minikube installed (Only if you want to run the app by Skaffold. Otherwise, other local Kubernetes cluster, such as Kind and Docker Desktop Kubernetes, can be used too)
 2. kubectl configured to talk to the Kubernetes cluster that you chose
 3. Helm installed
 4. Java v21 installed
@@ -293,6 +293,14 @@ kubectl delete pod <pod-name>
 
 # Change the size of <deployment-name> to <number>
 kubectl scale deployment <deployment-name> --replicas=<number>
+
+
+minikube start
+
+minikube status
+
+minikube stop
+
 ```
 
 ---
