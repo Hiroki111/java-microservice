@@ -1,6 +1,6 @@
 package com.easycar.product_service.exception;
 
-import com.easycar.product_service.dto.ErrorResponseDto;
+import com.easycar.common.dto.ErrorResponseDto;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.time.LocalDateTime;
 import java.util.Arrays;

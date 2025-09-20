@@ -1,10 +1,11 @@
 package com.easycar.order_service.exception;
 
-import com.easycar.order_service.dto.ErrorResponseDto;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.easycar.common.dto.ErrorResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

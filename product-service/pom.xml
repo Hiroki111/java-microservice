@@ -119,7 +119,12 @@
 			<artifactId>embedded-redis</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.easycar</groupId>
+            <artifactId>common</artifactId>
+			<version>${common-lib.version}</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
