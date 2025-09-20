@@ -1,8 +1,8 @@
 package com.easycar.product_service.mapper;
 
+import com.easycar.common.dto.PageDto;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
-import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductCreateDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;

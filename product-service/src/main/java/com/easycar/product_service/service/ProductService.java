@@ -1,12 +1,12 @@
 package com.easycar.product_service.service;
 
+import com.easycar.common.dto.PageDto;
 import com.easycar.product_service.constants.CacheConstants;
 import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.domain.Make;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.domain.entity.Product;
 import com.easycar.product_service.dto.OrderMessageDto;
-import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductCreateDto;
 import com.easycar.product_service.dto.ProductDto;
 import com.easycar.product_service.dto.ProductPatchDto;

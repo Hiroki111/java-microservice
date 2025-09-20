@@ -1,10 +1,11 @@
 package com.easycar.product_service.mapper;
 
+import com.easycar.common.dto.PageDto;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.dto.DealerCreateDto;
 import com.easycar.product_service.dto.DealerDto;
 import com.easycar.product_service.dto.DealerPatchDto;
-import com.easycar.product_service.dto.PageDto;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;

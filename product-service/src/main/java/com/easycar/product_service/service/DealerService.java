@@ -1,10 +1,10 @@
 package com.easycar.product_service.service;
 
+import com.easycar.common.dto.PageDto;
 import com.easycar.product_service.domain.entity.Dealer;
 import com.easycar.product_service.dto.DealerCreateDto;
 import com.easycar.product_service.dto.DealerDto;
 import com.easycar.product_service.dto.DealerPatchDto;
-import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.exception.ResourceNotFoundException;
 import com.easycar.product_service.mapper.DealerMapper;
 import com.easycar.product_service.repository.DealerRepository;

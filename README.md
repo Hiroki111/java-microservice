@@ -2,6 +2,7 @@
 
 ## Version History
 
+- **main** – (Ongoing) Introduced a common module in the Spring Boot BOM.
 - **2.0.0** – Replaced Eureka Server with Kubernetes server-side service discovery (not supported in Docker Compose). Introduced Spring Boot BOM, jib, and Skaffold.
 - **1.0.0** – Used Eureka Server for client-side service discovery. Can run with Docker Compose or Kubernetes (with or without Helm).
 

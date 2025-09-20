@@ -1,5 +1,6 @@
 package com.easycar.product_service.controller;
 
+import com.easycar.common.dto.PageDto;
 import com.easycar.product_service.dto.*;
 import com.easycar.product_service.service.DealerService;
 import io.swagger.v3.oas.annotations.Parameter;

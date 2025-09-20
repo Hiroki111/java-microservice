@@ -1,8 +1,8 @@
 package com.easycar.product_service.service;
 
+import com.easycar.common.dto.PageDto;
 import com.easycar.product_service.constants.CacheConstants;
 import com.easycar.product_service.constants.ProductConstants;
-import com.easycar.product_service.dto.PageDto;
 import com.easycar.product_service.dto.ProductDto;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.annotation.Lazy;

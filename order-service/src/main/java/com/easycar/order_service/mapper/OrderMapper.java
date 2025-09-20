@@ -1,9 +1,10 @@
 package com.easycar.order_service.mapper;
 
+import com.easycar.common.dto.PageDto;
 import com.easycar.order_service.domain.entity.Order;
 import com.easycar.order_service.dto.OrderCreateDto;
 import com.easycar.order_service.dto.OrderDto;
-import com.easycar.order_service.dto.PageDto;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
