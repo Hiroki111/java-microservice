@@ -1,5 +1,6 @@
 package com.easycar.product_service.controller.backstage;
 
+import com.easycar.common.dto.ResponseDto;
 import com.easycar.product_service.constants.ProductConstants;
 import com.easycar.product_service.dto.*;
 import com.easycar.product_service.service.DealerService;

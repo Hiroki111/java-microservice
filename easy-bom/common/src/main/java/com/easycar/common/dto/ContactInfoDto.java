@@ -1,10 +1,11 @@
-package com.easycar.order_service.dto;
+package com.easycar.common.dto;
 
-import java.util.List;
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.List;
+import java.util.Map;
 
 @ConfigurationProperties(prefix = "order-service")
 @Getter

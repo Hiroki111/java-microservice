@@ -1,9 +1,9 @@
 package com.easycar.order_service.controller;
 
+import com.easycar.common.dto.ResponseDto;
 import com.easycar.order_service.constants.RestApiConstants;
 import com.easycar.order_service.dto.OrderCreateDto;
 import com.easycar.order_service.dto.OrderDto;
-import com.easycar.order_service.dto.ResponseDto;
 import com.easycar.order_service.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

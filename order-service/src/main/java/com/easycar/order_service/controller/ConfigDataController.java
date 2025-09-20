@@ -1,6 +1,6 @@
 package com.easycar.order_service.controller;
 
-import com.easycar.order_service.dto.ContactInfoDto;
+import com.easycar.common.dto.ContactInfoDto;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;

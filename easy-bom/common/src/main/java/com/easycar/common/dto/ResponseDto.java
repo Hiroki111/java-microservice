@@ -1,4 +1,4 @@
-package com.easycar.product_service.dto;
+package com.easycar.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
