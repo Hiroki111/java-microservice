@@ -2,7 +2,7 @@
 
 ## Version History
 
-- **2.0.0** – Replaced Eureka Server with Kubernetes server-side service discovery (not supported in Docker Compose).
+- **2.0.0** – Replaced Eureka Server with Kubernetes server-side service discovery (not supported in Docker Compose). Introduced a Spring Boot BOM.
 - **1.0.0** – Used Eureka Server for client-side service discovery. Can run with Docker Compose or Kubernetes (with or without Helm).
 
 ---
