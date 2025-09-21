@@ -1,6 +1,6 @@
 package com.easycar.order_service;
 
-import com.easycar.common.dto.ContactInfoDto;
+import com.easycar.order_service.dto.ContactInfoDto;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
