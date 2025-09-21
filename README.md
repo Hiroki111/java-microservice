@@ -27,14 +27,14 @@
    ```bash
    cd <root-of-app>
    ```
-2. Start your Kubernetes cluster.
+2. Start your Kubernetes cluster. If you use minikube, start it by `minikube start --cpus 4 --memory 4096`. [By default, minikube uses 2048MB](https://github.com/kubernetes/minikube/blob/232080ae0cbcf9cb9a388eb76cc11cf6884e19c0/pkg/minikube/constants/constants.go#L102), which isn't sufficient most of the time.
 3. Check if the Keycloak Helm release is running:
    ```bash
    helm list
    ```
    If not, install it:
    ```bash
-   helm install keycloak helm/keycloak
+   helm install keycloak bitnami/keycloak --version 25.1.2  --values helm/external/keycloak/values.yaml
    ```
 4. Install infrastructure:
    ```bash
@@ -67,32 +67,14 @@
 
 ## Future Enhancements
 
-- `skaffold debug` doesn't break properly. Breakpoints aren't hit while I put them on IntelliJ. I may need to use Cloud Code as [recommended here](https://skaffold.dev/docs/workflows/debug/#recommended-debugging-using-cloud-code).
-- Introduce e2e testing.
-- Remove RabbitMQ, Keycloak and Redis Helm chart folder from `/helm` folder. Those folders bloating this repo. Instead, try using charts by remote chart. For example:
-```bash
-# I haven't tested this approach
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install keycloak bitnami/keycloak -f my-values.yaml
-```
-- Set credentials for Redis. Currently, no authentication is required.
-- Update every occurrence of `SPRING_RABBITMQ_HOST: "rabbit"` with `SPRING_RABBITMQ_HOST: "rabbitmq"` in Docker Compose and Kubernetes manifest files and update the service name from  `rabbit` to `rabbitmq`.
 - Currently, `easycar-correlation-id` is used for logging inter-service communication (see the `com.easycar.gatewayserver.filters` package in `gatewayserver`). Consider using Micrometer for centralized logging.
 - `gatewayserver` implements a circuit breaker for `order-service`. Try implementing additional resiliency patterns such as [rate limiting](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945186) and [retry](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945166). Consider which pattern is best suited for each scenario before implementing them.
-- Create a utility class to clean up the logic for extracting `"realm_access"` roles from JWTs. For example:
-
-```java
-public class JwtUtil {
-    public static List<String> extractRoles(Jwt jwt) {
-        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-        if (realmAccess == null) return List.of();
-        return (List<String>) realmAccess.getOrDefault("roles", List.of());
-    }
-}
-```
-
+- Update every occurrence of `SPRING_RABBITMQ_HOST: "rabbit"` with `SPRING_RABBITMQ_HOST: "rabbitmq"` in Docker Compose and Kubernetes manifest files and update the service name from  `rabbit` to `rabbitmq`.
+- Introduce e2e testing.
 - Introduce Apache Kafka. Identify a use case where Kafka is more appropriate than RabbitMQ and integrate it. See [this page](https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/learn/lecture/39945898#overview) for using Kafka with Docker. Note that using both Kafka and RabbitMQ with Spring Cloud Stream is likely not supported. Use Kafka with Spring Boot directly (without Spring Cloud).
+- Set credentials for Redis. Currently, no authentication is required.
 - The `GET /api/product` endpoint caches results but does not handle race conditions. Consider strategies to prevent this issue.
+- `skaffold debug` doesn't break properly. Breakpoints aren't hit while I put them on IntelliJ. I may need to use Cloud Code as [recommended here](https://skaffold.dev/docs/workflows/debug/#recommended-debugging-using-cloud-code).
 
 ---
 
@@ -120,7 +102,7 @@ mvn compile jib:dockerBuild
 ## How to refresh config properties provided by `configserver`
 
 - Do port-forward for the service that needs to refresh its config properties (e.g., `kubectl port-forward service/product-service 8081:8081`)
-- Hit `GET http://localhost:8081/actuator/busrefresh`
+- Hit `POST http://localhost:8081/actuator/busrefresh`
 
 ---
 
@@ -164,7 +146,7 @@ mvn spotless:apply
 
 To access protected endpoints:
 
-1. Start Keycloak by `helm install keycloak <directory-of-keycloak>`
+1. Start Keycloak by `helm install keycloak bitnami/keycloak --version 25.1.2  --values helm/external/keycloak/values.yaml`
 2. Check if `keycloak` Kubernetes service is running by `kubectl get svc`
 3. If `keycloak` is running, do port-forwarding (e.g., If the ports are `80:30510/TCP`, run `kubectl port-forward svc/keycloak 7080:80` where 7080 is any available port)
 4. Open the admin console (e.g., `http://localhost:7080/admin/master/console/`)
@@ -179,7 +161,7 @@ Then:
     - Click Next
     - Enable *Client authentication*, disable *Authorization*, check only *Standard flow*
     - Click Next
-    - Set `*` as the value for Valid Redirect URIs and Web Origins (use specific URIs in production)
+    - Set `*` as the value for *Valid Redirect URIs* and *Web Origins* (use specific URIs in production)
     - Save
 
 2. **Create Users**
@@ -239,9 +221,8 @@ mvn flyway:migrate   -Dflyway.url=jdbc:postgresql://localhost:<port>/<service>-s
 ### Run Locally (Helm and Kubernetes)
 
 ```bash
-# NOTE: This doesn't work on Powershell
 kubectl port-forward svc/<service>-service-db 5432:5432
-# Open a new terminal
+# Open a new terminal (Don't use Powershell, since PowerShell treats : and = inside arguments differently and often messes with -D system property flags)
 cd <service>
 mvn flyway:migrate   -Dflyway.url=jdbc:postgresql://localhost:5432/<service>-service-db   -Dflyway.user=postgres   -Dflyway.password=secret
 
