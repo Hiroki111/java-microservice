@@ -1,7 +1,6 @@
 SERVICES = configserver gatewayserver order-service product-service message
-DOCKER_REPO = hiroki111/easycar
 
-.PHONY: all build-jar build-images
+.PHONY: all build-jar
 
 all: build-jar
 

@@ -1,26 +1,24 @@
-# TODO: Activate GitHub based config after migrating to Kubernetes and/or building a CI/CD pipeline
 spring:
   application:
     name: "configserver"
   profiles:
-    active: native
-    #active: git
+    active: git
   cloud:
     config:
       server:
-        native:
-          search-locations: classpath:/config
-        #git:
-          #uri: https://github.com/Hiroki111/java-microservice-config.git
-          #username: Hiroki111
-          #password: ${GITHUB_TOKEN} # Store GITHUB_TOKEN as an environment variable or a Kubernetes secret.
-                                     # This is a token, not a GitHub password.
-                                     # Go to GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained tokens.
-                                     # Under Permissions, find Repository contents and check read-only.
-          #default-label: main
-          #timeout: 5 # i.e. 5 minutes
-          #clone-on-start: true
-          #force-pull: true
+        git:
+          uri: https://github.com/Hiroki111/java-microservice-config.git
+          # NOTE: Use credentials for real-world projects.
+          #       Currently, Hiroki111/java-microservice-config is a public repo, but it should be a private repo if it's used for a real-world project.
+          # username: Hiroki111
+          # password: ${GITHUB_TOKEN} # Store GITHUB_TOKEN as an environment variable or a Kubernetes secret.
+          #                            # This is a token, not a GitHub password.
+          #                            # Go to GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained tokens.
+          #                            # Under Permissions, find Repository contents and check read-only.
+          default-label: main
+          timeout: 5
+          clone-on-start: true
+          force-pull: true
   rabbitmq:
     host: "localhost"
     port: 5672
