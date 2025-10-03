@@ -1369,38 +1369,29 @@ prometheus:
             ]
        },
        {
-            "job_name": "eurekaserver",
+            "job_name": "order-service",
             "metrics_path": "/actuator/prometheus",
             "static_configs": [
               {
-                "targets": ["eurekaserver:8070"]
+                "targets": ["order-service:8082"]
               }
             ]
        },
        {
-            "job_name": "accounts",
+            "job_name": "product-service",
             "metrics_path": "/actuator/prometheus",
             "static_configs": [
               {
-                "targets": ["accounts:8080"]
+                "targets": ["product-service:8081"]
               }
             ]
        },
        {
-            "job_name": "loans",
+            "job_name": "message",
             "metrics_path": "/actuator/prometheus",
             "static_configs": [
               {
-                "targets": ["loans:8090"]
-              }
-            ]
-       },
-       {
-            "job_name": "cards",
-            "metrics_path": "/actuator/prometheus",
-            "static_configs": [
-              {
-                "targets": ["cards:9000"]
+                "targets": ["message:8083"]
               }
             ]
        },
