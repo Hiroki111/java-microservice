@@ -19,11 +19,6 @@ spring:
     password: guest
     connection-timeout: 10s
 
-management:
-  metrics:
-    tags:
-      application: ${spring.application.name}
-
 info:
   app:
     name: message
