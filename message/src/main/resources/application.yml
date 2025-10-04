@@ -23,4 +23,4 @@ info:
   app:
     name: message
     description: "easycar message service"
-    version: 2.1.0
+    version: 2.1.1
