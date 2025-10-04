@@ -2,7 +2,7 @@
 
 ## Version History
 
-- **2.2.0** - Solved all the "TODO" in configserver.
+- **2.2.0** - Moved config data from configserver to https://github.com/Hiroki111/java-microservice-config.git.
 - **2.1.1** – Introduced a common module in the Spring Boot BOM. Replaced external Bitnami Helm charts with remote ones that are found by `helm repo add bitnami https://charts.bitnami.com/bitnami`.
 - **2.0.0** – Replaced Eureka Server with Kubernetes server-side service discovery (not supported in Docker Compose). Introduced Spring Boot BOM, jib, and Skaffold.
 - **1.0.0** – Used Eureka Server for client-side service discovery. Can run with Docker Compose or Kubernetes (with or without Helm).
