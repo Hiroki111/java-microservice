@@ -7,7 +7,7 @@ replicaCount: 2
 
 image:
   repository: hiroki111/easycar-product-service
-  tag: 2.1.0
+  tag: 2.2.0
 
 containerPort: 8081
 

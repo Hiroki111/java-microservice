@@ -43,7 +43,7 @@ info:
   app:
     name: gatewayserver
     description: "easycar gateway server"
-    version: 2.1.0
+    version: 2.2.0
 
 logging:
   level:
