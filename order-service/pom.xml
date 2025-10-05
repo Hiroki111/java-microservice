@@ -63,7 +63,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+			<artifactId>spring-cloud-stream-binder-kafka</artifactId>
 		</dependency>
 
 		<!-- Databases -->
@@ -110,6 +110,11 @@
 			<groupId>com.easycar</groupId>
 			<artifactId>common</artifactId>
 			<version>${common-lib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>kafka</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

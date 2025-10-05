@@ -32,6 +32,10 @@ spring:
           destination: send-communication
         reserveProduct-out-0:
           destination: reserve-product
+      kafka:
+        binder:
+          brokers:
+            - localhost:9092
   rabbitmq:
     host: ${SPRING_RABBITMQ_HOST:localhost}
     port: ${SPRING_RABBITMQ_PORT:5672}

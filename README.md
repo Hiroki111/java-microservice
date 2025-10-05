@@ -2,6 +2,7 @@
 
 ## Version History
 
+- **dev** - I'm replacing RabbitMQ with Kafka. Currently, order-service and message have Kafka, but the order-service's test files don't run. I need to use Testcontainers to test full Kafka integration. So, (1) fix the tests with Testcontainers, (2) introduce Kafka helm chart, (3) test the endpoint for creating an order and see if a message is sent from order-service to message 
 - **2.2.0** - Moved config data from configserver to https://github.com/Hiroki111/java-microservice-config.git.
 - **2.1.1** – Introduced a common module in the Spring Boot BOM. Replaced external Bitnami Helm charts with remote ones that are found by `helm repo add bitnami https://charts.bitnami.com/bitnami`.
 - **2.0.0** – Replaced Eureka Server with Kubernetes server-side service discovery (not supported in Docker Compose). Introduced Spring Boot BOM, jib, and Skaffold.
